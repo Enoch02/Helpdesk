@@ -1,6 +1,5 @@
 package com.enoch02.helpdesk.ui.screen.authentication
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,15 +13,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.enoch02.helpdesk.navigation.Screen
 import com.enoch02.helpdesk.ui.screen.authentication.component.BasicAuthForm
 import com.enoch02.helpdesk.ui.screen.authentication.component.LabeledCheckBox
 
@@ -35,9 +32,17 @@ fun AuthenticationScreen(
     val password = viewModel.password
     val state = viewModel.screenState
     val rememberMe = viewModel.rememberMe
-    var headerText by rememberSaveable {
-        mutableStateOf("")
-    }
+
+    //TODO: remove... (for testing only)
+    LaunchedEffect(
+        key1 = viewModel.loggedIn,
+        block = {
+            if (viewModel.loggedIn == LoginState.LOGGED_IN) {
+                viewModel.loggedIn = LoginState.NOT_LOGGED_IN
+                navController.navigate(Screen.StudentHome.route)
+            }
+        }
+    )
 
     Column(
         modifier = Modifier

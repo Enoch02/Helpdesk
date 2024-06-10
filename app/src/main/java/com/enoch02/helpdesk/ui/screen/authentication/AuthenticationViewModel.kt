@@ -8,11 +8,13 @@ import androidx.lifecycle.ViewModel
 //@HiltViewModel
 class AuthenticationViewModel : ViewModel() {
     var screenState by mutableStateOf(AuthScreenState.SIGN_IN)
-    var email by mutableStateOf("")
-    var password by mutableStateOf("")
+    var email by mutableStateOf("adesanyaenoch@gmail.com")
+    var password by mutableStateOf("admin")
 
     //TODO: laod its value from shared prefs
     var rememberMe by mutableStateOf(true)
+
+    var loggedIn by mutableStateOf(LoginState.NOT_LOGGED_IN)
 
 
     fun changeState(newValue: AuthScreenState) {
@@ -33,7 +35,10 @@ class AuthenticationViewModel : ViewModel() {
 
     //TODO: create a function that validates inputs
     fun signIn() {
-
+        //TODO: temp
+        if (email == "adesanyaenoch@gmail.com" && password == "admin") {
+            loggedIn = LoginState.LOGGED_IN
+        }
     }
 
     fun signUp() {

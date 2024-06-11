@@ -20,6 +20,7 @@ fun FormTextField(
     label: String,
     value: String,
     onValueChange: (String) -> Unit,
+    maxLines: Int,
     modifier: Modifier = Modifier
 ) {
     val focusManager = LocalFocusManager.current
@@ -36,6 +37,7 @@ fun FormTextField(
             autoCorrect = true
         ),
         keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
+        maxLines = maxLines
     )
 }
 
@@ -47,6 +49,7 @@ private fun Preview() {
         value = "",
         onValueChange = {
 
-        }
+        },
+        maxLines = 1
     )
 }

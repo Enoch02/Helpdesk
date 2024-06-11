@@ -63,7 +63,8 @@ fun CreateTicketScreen(
                         value = subject,
                         onValueChange = {
                             viewModel.updateSubject(it)
-                        }
+                        },
+                        maxLines = 1
                     )
 
 
@@ -92,7 +93,8 @@ fun CreateTicketScreen(
                         value = description,
                         onValueChange = {
                             viewModel.updateDescription(it)
-                        }
+                        },
+                        maxLines = 5
                     )
 
                     AttachmentSelector(

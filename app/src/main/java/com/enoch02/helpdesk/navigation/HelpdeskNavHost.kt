@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.enoch02.helpdesk.ui.screen.authentication.AuthenticationScreen
 import com.enoch02.helpdesk.ui.screen.student.create_ticket.CreateTicketScreen
 import com.enoch02.helpdesk.ui.screen.student.home.StudentHomeScreen
+import com.enoch02.helpdesk.ui.screen.student.ticket_list.TicketListScreen
 
 @Composable
 fun HelpdeskNavHost(navController: NavHostController = rememberNavController()) {
@@ -25,6 +26,10 @@ fun HelpdeskNavHost(navController: NavHostController = rememberNavController()) 
 
             composable(Screen.CreateTicket.route) {
                 CreateTicketScreen(navController = navController)
+            }
+
+            composable(Screen.TicketList.route) {
+                TicketListScreen(navController = navController)
             }
         }
     )

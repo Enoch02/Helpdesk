@@ -82,7 +82,7 @@ fun StudentHomeScreen(
                                     Icons.Default.ConfirmationNumber,
                                     label = "Open Tickets",
                                     onClick = {
-
+                                        navController.navigate(Screen.TicketList.route)
                                     }
                                 )
                             }
@@ -102,7 +102,7 @@ fun StudentHomeScreen(
                                     Icons.Default.History,
                                     label = "Recent Tickets",
                                     onClick = {
-
+                                        navController.navigate(Screen.TicketList.route)
                                     }
                                 )
                             }

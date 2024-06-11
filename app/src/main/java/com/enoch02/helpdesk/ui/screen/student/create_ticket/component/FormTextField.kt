@@ -14,6 +14,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 
+//TODO: add maxLines parameter so that i can make the description box chunky
 @Composable
 fun FormTextField(
     label: String,
@@ -34,7 +35,7 @@ fun FormTextField(
             imeAction = ImeAction.Next,
             autoCorrect = true
         ),
-        keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
+        keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),
     )
 }
 

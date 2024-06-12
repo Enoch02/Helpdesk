@@ -21,8 +21,10 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.enoch02.helpdesk.navigation.Screen
 import com.enoch02.helpdesk.ui.screen.student.ticket_list.component.TicketListItem
 
 //TODO: show only recent tickets or all open tickets depending on where the user is
@@ -121,7 +123,9 @@ fun TicketListScreen(navController: NavController, viewModel: TicketListViewMode
                         modifier = Modifier.fillMaxSize()
                     )
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
             )
         },
         content = { paddingValues ->
@@ -130,7 +134,13 @@ fun TicketListScreen(navController: NavController, viewModel: TicketListViewMode
                     items(
                         count = 50,
                         itemContent = {
-                            TicketListItem(subject = "Ticket #$it", status = "Closed", onClick = {})
+                            TicketListItem(
+                                subject = "Ticket #$it",
+                                status = "Closed",
+                                onClick = {
+                                    navController.navigate(Screen.TicketDetail.route)
+                                }
+                            )
                             if (it < 49) {
                                 Divider()
                             }

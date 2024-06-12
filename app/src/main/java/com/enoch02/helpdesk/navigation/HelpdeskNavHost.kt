@@ -16,8 +16,8 @@ import com.enoch02.helpdesk.ui.screen.student.ticket_list.TicketListScreen
 fun HelpdeskNavHost(navController: NavHostController = rememberNavController()) {
     NavHost(
         navController = navController,
-        /*startDestination = Screen.Authentication.route,*/
-        startDestination = Screen.TicketDetail.route,
+        startDestination = Screen.Authentication.route,
+        /*startDestination = Screen.Chat.route,*/
         builder = {
             composable(Screen.Authentication.route) {
                 AuthenticationScreen(navController = navController)

@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.enoch02.helpdesk.navigation.Screen
 import com.enoch02.helpdesk.ui.screen.common.ticket_detail.component.TicketActionRow
 import com.enoch02.helpdesk.ui.screen.common.ticket_detail.component.TicketDetailCard
 
@@ -127,7 +128,12 @@ fun TicketDetailScreen(
                         )
                     }
 
-                    item { TicketActionRow(modifier = Modifier.padding(8.dp)) }
+                    item {
+                        TicketActionRow(
+                            onChatButtonClicked = { navController.navigate(Screen.Chat.route) },
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
                 },
                 modifier = Modifier
                     .padding(paddingValues)

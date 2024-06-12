@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun TicketActionRow(modifier: Modifier) {
+fun TicketActionRow(onChatButtonClicked: () -> Unit, modifier: Modifier) {
     // TODO: hide some buttons based on ticket state
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -30,7 +30,7 @@ fun TicketActionRow(modifier: Modifier) {
             )
 
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { onChatButtonClicked() },
                 content = {
                     Text(text = "Chat")
                 }
@@ -43,5 +43,5 @@ fun TicketActionRow(modifier: Modifier) {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun Preview() {
-    TicketActionRow(Modifier)
+    TicketActionRow(onChatButtonClicked = {}, modifier = Modifier)
 }

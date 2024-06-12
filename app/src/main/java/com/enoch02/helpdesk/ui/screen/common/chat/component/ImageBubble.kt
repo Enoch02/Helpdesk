@@ -12,11 +12,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 
+//TODO: image bubble with text
+//TODO: image bubble with multiple images
 @Composable
-fun ImageBubble(content: String, type: BubbleOwner) {
+fun ImageBubble(content: String, owner: BubbleOwner) {
     val alignment =
-        when (type) {
+        when (owner) {
             BubbleOwner.SENDER -> {
                 Alignment.CenterStart
             }
@@ -26,7 +29,7 @@ fun ImageBubble(content: String, type: BubbleOwner) {
             }
         }
     val colors = CardDefaults.cardColors(
-        containerColor = when (type) {
+        containerColor = when (owner) {
             BubbleOwner.SENDER -> {
                 MaterialTheme.colorScheme.surfaceVariant
             }
@@ -44,7 +47,10 @@ fun ImageBubble(content: String, type: BubbleOwner) {
         content = {
             Card(
                 content = {
-                    //TODO: AsyncImage here!
+                    AsyncImage(
+                        model = content,
+                        contentDescription = null
+                    )
                 },
                 colors = colors,
                 modifier = Modifier.fillMaxWidth(0.7f)
@@ -58,7 +64,7 @@ fun ImageBubble(content: String, type: BubbleOwner) {
 @Composable
 private fun Preview() {
     Column(modifier = Modifier.fillMaxWidth()) {
-        ImageBubble(content = "", type = BubbleOwner.SENDER)
-        ImageBubble(content = "", type = BubbleOwner.RECEIVER)
+        ImageBubble(content = "", owner = BubbleOwner.SENDER)
+        ImageBubble(content = "", owner = BubbleOwner.RECEIVER)
     }
 }

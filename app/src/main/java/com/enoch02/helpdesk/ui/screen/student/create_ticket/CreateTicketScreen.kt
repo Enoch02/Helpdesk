@@ -22,7 +22,7 @@ import androidx.navigation.NavController
 import com.enoch02.helpdesk.data.model.Category
 import com.enoch02.helpdesk.data.model.Priority
 import com.enoch02.helpdesk.data.model.toPriority
-import com.enoch02.helpdesk.ui.screen.authentication.component.AttachmentSelector
+import com.enoch02.helpdesk.ui.screen.student.create_ticket.component.AttachmentSelector
 import com.enoch02.helpdesk.ui.screen.student.create_ticket.component.FormDropdown
 import com.enoch02.helpdesk.ui.screen.student.create_ticket.component.FormTextField
 

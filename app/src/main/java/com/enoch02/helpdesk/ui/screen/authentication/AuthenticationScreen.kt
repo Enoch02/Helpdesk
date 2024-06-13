@@ -1,5 +1,6 @@
 package com.enoch02.helpdesk.ui.screen.authentication
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,35 +15,34 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.enoch02.helpdesk.navigation.Screen
 import com.enoch02.helpdesk.ui.screen.authentication.component.BasicAuthForm
 import com.enoch02.helpdesk.ui.screen.authentication.component.LabeledCheckBox
+import kotlinx.coroutines.launch
 
 @Composable
 fun AuthenticationScreen(
     navController: NavController,
     viewModel: AuthenticationViewModel = hiltViewModel()
 ) {
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    val registrationState = viewModel.registrationState.collectAsState(initial = null)
+    val loginState = viewModel.loginState.collectAsState(initial = null)
+
     val email = viewModel.email
     val password = viewModel.password
     val state = viewModel.screenState
     val rememberMe = viewModel.rememberMe
-
-    //TODO: remove... (for testing only)
-    LaunchedEffect(
-        key1 = viewModel.loggedIn,
-        block = {
-            if (viewModel.loggedIn == LoginState.LOGGED_IN) {
-                viewModel.loggedIn = LoginState.NOT_LOGGED_IN
-                navController.navigate(Screen.StudentHome.route)
-            }
-        }
-    )
 
     Column(
         modifier = Modifier
@@ -161,4 +161,52 @@ fun AuthenticationScreen(
             )
         }
     )
+
+    LaunchedEffect(key1 = registrationState.value?.isSuccess) {
+        scope.launch {
+            if (registrationState.value?.isSuccess?.isNotEmpty() == true) {
+                val success = registrationState.value?.isSuccess
+                Toast.makeText(context, "$success", Toast.LENGTH_SHORT).show()
+
+                navController.navigate(Screen.StudentHome.route) {
+                    popUpTo(Screen.Authentication.route) {
+                        inclusive = true
+                    }
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(key1 = registrationState.value?.isError) {
+        scope.launch {
+            if (registrationState.value?.isError?.isNotEmpty() == true) {
+                val error = registrationState.value?.isError
+                Toast.makeText(context, "$error", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    LaunchedEffect(key1 = loginState.value?.isSuccess) {
+        scope.launch {
+            if (loginState.value?.isSuccess?.isNotEmpty() == true) {
+                val success = loginState.value?.isSuccess
+                Toast.makeText(context, "$success", Toast.LENGTH_SHORT).show()
+
+                navController.navigate(Screen.StudentHome.route) {
+                    popUpTo(Screen.Authentication.route) {
+                        inclusive = true
+                    }
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(key1 = loginState.value?.isError) {
+        scope.launch {
+            if (loginState.value?.isError?.isNotEmpty() == true) {
+                val error = loginState.value?.isError
+                Toast.makeText(context, "$error", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 }

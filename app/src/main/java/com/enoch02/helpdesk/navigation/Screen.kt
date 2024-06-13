@@ -8,6 +8,7 @@ sealed class Screen(val route: String) {
     data object TicketList: Screen("ticket_list_screen")
     data object TicketDetail: Screen("ticket_detail_screen")
     data object Chat: Screen("chat_screen")
+    data object Feedback: Screen("feedback_screen")
 
     fun withArgs(vararg args: String): String {
         return buildString {

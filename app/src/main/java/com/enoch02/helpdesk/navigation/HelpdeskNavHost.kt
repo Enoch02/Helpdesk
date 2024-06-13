@@ -9,6 +9,7 @@ import com.enoch02.helpdesk.ui.screen.authentication.AuthenticationScreen
 import com.enoch02.helpdesk.ui.screen.common.chat.ChatScreen
 import com.enoch02.helpdesk.ui.screen.common.ticket_detail.TicketDetailScreen
 import com.enoch02.helpdesk.ui.screen.student.create_ticket.CreateTicketScreen
+import com.enoch02.helpdesk.ui.screen.student.feedback.FeedbackScreen
 import com.enoch02.helpdesk.ui.screen.student.home.StudentHomeScreen
 import com.enoch02.helpdesk.ui.screen.student.ticket_list.TicketListScreen
 
@@ -16,8 +17,8 @@ import com.enoch02.helpdesk.ui.screen.student.ticket_list.TicketListScreen
 fun HelpdeskNavHost(navController: NavHostController = rememberNavController()) {
     NavHost(
         navController = navController,
-        startDestination = Screen.Authentication.route,
-        /*startDestination = Screen.Chat.route,*/
+        /*startDestination = Screen.Authentication.route,*/
+        startDestination = Screen.Feedback.route,
         builder = {
             composable(Screen.Authentication.route) {
                 AuthenticationScreen(navController = navController)
@@ -41,6 +42,10 @@ fun HelpdeskNavHost(navController: NavHostController = rememberNavController()) 
 
             composable(Screen.Chat.route) {
                 ChatScreen(navController = navController)
+            }
+            
+            composable(Screen.Feedback.route) {
+                FeedbackScreen(navController = navController)
             }
         }
     )

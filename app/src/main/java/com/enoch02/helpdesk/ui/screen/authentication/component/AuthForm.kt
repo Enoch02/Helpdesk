@@ -1,6 +1,7 @@
 package com.enoch02.helpdesk.ui.screen.authentication.component
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,7 +17,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,9 +36,12 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun BasicAuthForm(
+    acceptName: Boolean,
     headerText: String,
+    name: String = "",
     email: String,
     password: String,
+    onNameChange: (String) -> Unit = {},
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onDone: () -> Unit,
@@ -66,6 +69,29 @@ fun BasicAuthForm(
             )
 
             Spacer(modifier = Modifier.height(80.dp))
+
+            AnimatedVisibility(visible = acceptName) {
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { onNameChange(it) },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text(text = "Name") },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next,
+                        autoCorrect = true
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onNext = {
+                            focusManager.moveFocus(
+                                FocusDirection.Down
+                            )
+                        }
+                    )
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             OutlinedTextField(
                 value = email,
@@ -114,5 +140,16 @@ fun BasicAuthForm(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun Preview() {
-    BasicAuthForm("Hello World", "", "", {}, {}, {}, modifier = Modifier.fillMaxSize())
+    BasicAuthForm(
+        acceptName = true,
+        headerText = "Hello World",
+        name = "",
+        email = "",
+        password = "",
+        onNameChange = {},
+        onEmailChange = {},
+        onPasswordChange = {},
+        onDone = {},
+        modifier = Modifier.fillMaxSize()
+    )
 }

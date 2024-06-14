@@ -23,7 +23,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.enoch02.helpdesk.navigation.Screen
 import com.enoch02.helpdesk.ui.screen.student.home.component.ActionCard
@@ -33,7 +33,7 @@ import com.enoch02.helpdesk.ui.screen.student.home.component.Header
 @Composable
 fun StudentHomeScreen(
     navController: NavController,
-    viewModel: StudentHomeViewModel = viewModel()
+    viewModel: StudentHomeViewModel = hiltViewModel()
 ) {
     Scaffold(
         topBar = {
@@ -41,9 +41,12 @@ fun StudentHomeScreen(
                 title = { /*TODO*/ },
                 navigationIcon = {
                     IconButton(
-                        onClick = { /*TODO*/ },
+                        onClick = { navController.navigate(Screen.Account.route) },
                         content = {
-                            Icon(imageVector = Icons.Default.AccountCircle, contentDescription = null)
+                            Icon(
+                                imageVector = Icons.Default.AccountCircle,
+                                contentDescription = null
+                            )
                         }
                     )
                 },
@@ -60,7 +63,10 @@ fun StudentHomeScreen(
         content = { paddingValues ->
             Column(
                 content = {
-                    Header(modifier = Modifier.fillMaxWidth())
+                    Header(
+                        userName = viewModel.getDisplayName() ?: "User",
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
                     Spacer(modifier = Modifier.height(20.dp))
 
@@ -80,7 +86,7 @@ fun StudentHomeScreen(
                             item {
                                 ActionCard(
                                     Icons.Default.ConfirmationNumber,
-                                    label = "Open Tickets",
+                                    label = "View Open Tickets",
                                     onClick = {
                                         navController.navigate(Screen.TicketList.route)
                                     }

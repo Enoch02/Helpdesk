@@ -8,7 +8,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.enoch02.helpdesk.ui.screen.authentication.AuthenticationScreen
 import com.enoch02.helpdesk.ui.screen.authentication.AuthenticationViewModel
+import com.enoch02.helpdesk.ui.screen.common.account.AccountScreen
 import com.enoch02.helpdesk.ui.screen.common.chat.ChatScreen
+import com.enoch02.helpdesk.ui.screen.common.settings.SettingsScreen
 import com.enoch02.helpdesk.ui.screen.common.ticket_detail.TicketDetailScreen
 import com.enoch02.helpdesk.ui.screen.student.create_ticket.CreateTicketScreen
 import com.enoch02.helpdesk.ui.screen.student.feedback.FeedbackScreen
@@ -57,6 +59,14 @@ fun HelpdeskNavHost(
 
             composable(Screen.Feedback.route) {
                 FeedbackScreen(navController = navController)
+            }
+
+            composable(Screen.Settings.route) {
+                SettingsScreen(navController = navController)
+            }
+
+            composable(Screen.Account.route) {
+                AccountScreen(navController = navController)
             }
         }
     )

@@ -1,7 +1,7 @@
 package com.enoch02.helpdesk.di
 
-import com.enoch02.helpdesk.data.repository.FirebaseRepository
-import com.enoch02.helpdesk.data.repository.FirebaseRepositoryImpl
+import com.enoch02.helpdesk.data.remote.repository.FirebaseRepository
+import com.enoch02.helpdesk.data.remote.repository.FirebaseRepositoryImpl
 import com.google.firebase.auth.FirebaseAuth
 import dagger.Module
 import dagger.Provides

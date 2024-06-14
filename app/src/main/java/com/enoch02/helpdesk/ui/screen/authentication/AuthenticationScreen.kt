@@ -39,6 +39,7 @@ fun AuthenticationScreen(
     val registrationState = viewModel.registrationState.collectAsState(initial = null)
     val loginState = viewModel.loginState.collectAsState(initial = null)
 
+    val name = viewModel.name
     val email = viewModel.email
     val password = viewModel.password
     val state = viewModel.screenState
@@ -51,6 +52,15 @@ fun AuthenticationScreen(
         verticalArrangement = Arrangement.Center,
         content = {
             BasicAuthForm(
+                acceptName = when (viewModel.screenState) {
+                    AuthScreenState.SIGN_IN -> {
+                        false
+                    }
+
+                    AuthScreenState.SIGN_UP -> {
+                        true
+                    }
+                },
                 headerText = when (viewModel.screenState) {
                     AuthScreenState.SIGN_IN -> {
                         "Sign in to your account"
@@ -60,8 +70,10 @@ fun AuthenticationScreen(
                         "Sign up for an account"
                     }
                 },
+                name = name,
                 email = email,
                 password = password,
+                onNameChange = { viewModel.updateName(it) },
                 onEmailChange = { viewModel.updateEmail(it) },
                 onPasswordChange = { viewModel.updatePassword(it) },
                 onDone = {
@@ -162,6 +174,7 @@ fun AuthenticationScreen(
         }
     )
 
+    //TODO: replace toasts with snack bars?
     LaunchedEffect(key1 = registrationState.value?.isSuccess) {
         scope.launch {
             if (registrationState.value?.isSuccess?.isNotEmpty() == true) {

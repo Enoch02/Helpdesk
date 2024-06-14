@@ -12,13 +12,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun Header(userName: String = "User", modifier: Modifier) {
+fun Header(userName: String, modifier: Modifier) {
     Column(
         modifier = modifier,
         content = {
             Text(
                 text = "Welcome, $userName!",
-                fontSize = MaterialTheme.typography.headlineLarge.fontSize,
+                fontSize = MaterialTheme.typography.headlineSmall.fontSize,
                 fontWeight = FontWeight.Bold
             )
 
@@ -30,5 +30,5 @@ fun Header(userName: String = "User", modifier: Modifier) {
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 private fun Preview() {
-    Header(modifier = Modifier.fillMaxWidth())
+    Header(userName = "Adesanya Enoch", modifier = Modifier.fillMaxWidth())
 }

@@ -12,6 +12,7 @@ import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -123,31 +124,36 @@ fun TicketListScreen(navController: NavController, viewModel: TicketListViewMode
                         modifier = Modifier.fillMaxSize()
                     )
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
+                modifier = Modifier.fillMaxWidth()
             )
         },
         content = { paddingValues ->
-            LazyColumn(
+            Card(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
                 content = {
-                    items(
-                        count = 50,
-                        itemContent = {
-                            TicketListItem(
-                                subject = "Ticket #$it",
-                                status = "Closed",
-                                onClick = {
-                                    navController.navigate(Screen.TicketDetail.route)
+                    LazyColumn(
+                        content = {
+                            items(
+                                count = 20,
+                                itemContent = {
+
+                                    TicketListItem(
+                                        subject = "Ticket #$it",
+                                        status = "Closed",
+                                        onClick = {
+                                            navController.navigate(Screen.TicketDetail.route)
+                                        }
+                                    )
+                                    if (it < 19) {
+                                        Divider()
+                                    }
                                 }
                             )
-                            if (it < 49) {
-                                Divider()
-                            }
                         }
                     )
-                },
-                modifier = Modifier.padding(paddingValues)
+                }
             )
         }
     )

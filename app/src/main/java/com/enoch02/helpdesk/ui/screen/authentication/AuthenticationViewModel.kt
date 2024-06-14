@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.enoch02.helpdesk.data.repository.FirebaseRepository
+import com.enoch02.helpdesk.data.remote.repository.FirebaseRepository
 import com.enoch02.helpdesk.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -23,8 +23,9 @@ class AuthenticationViewModel @Inject constructor(private val repository: Fireba
     val loginState = _loginState.receiveAsFlow()
 
     var screenState by mutableStateOf(AuthScreenState.SIGN_IN)
-    var email by mutableStateOf("adesanyaenoch@gmail.com")
-    var password by mutableStateOf("admin")
+    var name by mutableStateOf("")
+    var email by mutableStateOf("")
+    var password by mutableStateOf("")
 
     //TODO: laod its value from shared prefs
     var rememberMe by mutableStateOf(true)
@@ -32,6 +33,10 @@ class AuthenticationViewModel @Inject constructor(private val repository: Fireba
 
     fun changeState(newValue: AuthScreenState) {
         screenState = newValue
+    }
+
+    fun updateName(newName: String) {
+        name = newName
     }
 
     fun updateEmail(newEmail: String) {
@@ -80,7 +85,9 @@ class AuthenticationViewModel @Inject constructor(private val repository: Fireba
                     }
 
                     is Resource.Success -> {
-                        _registrationState.send(AuthState(isSuccess = "Registration Complete"))
+                        repository.updateUserInfo(name = name, profilePicture = null).onSuccess {
+                            _registrationState.send(AuthState(isSuccess = "Registration Complete"))
+                        }
                     }
                 }
             }

@@ -24,6 +24,11 @@ android {
     }
 
     buildTypes {
+        getByName("debug") {
+            applicationIdSuffix = ".debug"
+            resValue("string", "app_name", "Helpdesk Debug")
+        }
+
         release {
             isMinifyEnabled = false
             proguardFiles(

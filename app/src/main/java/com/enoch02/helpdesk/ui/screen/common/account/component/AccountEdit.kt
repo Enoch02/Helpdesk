@@ -8,13 +8,16 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -36,6 +39,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
@@ -45,6 +49,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 
@@ -186,11 +191,15 @@ fun NewNameSelector(currentName: String?, onNameChange: (String) -> Unit) {
 
     ListItem(
         leadingContent = {
-            Text(text = currentName ?: "User")
+            Text(text = "Display Name")
         },
         headlineContent = { /*TODO*/ },
         trailingContent = {
-            Icon(imageVector = Icons.Default.ChevronRight, contentDescription = null)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = currentName ?: "User")
+                Spacer(modifier = Modifier.width(4.dp))
+                Icon(imageVector = Icons.Default.ChevronRight, contentDescription = null)
+            }
         },
         tonalElevation = 30.dp,
         modifier = Modifier.clickable {
@@ -462,7 +471,7 @@ fun EmailChanger() {
     )
 }
 
-/*@Preview(showSystemUi = true, showBackground = true)
+@Preview(showSystemUi = true, showBackground = true)
 @Composable
 private fun ProfilePicPreview() {
     ProfilePictureEdit(currentImage = null, onImageChange = {})
@@ -486,4 +495,3 @@ private fun PasswordChangerPreview() {
 
     }
 }
-*/

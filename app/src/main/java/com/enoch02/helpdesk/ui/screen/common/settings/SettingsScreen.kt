@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.enoch02.helpdesk.navigation.Screen
 import com.enoch02.helpdesk.ui.screen.common.settings.component.UserInfo
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,7 +57,14 @@ fun SettingsScreen(navController: NavController, viewModel: SettingsViewModel = 
                             onProfilePicChange = {
 
                             },
-                            onLogOutClicked = { viewModel.signOut() },
+                            onLogOutClicked = {
+                                viewModel.signOut()
+                                navController.popBackStack(
+                                    navController.graph.startDestinationRoute.toString(),
+                                    inclusive = true
+                                )
+                                navController.navigate(Screen.Authentication.route)
+                            },
                             modifier = Modifier.fillMaxWidth()
                         )
                     }

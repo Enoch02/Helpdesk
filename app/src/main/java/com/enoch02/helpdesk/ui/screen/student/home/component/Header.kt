@@ -1,5 +1,6 @@
 package com.enoch02.helpdesk.ui.screen.student.home.component
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,13 +14,22 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun Header(userName: String, modifier: Modifier) {
+    val showMessage = when (userName) {
+        "User" -> false
+        else -> true
+    }
     Column(
         modifier = modifier,
         content = {
-            Text(
-                text = "Welcome, $userName!",
-                fontSize = MaterialTheme.typography.headlineSmall.fontSize,
-                fontWeight = FontWeight.Bold
+            AnimatedVisibility(
+                visible = showMessage,
+                content = {
+                    Text(
+                        text = "Welcome, $userName!",
+                        fontSize = MaterialTheme.typography.headlineSmall.fontSize,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             )
 
             Text(text = "What would you like to do?", modifier = Modifier.padding(start = 4.dp))

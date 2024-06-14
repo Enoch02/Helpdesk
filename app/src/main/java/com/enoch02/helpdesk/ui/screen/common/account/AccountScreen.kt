@@ -11,6 +11,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -22,7 +23,12 @@ import com.enoch02.helpdesk.ui.screen.common.account.component.Profile
 fun AccountScreen(navController: NavController, viewModel: AccountViewModel = hiltViewModel()) {
     val showProfile = viewModel.showProfile
     val currentImage = viewModel.currentImage
-    val currentName = viewModel.currentName
+    val displayName = viewModel.userData.displayName
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.getUserData()
+        viewModel.getProfilePicture()
+    }
 
     Scaffold(
         topBar = {
@@ -30,7 +36,7 @@ fun AccountScreen(navController: NavController, viewModel: AccountViewModel = hi
                 title = {
                     Text(
                         text = when (showProfile) {
-                            true -> "$"
+                            true -> ""
                             false -> "Account"
                         }
                     )
@@ -61,7 +67,7 @@ fun AccountScreen(navController: NavController, viewModel: AccountViewModel = hi
                     when (it) {
                         true -> {
                             Profile(
-                                displayName = currentName,
+                                displayName = displayName,
                                 profilePic = currentImage,
                                 onDisplayNameClick = {
                                     viewModel.toggleShowProfile()
@@ -74,7 +80,7 @@ fun AccountScreen(navController: NavController, viewModel: AccountViewModel = hi
                             AccountEdit(
                                 currentImage = currentImage,
                                 onImageChange = { newImage -> viewModel.updateCurrentImage(newImage) },
-                                currentName = currentName,
+                                currentName = displayName,
                                 onNameChange = { newName -> viewModel.updateCurrentName(newName) },
                                 onSaveChangesClicked = {
                                     viewModel.updateUserInfo()

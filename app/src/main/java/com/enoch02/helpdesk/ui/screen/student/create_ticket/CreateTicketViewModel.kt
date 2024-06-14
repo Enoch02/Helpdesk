@@ -6,8 +6,8 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.enoch02.helpdesk.data.model.Category
-import com.enoch02.helpdesk.data.model.Priority
+import com.enoch02.helpdesk.data.local.model.Category
+import com.enoch02.helpdesk.data.local.model.Priority
 
 class CreateTicketViewModel : ViewModel() {
     var subject by mutableStateOf("")

@@ -23,7 +23,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.enoch02.helpdesk.data.model.Category
+import com.enoch02.helpdesk.data.local.model.Category
 
 @Composable
 fun FormDropdown(

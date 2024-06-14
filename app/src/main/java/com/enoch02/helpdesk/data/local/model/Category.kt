@@ -1,4 +1,4 @@
-package com.enoch02.helpdesk.data.model
+package com.enoch02.helpdesk.data.local.model
 
 object Category {
     val builtInCategories = mutableListOf(

@@ -5,7 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.enoch02.helpdesk.data.remote.repository.FirebaseRepository
+import com.enoch02.helpdesk.data.remote.repository.auth.FirebaseAuthRepository
+import com.enoch02.helpdesk.data.remote.repository.firestore_db.FirestoreRepository
 import com.enoch02.helpdesk.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -14,7 +15,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AuthenticationViewModel @Inject constructor(private val repository: FirebaseRepository) :
+class AuthenticationViewModel @Inject constructor(
+    private val authRepository: FirebaseAuthRepository,
+    private val realtimeDatabaseRepository: FirestoreRepository
+) :
     ViewModel() {
     private val _registrationState = Channel<AuthState>()
     private val _loginState = Channel<AuthState>()
@@ -27,7 +31,7 @@ class AuthenticationViewModel @Inject constructor(private val repository: Fireba
     var email by mutableStateOf("")
     var password by mutableStateOf("")
 
-    //TODO: laod its value from shared prefs
+    //TODO: load its value from shared prefs
     var rememberMe by mutableStateOf(true)
 
 
@@ -54,7 +58,7 @@ class AuthenticationViewModel @Inject constructor(private val repository: Fireba
     //TODO: create a function that validates inputs
     fun signIn() {
         viewModelScope.launch {
-            repository.loginUser(email, password).collect { result ->
+            authRepository.loginUser(email, password).collect { result ->
                 when (result) {
                     is Resource.Error -> {
                         _registrationState.send(AuthState(isError = result.message))
@@ -74,7 +78,7 @@ class AuthenticationViewModel @Inject constructor(private val repository: Fireba
 
     fun signUp() {
         viewModelScope.launch {
-            repository.registerUser(email, password).collect { result ->
+            authRepository.registerUser(email, password).collect { result ->
                 when (result) {
                     is Resource.Error -> {
                         _registrationState.send(AuthState(isError = result.message))
@@ -85,14 +89,19 @@ class AuthenticationViewModel @Inject constructor(private val repository: Fireba
                     }
 
                     is Resource.Success -> {
-                        repository.updateUserInfo(name = name, profilePicture = null).onSuccess {
-                            _registrationState.send(AuthState(isSuccess = "Registration Complete"))
-                        }
+                        realtimeDatabaseRepository.createNewUserData(
+                            uid = authRepository.getUID(),
+                            name = name,
+                            role = "Student",
+                        )
+                            .onSuccess {
+                                _registrationState.send(AuthState(isSuccess = "Registration Complete"))
+                            }
                     }
                 }
             }
         }
     }
 
-    fun isUserLoggedIn() = repository.isUserLoggedIn()
+    fun isUserLoggedIn() = authRepository.isUserLoggedIn()
 }

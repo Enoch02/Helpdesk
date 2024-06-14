@@ -1,4 +1,4 @@
-package com.enoch02.helpdesk.data.remote.repository
+package com.enoch02.helpdesk.data.remote.repository.auth
 
 import android.net.Uri
 import android.util.Log
@@ -7,18 +7,14 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.userProfileChangeRequest
-//import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class FirebaseRepositoryImpl @Inject constructor(
-    private val firebaseAuth: FirebaseAuth,
-    //private val db: FirebaseFirestore
-) :
-    FirebaseRepository {
+class FirebaseAuthRepositoryImpl @Inject constructor(private val firebaseAuth: FirebaseAuth) :
+    FirebaseAuthRepository {
     override fun isUserLoggedIn(): Boolean {
         return firebaseAuth.currentUser != null
     }
@@ -26,6 +22,8 @@ class FirebaseRepositoryImpl @Inject constructor(
     override fun signOut() {
         firebaseAuth.signOut()
     }
+
+    override fun getUID(): String = firebaseAuth.currentUser?.uid.toString()
 
     override fun loginUser(email: String, password: String): Flow<Resource<AuthResult>> {
         return flow {
@@ -49,15 +47,13 @@ class FirebaseRepositoryImpl @Inject constructor(
 
     override fun getUser() = firebaseAuth.currentUser
 
-    override fun updateUserInfo(name: String, profilePicture: Uri?): Result<Unit> {
+    //TODO: remove
+    override fun updateUserInfo(name: String): Result<Unit> {
         return try {
             val user = firebaseAuth.currentUser
             val profileUpdates = userProfileChangeRequest {
                 if (name != (getUser()?.displayName ?: "")) {
                     displayName = name
-                }
-                if (profilePicture != null) {
-                    photoUri = profilePicture
                 }
             }
 

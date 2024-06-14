@@ -131,10 +131,9 @@ private fun ProfilePictureEdit(currentImage: Uri?, onImageChange: (Uri?) -> Unit
             if (permissionStatusMap.values.all { true }) {
                 getContent.launch("image/*")
             } else {
-                //TODO: replace with snack bar.
                 Toast.makeText(
                     context,
-                    "This permission is needed to select attachments",
+                    "This permission is needed to select a picture",
                     Toast.LENGTH_SHORT
                 ).show()
             }

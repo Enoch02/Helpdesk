@@ -23,7 +23,7 @@ import com.enoch02.helpdesk.ui.screen.common.account.component.Profile
 fun AccountScreen(navController: NavController, viewModel: AccountViewModel = hiltViewModel()) {
     val showProfile = viewModel.showProfile
     val currentImage = viewModel.currentImage
-    val displayName = viewModel.userData.displayName
+    val displayName = viewModel.currentName
 
     LaunchedEffect(key1 = Unit) {
         viewModel.getUserData()
@@ -36,7 +36,7 @@ fun AccountScreen(navController: NavController, viewModel: AccountViewModel = hi
                 title = {
                     Text(
                         text = when (showProfile) {
-                            true -> ""
+                            true -> "Profile"
                             false -> "Account"
                         }
                     )

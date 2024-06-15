@@ -24,7 +24,7 @@ class AccountViewModel @Inject constructor(
     ViewModel() {
     var showProfile by mutableStateOf(true)
     var currentImage by mutableStateOf<Uri?>(null)
-    private var currentName by mutableStateOf("") // For updating the user's name
+    var currentName by mutableStateOf("") // For updating the user's name
     var userData by mutableStateOf(UserData(displayName = null))
 
     init {
@@ -76,6 +76,8 @@ class AccountViewModel @Inject constructor(
     }
 
     fun toggleShowProfile() {
+        getUserData()
+        getProfilePicture()
         showProfile = !showProfile
     }
 

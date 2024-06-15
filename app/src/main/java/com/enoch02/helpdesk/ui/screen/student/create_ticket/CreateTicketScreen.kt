@@ -1,5 +1,6 @@
 package com.enoch02.helpdesk.ui.screen.student.create_ticket
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,7 +17,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.enoch02.helpdesk.data.local.model.Category
@@ -30,8 +33,9 @@ import com.enoch02.helpdesk.ui.screen.student.create_ticket.component.FormTextFi
 @Composable
 fun CreateTicketScreen(
     navController: NavController,
-    viewModel: CreateTicketViewModel = viewModel()
+    viewModel: CreateTicketViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     val subject = viewModel.subject
     val category = viewModel.category
     val priority = viewModel.priority
@@ -69,7 +73,7 @@ fun CreateTicketScreen(
 
 
                     FormDropdown(
-                        selection = viewModel.category,
+                        selection = category,
                         options = Category.builtInCategories,
                         allowCustomOptions = true,
                         onSelectionChange = {
@@ -79,7 +83,7 @@ fun CreateTicketScreen(
 
 
                     FormDropdown(
-                        selection = viewModel.priority.stringify(),
+                        selection = priority.stringify(),
                         options = Priority.entries.map { it.stringify() },
                         allowCustomOptions = false,
                         onSelectionChange = {
@@ -107,9 +111,19 @@ fun CreateTicketScreen(
 
                     Spacer(modifier = Modifier.height(40.dp))
 
-                    //TODO: this is being pushed out of view when attachments are added...
                     Button(
-                        onClick = { viewModel.submitTicket() },
+                        onClick = {
+                            //TODO: use snack bars?
+                            viewModel.submitTicket(
+                                onSuccess = {
+                                    Toast.makeText(context, "Ticket created successfully", Toast.LENGTH_SHORT).show()
+                                    navController.popBackStack()
+                                },
+                                onFailure = {
+                                    Toast.makeText(context, "Error: $it", Toast.LENGTH_SHORT).show()
+                                }
+                            )
+                        },
                         content = {
                             Text(text = "Submit Ticket")
                         },

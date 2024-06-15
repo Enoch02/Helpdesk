@@ -2,6 +2,8 @@ package com.enoch02.helpdesk.ui.screen.student.ticket_list
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,9 +23,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.enoch02.helpdesk.navigation.Screen
 import com.enoch02.helpdesk.ui.screen.student.ticket_list.component.TicketListItem
@@ -32,9 +36,16 @@ import com.enoch02.helpdesk.ui.screen.student.ticket_list.component.TicketListIt
 // navigating from!
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TicketListScreen(navController: NavController, viewModel: TicketListViewModel = viewModel()) {
+fun TicketListScreen(
+    navController: NavController,
+    viewModel: TicketListViewModel = hiltViewModel()
+) {
     val query = viewModel.query
+    val searchResult = viewModel.searchResult
     val active = viewModel.searchActive
+    val tickets = viewModel.tickets.tickets
+
+    LaunchedEffect(key1 = Unit, block = { viewModel.getTickets() })
 
     Scaffold(
         topBar = {
@@ -45,9 +56,20 @@ fun TicketListScreen(navController: NavController, viewModel: TicketListViewMode
                 },
                 onSearch = {
                     viewModel.updateSearchStatus(true)
+                    viewModel.startSearch()
                 },
                 active = active,
-                onActiveChange = {},
+                onActiveChange = {
+                    when (it) {
+                        true -> {/*TODO*/
+                        }
+
+                        false -> {
+                            viewModel.clearQuery()
+                        }
+                    }
+                },
+                placeholder = { Text(text = "Subject") },
                 leadingIcon = {
                     AnimatedContent(targetState = active, label = "") {
                         when (it) {
@@ -100,22 +122,20 @@ fun TicketListScreen(navController: NavController, viewModel: TicketListViewMode
                 content = {
                     LazyColumn(
                         content = {
-                            item {
-                                Text(text = "Demo Content")
-                            }
-
                             items(
-                                count = 10,
-                                itemContent = {
-                                    TicketListItem(
-                                        subject = "Ticket #$it",
-                                        status = "Closed",
-                                        onClick = {
+                                count = searchResult.size,
+                                itemContent = { index ->
+                                    val item = searchResult[index]
 
+                                    TicketListItem(
+                                        subject = "${item.subject}",
+                                        status = "${item.status}",
+                                        onClick = {
+                                            /*TODO*/
                                         }
                                     )
 
-                                    if (it < 9) {
+                                    if (index < searchResult.size - 1) {
                                         Divider()
                                     }
                                 }
@@ -128,28 +148,55 @@ fun TicketListScreen(navController: NavController, viewModel: TicketListViewMode
             )
         },
         content = { paddingValues ->
-            Card(
-                modifier = Modifier
-                    .padding(paddingValues)
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
+            Column(
                 content = {
-                    LazyColumn(
+                    AnimatedVisibility(
+                        visible = (tickets?.size ?: 0) > 0,
                         content = {
-                            items(
-                                count = 20,
-                                itemContent = {
+                            Card(
+                                modifier = Modifier
+                                    .padding(paddingValues)
+                                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                                content = {
+                                    LazyColumn(
+                                        content = {
+                                            items(
+                                                count = tickets?.size ?: 0,
+                                                itemContent = { index ->
+                                                    val item = tickets?.get(index)
 
-                                    TicketListItem(
-                                        subject = "Ticket #$it",
-                                        status = "Closed",
-                                        onClick = {
-                                            navController.navigate(Screen.TicketDetail.route)
+                                                    if (item != null) {
+                                                        TicketListItem(
+                                                            subject = "${item.subject}",
+                                                            status = "${item.status}",
+                                                            onClick = {
+                                                                navController.navigate(Screen.TicketDetail.route)
+                                                            }
+                                                        )
+
+                                                        if (index < tickets.size - 1) {
+                                                            Divider()
+                                                        }
+                                                    }
+                                                }
+                                            )
                                         }
                                     )
-                                    if (it < 19) {
-                                        Divider()
-                                    }
                                 }
+                            )
+                        }
+                    )
+
+                    AnimatedVisibility(
+                        visible = (tickets?.size ?: 0) == 0,
+                        content = {
+                            Column(
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                content = {
+                                    Text(text = "You do not have any tickets")
+                                },
+                                modifier = Modifier.fillMaxSize()
                             )
                         }
                     )

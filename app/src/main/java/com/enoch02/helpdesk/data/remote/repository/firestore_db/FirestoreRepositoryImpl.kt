@@ -5,6 +5,7 @@ import com.enoch02.helpdesk.data.remote.model.Ticket
 import com.enoch02.helpdesk.data.remote.model.Tickets
 import com.enoch02.helpdesk.data.remote.model.UserData
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -53,7 +54,6 @@ class FirestoreRepositoryImpl @Inject constructor(private val db: FirebaseFirest
         }
     }
 
-    //TODO: how can i add another without overwriting the list in the db??
     override suspend fun createTicket(ticket: Ticket): Result<Unit> {
         return try {
             val collection = db.collection(TICKETS_COLLECTION_NAME)
@@ -93,6 +93,71 @@ class FirestoreRepositoryImpl @Inject constructor(private val db: FirebaseFirest
             }
         } catch (e: Exception) {
             Log.e(TAG, "createTicket: ${e.message}")
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getTicket(uid: String, tid: String): Result<Ticket> {
+        return try {
+            val documentRef = db.collection(TICKETS_COLLECTION_NAME).document(uid)
+            val tickets = documentRef.get().await().toObject(Tickets::class.java)?.tickets
+
+            Result.success(tickets?.firstOrNull { it.ticketID == tid } ?: Ticket())
+        } catch (e: Exception) {
+            Log.e(TAG, "getTicket: ${e.message}")
+            Result.failure(e)
+        }
+    }
+
+    //TODO: get around to combining these 2 functions
+    override suspend fun closeTicket(uid: String, tid: String): Result<Unit> {
+        return try {
+            val documentRef = db.collection(TICKETS_COLLECTION_NAME).document(uid)
+            val ticketsObj = documentRef.get().await().toObject(Tickets::class.java)
+            val tickets = ticketsObj?.tickets
+            val ticketIndex = tickets?.indexOfFirst { it.ticketID == tid }
+
+            if (ticketsObj != null) {
+                if (ticketIndex != null) {
+                    val ticket = tickets[ticketIndex]
+
+                    tickets[ticketIndex] = ticket.copy(status = "Closed")
+                }
+
+                documentRef
+                    .set(ticketsObj)
+                    .await()
+            }
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e(TAG, "closeTicket: ${e.message}")
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun openTicket(uid: String, tid: String): Result<Unit> {
+        return try {
+            val documentRef = db.collection(TICKETS_COLLECTION_NAME).document(uid)
+            val ticketsObj = documentRef.get().await().toObject(Tickets::class.java)
+            val tickets = ticketsObj?.tickets
+            val ticketIndex = tickets?.indexOfFirst { it.ticketID == tid }
+
+            if (ticketsObj != null) {
+                if (ticketIndex != null) {
+                    val ticket = tickets[ticketIndex]
+
+                    tickets[ticketIndex] = ticket.copy(status = "Open")
+                }
+
+                documentRef
+                    .set(ticketsObj)
+                    .await()
+            }
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e(TAG, "closeTicket: ${e.message}")
             Result.failure(e)
         }
     }

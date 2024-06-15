@@ -58,6 +58,7 @@ class CreateTicketViewModel @Inject constructor(
             val newTicket = Ticket(
                 uid = authRepository.getUID(),
                 subject = subject,
+                category = category,
                 description = description,
                 status = "Open",
                 priority = priority.stringify(),

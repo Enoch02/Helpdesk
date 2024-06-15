@@ -38,6 +38,7 @@ import com.enoch02.helpdesk.ui.screen.student.ticket_list.component.TicketListIt
 @Composable
 fun TicketListScreen(
     navController: NavController,
+    //filter: String,
     viewModel: TicketListViewModel = hiltViewModel()
 ) {
     val query = viewModel.query
@@ -131,7 +132,12 @@ fun TicketListScreen(
                                         subject = "${item.subject}",
                                         status = "${item.status}",
                                         onClick = {
-                                            /*TODO*/
+                                            navController.navigate(
+                                                Screen.TicketDetail.withArgs(
+                                                    item.uid.toString(),
+                                                    item.ticketID.toString()
+                                                )
+                                            )
                                         }
                                     )
 
@@ -170,7 +176,12 @@ fun TicketListScreen(
                                                             subject = "${item.subject}",
                                                             status = "${item.status}",
                                                             onClick = {
-                                                                navController.navigate(Screen.TicketDetail.route)
+                                                                navController.navigate(
+                                                                    Screen.TicketDetail.withArgs(
+                                                                        item.uid.toString(),
+                                                                        item.ticketID.toString()
+                                                                    )
+                                                                )
                                                             }
                                                         )
 

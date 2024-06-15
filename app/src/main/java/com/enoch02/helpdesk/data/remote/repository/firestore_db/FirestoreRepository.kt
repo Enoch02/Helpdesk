@@ -14,4 +14,10 @@ interface FirestoreRepository {
     suspend fun createTicket(ticket: Ticket): Result<Unit>
 
     suspend fun getTickets(uid: String): Result<Tickets>
+
+    suspend fun getTicket(uid: String, tid: String): Result<Ticket>
+
+    suspend fun closeTicket(uid: String, tid: String): Result<Unit>
+
+    suspend fun openTicket(uid: String, tid: String): Result<Unit>
 }

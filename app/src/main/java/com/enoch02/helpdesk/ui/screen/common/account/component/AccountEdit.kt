@@ -8,7 +8,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -130,7 +129,11 @@ private fun ProfilePictureEdit(currentImage: Uri?, onImageChange: (Uri?) -> Unit
     val context = LocalContext.current
     val getContent =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-            onImageChange(uri)
+            if (uri == null) {
+                onImageChange(currentImage)
+            } else {
+                onImageChange(uri)
+            }
         }
     val requestPermission =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissionStatusMap ->

@@ -79,7 +79,7 @@ fun AttachmentSelector(
             )
 
             Box(
-                modifier = Modifier.height(120.dp),
+                modifier = Modifier.then(if (selectedImages.size > 0) Modifier.height(120.dp) else Modifier),
                 content = {
                     LazyHorizontalGrid(
                         rows = GridCells.Fixed(1),

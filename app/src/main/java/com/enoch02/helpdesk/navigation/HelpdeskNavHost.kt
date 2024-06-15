@@ -49,9 +49,15 @@ fun HelpdeskNavHost(
                 CreateTicketScreen(navController = navController)
             }
 
-            composable(Screen.TicketList.route) {
-                TicketListScreen(navController = navController)
-            }
+            composable(route = Screen.TicketList.route + "/{filter}",
+                arguments = listOf(navArgument("filter") { type = NavType.StringType }),
+                content = { entry ->
+                    TicketListScreen(
+                        filter = entry.arguments?.getString("filter").toString(),
+                        navController = navController
+                    )
+                }
+            )
 
             composable(
                 route = Screen.TicketDetail.route + "/{uid}/{tid}",

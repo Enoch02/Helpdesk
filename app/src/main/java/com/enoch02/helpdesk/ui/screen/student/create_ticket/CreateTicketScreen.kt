@@ -74,6 +74,7 @@ fun CreateTicketScreen(
 
                     FormDropdown(
                         selection = category,
+                        label = "Category",
                         options = Category.builtInCategories,
                         allowCustomOptions = true,
                         onSelectionChange = {
@@ -84,6 +85,7 @@ fun CreateTicketScreen(
 
                     FormDropdown(
                         selection = priority.stringify(),
+                        label = "Priority",
                         options = Priority.entries.map { it.stringify() },
                         allowCustomOptions = false,
                         onSelectionChange = {
@@ -101,6 +103,7 @@ fun CreateTicketScreen(
                         maxLines = 5
                     )
 
+                    //TODO: upload attachments to firebase
                     AttachmentSelector(
                         modifier = Modifier,
                         selectedImages = selectedAttachments,

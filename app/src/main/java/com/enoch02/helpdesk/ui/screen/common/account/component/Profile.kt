@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -33,77 +34,118 @@ fun Profile(
     displayName: String?,
     profilePic: Uri?,
     onDisplayNameClick: () -> Unit,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     // TODO: Add some stats
-    Column(
+    LazyColumn(
         modifier = modifier,
         content = {
-            Card(modifier = Modifier.padding(8.dp)) {
-                AnimatedVisibility(
-                    visible = profilePic == null,
+            item {
+                Card(
+                    modifier = Modifier.padding(8.dp),
                     content = {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(4.dp),
+                        AnimatedVisibility(
+                            visible = profilePic == null,
                             content = {
-                                Icon(
-                                    imageVector = Icons.Default.AccountCircle,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(128.dp)
-                                )
-                            },
-                            contentAlignment = Alignment.Center
-                        )
-                    }
-                )
-
-                AnimatedVisibility(
-                    visible = profilePic != null,
-                    content = {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(4.dp),
-                            content = {
-                                AsyncImage(
-                                    model = profilePic,
-                                    contentDescription = null,
-                                    contentScale = ContentScale.Crop,
+                                Box(
                                     modifier = Modifier
-                                        .size(128.dp)
-                                        .clip(CircleShape)
-                                )
-                            },
-                            contentAlignment = Alignment.Center
-                        )
-                    }
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(4.dp),
-                    content = {
-                        TextButton(
-                            onClick = {
-                                onDisplayNameClick()
-                            },
-                            content = {
-                                Text(text = displayName ?: "")
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                                    contentDescription = null
+                                        .fillMaxWidth()
+                                        .padding(4.dp),
+                                    content = {
+                                        Icon(
+                                            imageVector = Icons.Default.AccountCircle,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(128.dp)
+                                        )
+                                    },
+                                    contentAlignment = Alignment.Center
                                 )
                             }
                         )
-                    },
-                    contentAlignment = Alignment.Center
+
+                        AnimatedVisibility(
+                            visible = profilePic != null,
+                            content = {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(4.dp),
+                                    content = {
+                                        AsyncImage(
+                                            model = profilePic,
+                                            contentDescription = null,
+                                            contentScale = ContentScale.Crop,
+                                            modifier = Modifier
+                                                .size(128.dp)
+                                                .clip(CircleShape)
+                                        )
+                                    },
+                                    contentAlignment = Alignment.Center
+                                )
+                            }
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(4.dp),
+                            content = {
+                                TextButton(
+                                    onClick = {
+                                        onDisplayNameClick()
+                                    },
+                                    content = {
+                                        Text(text = displayName ?: "")
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Icon(
+                                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                            contentDescription = null
+                                        )
+                                    }
+                                )
+                            },
+                            contentAlignment = Alignment.Center
+                        )
+                    }
+                )
+            }
+
+            item {
+                Card(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                        .height(200.dp),  //TODO: remove
+                    content = {
+
+                    }
+                )
+            }
+
+            item {
+                Card(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                        .height(200.dp),  //TODO: remove
+                    content = {
+
+                    }
+                )
+            }
+
+            item {
+                Card(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
+                        .height(200.dp),  //TODO: remove
+                    content = {
+
+                    }
                 )
             }
         }

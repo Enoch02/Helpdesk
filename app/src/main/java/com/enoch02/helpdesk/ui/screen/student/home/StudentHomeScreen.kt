@@ -147,7 +147,7 @@ fun StudentHomeScreen(
                                     Icons.Default.ConfirmationNumber,
                                     label = "View Open Tickets",
                                     onClick = {
-                                        navController.navigate(Screen.TicketList.route)
+                                        navController.navigate(Screen.TicketList.withArgs("Open"))
                                     }
                                 )
                             }
@@ -165,9 +165,9 @@ fun StudentHomeScreen(
                             item {
                                 ActionCard(
                                     Icons.Default.History,
-                                    label = "Recent Tickets",
+                                    label = "All Tickets",
                                     onClick = {
-                                        navController.navigate(Screen.TicketList.route)
+                                        navController.navigate(Screen.TicketList.withArgs("all"))
                                     }
                                 )
                             }

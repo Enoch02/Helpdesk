@@ -144,6 +144,7 @@ class FirestoreRepositoryImpl @Inject constructor(private val db: FirebaseFirest
             val ticketIndex = tickets?.indexOfFirst { it.ticketID == tid }
 
             if (ticketsObj != null) {
+                Log.e(TAG, "openTicket: OBJECT NOT NULL", )
                 if (ticketIndex != null) {
                     val ticket = tickets[ticketIndex]
 
@@ -153,6 +154,8 @@ class FirestoreRepositoryImpl @Inject constructor(private val db: FirebaseFirest
                 documentRef
                     .set(ticketsObj)
                     .await()
+            } else {
+                Log.e(TAG, "openTicket: OBJECT IS NULL", )
             }
 
             Result.success(Unit)

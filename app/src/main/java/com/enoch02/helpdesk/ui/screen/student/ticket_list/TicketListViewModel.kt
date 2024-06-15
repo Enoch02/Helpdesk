@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.enoch02.helpdesk.data.local.model.ContentState
 import com.enoch02.helpdesk.data.remote.model.Ticket
 import com.enoch02.helpdesk.data.remote.model.Tickets
 import com.enoch02.helpdesk.data.remote.repository.auth.FirebaseAuthRepository
@@ -19,14 +20,12 @@ class TicketListViewModel @Inject constructor(
     private val authRepository: FirebaseAuthRepository,
     private val firestoreRepository: FirestoreRepository
 ) : ViewModel() {
+    var contentState by mutableStateOf(ContentState.LOADING)
+    var errorMessage by mutableStateOf("")
     var query by mutableStateOf("")
     var searchActive by mutableStateOf(false)
     var tickets by mutableStateOf(Tickets())
     var searchResult = mutableStateListOf<Ticket>()
-
-    init {
-        getTickets()
-    }
 
     fun clearQuery() {
         query = ""
@@ -40,14 +39,25 @@ class TicketListViewModel @Inject constructor(
         searchActive = newStatus
     }
 
-    fun getTickets() {
+    fun getTickets(filter: String) {
         viewModelScope.launch {
             firestoreRepository.getTickets(authRepository.getUID())
                 .onSuccess {
-                    tickets = it
+                    tickets = if (filter == "all") {
+                        it
+                    } else {
+                        it.copy(
+                            tickets = it.tickets?.filter { ticket ->
+                                ticket.status == filter
+                            }?.toMutableList()
+                        )
+                    }
+
+                    contentState = ContentState.COMPLETED
                 }
                 .onFailure {
-                    /*TODO*/
+                    contentState = ContentState.FAILURE
+                    errorMessage = it.message.toString()
                 }
         }
     }

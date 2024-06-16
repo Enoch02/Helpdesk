@@ -19,30 +19,30 @@ import androidx.compose.ui.unit.dp
 fun ChatBubble(content: String, owner: BubbleOwner) {
     val alignment =
         when (owner) {
-            BubbleOwner.SENDER -> {
+            BubbleOwner.REMOTE -> {
                 Alignment.CenterStart
             }
 
-            BubbleOwner.RECEIVER -> {
+            BubbleOwner.LOCAL -> {
                 Alignment.CenterEnd
             }
         }
     val textAlign =
         when (owner) {
-            BubbleOwner.SENDER -> {
+            BubbleOwner.REMOTE -> {
                 TextAlign.Start
             }
 
-            BubbleOwner.RECEIVER -> {
+            BubbleOwner.LOCAL -> {
                 TextAlign.Start
             }
         }
     val colors = CardDefaults.cardColors(
         containerColor = when (owner) {
-            BubbleOwner.SENDER -> {
+            BubbleOwner.REMOTE -> {
                 MaterialTheme.colorScheme.surfaceVariant
             }
-            BubbleOwner.RECEIVER -> {
+            BubbleOwner.LOCAL -> {
                 MaterialTheme.colorScheme.primary
             }
         }
@@ -77,7 +77,7 @@ fun ChatBubble(content: String, owner: BubbleOwner) {
 @Composable
 private fun Preview() {
     Column(modifier = Modifier.fillMaxWidth()) {
-        ChatBubble(content = "Hello, World!", owner = BubbleOwner.SENDER)
-        ChatBubble(content = "Nice to meet ya!", owner = BubbleOwner.RECEIVER)
+        ChatBubble(content = "Hello, World!", owner = BubbleOwner.REMOTE)
+        ChatBubble(content = "Nice to meet ya!", owner = BubbleOwner.LOCAL)
     }
 }

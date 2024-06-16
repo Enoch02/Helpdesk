@@ -20,21 +20,21 @@ import coil.compose.AsyncImage
 fun ImageBubble(content: String, owner: BubbleOwner) {
     val alignment =
         when (owner) {
-            BubbleOwner.SENDER -> {
+            BubbleOwner.REMOTE -> {
                 Alignment.CenterStart
             }
 
-            BubbleOwner.RECEIVER -> {
+            BubbleOwner.LOCAL -> {
                 Alignment.CenterEnd
             }
         }
     val colors = CardDefaults.cardColors(
         containerColor = when (owner) {
-            BubbleOwner.SENDER -> {
+            BubbleOwner.REMOTE -> {
                 MaterialTheme.colorScheme.surfaceVariant
             }
 
-            BubbleOwner.RECEIVER -> {
+            BubbleOwner.LOCAL -> {
                 MaterialTheme.colorScheme.primary
             }
         }
@@ -64,7 +64,7 @@ fun ImageBubble(content: String, owner: BubbleOwner) {
 @Composable
 private fun Preview() {
     Column(modifier = Modifier.fillMaxWidth()) {
-        ImageBubble(content = "", owner = BubbleOwner.SENDER)
-        ImageBubble(content = "", owner = BubbleOwner.RECEIVER)
+        ImageBubble(content = "", owner = BubbleOwner.REMOTE)
+        ImageBubble(content = "", owner = BubbleOwner.LOCAL)
     }
 }

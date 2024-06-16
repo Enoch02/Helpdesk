@@ -1,6 +1,8 @@
 package com.enoch02.helpdesk.ui.screen.common.ticket_detail
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,6 +29,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -45,15 +48,18 @@ fun TicketDetailScreen(
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState()
     ),
-    viewModel: TicketDetailViewModel = hiltViewModel()
+    viewModel: TicketDetailViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
     val contentState = viewModel.contentState
+
     val subject = viewModel.subject
     val category = viewModel.category
     val priority = viewModel.priority
     val status = viewModel.status
     val creationDate = viewModel.creationDate
     val description = viewModel.description
+    val assignedTo = viewModel.assignedTo
 
     SideEffect {
         viewModel.getTicket(uid, tid)
@@ -164,6 +170,15 @@ fun TicketDetailScreen(
                                     }
 
                                     item {
+                                        /*TODO: get display name from uid*/
+                                        TicketDetailCard(
+                                            label = "Assigned To",
+                                            value = assignedTo,
+                                            modifier = Modifier.padding(vertical = 8.dp)
+                                        )
+                                    }
+
+                                    item {
                                         TicketDetailCard(
                                             label = "Description",
                                             value = description,
@@ -221,13 +236,55 @@ fun TicketDetailScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = { navController.navigate(Screen.Chat.route) },
+            AnimatedVisibility(
+                visible = contentState == ContentState.COMPLETED,
                 content = {
-                    Icon(imageVector = Icons.AutoMirrored.Filled.Message, contentDescription = null)
+                    FloatingActionButton(
+                        onClick = {
+                            if (assignedTo.isBlank() || assignedTo == "null") {
+                                Toast.makeText(
+                                    context,
+                                    "Your ticket has not been assigned to someone",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                when (viewModel.chatID.isBlank()) {
+                                    true -> {
+                                        Toast.makeText(
+                                            context,
+                                            "Preparing chat window",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+
+                                        viewModel.startNewChat(
+                                            uid = uid,
+                                            tid = tid,
+                                            staffID = assignedTo
+                                        )
+                                    }
+
+                                    false -> {
+                                        navController.navigate(Screen.Chat.withArgs(viewModel.chatID))
+                                    }
+                                }
+                            }
+                        },
+                        content = {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.Message,
+                                contentDescription = null
+                            )
+                        }
+                    )
                 }
             )
         },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     )
+
+    //TODO: find better alternative
+    if (viewModel.navigateToChatScreen) {
+        viewModel.navigateToChatScreen = false
+        navController.navigate(Screen.Chat.withArgs(viewModel.chatID))
+    }
 }

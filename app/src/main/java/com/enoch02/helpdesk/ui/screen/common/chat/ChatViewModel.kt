@@ -6,21 +6,31 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.enoch02.helpdesk.data.remote.repository.auth.FirebaseAuthRepository
+import com.enoch02.helpdesk.data.remote.repository.cloud_storage.CloudStorageRepository
+import com.enoch02.helpdesk.data.remote.repository.firestore_db.FirestoreRepository
 import com.enoch02.helpdesk.ui.screen.common.chat.component.BubbleOwner
 import com.enoch02.helpdesk.ui.screen.common.chat.component.BubbleType
-import com.enoch02.helpdesk.ui.screen.common.chat.component.Message
+import com.enoch02.helpdesk.ui.screen.common.chat.component.DemoMessage
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class ChatViewModel : ViewModel() {
+@HiltViewModel
+class ChatViewModel @Inject constructor(
+    private val authRepository: FirebaseAuthRepository,
+    private val cloudStorageRepository: CloudStorageRepository,
+    private val firestoreRepository: FirestoreRepository,
+) : ViewModel() {
     var message by mutableStateOf("")
-    var temp = mutableStateListOf<Message>()
+    var temp = mutableStateListOf<DemoMessage>()
     val selectedAttachments = mutableStateListOf<Uri>()
 
     init {
         for (i in 0..30) {
             temp.add(
-                Message(
+                DemoMessage(
                     text = "Message $i",
-                    owner = if (i % 2 == 0) BubbleOwner.SENDER else BubbleOwner.RECEIVER,
+                    owner = if (i % 2 == 0) BubbleOwner.REMOTE else BubbleOwner.LOCAL,
                     type = BubbleType.TEXT,
                     url = ""
                 )
@@ -40,9 +50,9 @@ class ChatViewModel : ViewModel() {
 
         if (selectedAttachments.isEmpty()) {
             temp.add(
-                Message(
+                DemoMessage(
                     text = message,
-                    owner = BubbleOwner.RECEIVER,
+                    owner = BubbleOwner.LOCAL,
                     type = BubbleType.TEXT,
                     url = ""
                 )
@@ -50,9 +60,9 @@ class ChatViewModel : ViewModel() {
         } else {
             selectedAttachments.forEach {
                 temp.add(
-                    Message(
+                    DemoMessage(
                         text = "",
-                        owner = BubbleOwner.RECEIVER,
+                        owner = BubbleOwner.LOCAL,
                         type = BubbleType.IMAGE,
                         url = it.toString()
                     )

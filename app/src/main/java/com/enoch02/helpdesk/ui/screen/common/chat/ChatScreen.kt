@@ -39,6 +39,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -51,8 +52,9 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ChatScreen(
+    chatID: String,
     navController: NavController,
-    viewModel: ChatViewModel = viewModel()
+    viewModel: ChatViewModel = hiltViewModel(),
 ) {
     val message = viewModel.message
     val temp = viewModel.temp
@@ -107,6 +109,10 @@ fun ChatScreen(
             LazyColumn(
                 state = listState,
                 content = {
+                    item {
+                        Text(text = chatID)
+                    }
+
                     items(
                         count = temp.size,
                         itemContent = {

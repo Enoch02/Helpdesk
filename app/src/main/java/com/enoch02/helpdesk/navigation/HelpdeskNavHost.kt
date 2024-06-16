@@ -24,7 +24,7 @@ import com.enoch02.helpdesk.ui.screen.student.ticket_list.TicketListScreen
 @Composable
 fun HelpdeskNavHost(
     navController: NavHostController = rememberNavController(),
-    viewModel: AuthenticationViewModel = hiltViewModel()
+    viewModel: AuthenticationViewModel = hiltViewModel(),
 ) {
     val startDestination = if (viewModel.isUserLoggedIn()) {
         Screen.StudentHome.route
@@ -73,9 +73,16 @@ fun HelpdeskNavHost(
                 }
             )
 
-            composable(Screen.Chat.route) {
-                ChatScreen(navController = navController)
-            }
+            composable(
+                Screen.Chat.route + "/{cid}",
+                arguments = listOf(navArgument("cid") { type = NavType.StringType }),
+                content = { entry ->
+                    ChatScreen(
+                        chatID = entry.arguments?.getString("cid").toString(),
+                        navController = navController
+                    )
+                }
+            )
 
             composable(Screen.Feedback.route) {
                 FeedbackScreen(navController = navController)

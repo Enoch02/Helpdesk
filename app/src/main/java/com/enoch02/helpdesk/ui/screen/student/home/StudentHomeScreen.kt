@@ -47,7 +47,7 @@ import com.enoch02.helpdesk.ui.screen.student.home.component.Header
 @Composable
 fun StudentHomeScreen(
     navController: NavController,
-    viewModel: StudentHomeViewModel = hiltViewModel()
+    viewModel: StudentHomeViewModel = hiltViewModel(),
 ) {
     val profilePicture = viewModel.profilePicture
     val userData = viewModel.userData

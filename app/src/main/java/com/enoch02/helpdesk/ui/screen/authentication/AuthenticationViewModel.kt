@@ -1,14 +1,19 @@
 package com.enoch02.helpdesk.ui.screen.authentication
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.enoch02.helpdesk.data.local.model.ContentState
+import com.enoch02.helpdesk.data.remote.model.UserData
 import com.enoch02.helpdesk.data.remote.repository.auth.FirebaseAuthRepository
 import com.enoch02.helpdesk.data.remote.repository.firestore_db.FirestoreRepository
+import com.enoch02.helpdesk.navigation.Screen
 import com.enoch02.helpdesk.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -17,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthenticationViewModel @Inject constructor(
     private val authRepository: FirebaseAuthRepository,
-    private val realtimeDatabaseRepository: FirestoreRepository
+    private val firestoreRepository: FirestoreRepository,
 ) :
     ViewModel() {
     private val _registrationState = Channel<AuthState>()
@@ -26,13 +31,32 @@ class AuthenticationViewModel @Inject constructor(
     val registrationState = _registrationState.receiveAsFlow()
     val loginState = _loginState.receiveAsFlow()
 
+    var userData by mutableStateOf<UserData?>(null)
+
     var screenState by mutableStateOf(AuthScreenState.SIGN_IN)
     var name by mutableStateOf("")
     var email by mutableStateOf("")
     var password by mutableStateOf("")
 
-    //TODO: load its value from shared prefs
+    //TODO: load its value from shared prefs or firebase?
     var rememberMe by mutableStateOf(true)
+
+    var homeScreenContentState by mutableStateOf(ContentState.LOADING)
+
+    init {
+        if (authRepository.isUserLoggedIn()) {
+            /*viewModelScope.launch {
+                firestoreRepository.getUserData(uid = authRepository.getUID())
+                    .onSuccess {
+                        userData = it
+                        Log.e("TAG", "signIn: $userData")
+                    }
+            }*/
+            getUserData {
+
+            }
+        }
+    }
 
 
     fun changeState(newValue: AuthScreenState) {
@@ -61,15 +85,23 @@ class AuthenticationViewModel @Inject constructor(
             authRepository.loginUser(email, password).collect { result ->
                 when (result) {
                     is Resource.Error -> {
-                        _registrationState.send(AuthState(isError = result.message))
+                        _loginState.send(AuthState(isError = result.message))
                     }
 
                     is Resource.Loading -> {
-                        _registrationState.send(AuthState(isLoading = true))
+                        _loginState.send(AuthState(isLoading = true))
                     }
 
                     is Resource.Success -> {
-                        _registrationState.send(AuthState(isSuccess = "Login Successful"))
+                        /*firestoreRepository.getUserData(uid = authRepository.getUID())
+                            .onSuccess {
+                                userData = it
+                                _loginState.send(AuthState(isSuccess = "Login Successful"))
+                            }*/
+
+                        getUserData {
+                            _loginState.send(AuthState(isSuccess = "Login Successful"))
+                        }
                     }
                 }
             }
@@ -89,10 +121,10 @@ class AuthenticationViewModel @Inject constructor(
                     }
 
                     is Resource.Success -> {
-                        realtimeDatabaseRepository.createNewUserData(
+                        firestoreRepository.createNewUserData(
                             uid = authRepository.getUID(),
                             name = name,
-                            role = "Student",
+                            role = "User",
                         )
                             .onSuccess {
                                 _registrationState.send(AuthState(isSuccess = "Registration Complete"))
@@ -100,6 +132,18 @@ class AuthenticationViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    fun getUserData(onSuccess: suspend () -> Unit) {
+        viewModelScope.launch {
+            homeScreenContentState = ContentState.LOADING
+            firestoreRepository.getUserData(uid = authRepository.getUID())
+                .onSuccess {
+                    userData = it
+                    onSuccess()
+                    homeScreenContentState = ContentState.COMPLETED
+                }
         }
     }
 

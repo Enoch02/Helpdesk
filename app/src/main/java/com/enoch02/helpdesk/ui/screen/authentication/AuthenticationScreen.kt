@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -26,12 +27,13 @@ import androidx.navigation.NavController
 import com.enoch02.helpdesk.navigation.Screen
 import com.enoch02.helpdesk.ui.screen.authentication.component.BasicAuthForm
 import com.enoch02.helpdesk.ui.screen.authentication.component.LabeledCheckBox
+import com.google.api.Distribution.BucketOptions.Linear
 import kotlinx.coroutines.launch
 
 @Composable
 fun AuthenticationScreen(
     navController: NavController,
-    viewModel: AuthenticationViewModel = hiltViewModel()
+    viewModel: AuthenticationViewModel = hiltViewModel(),
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -51,6 +53,13 @@ fun AuthenticationScreen(
             .padding(8.dp),
         verticalArrangement = Arrangement.Center,
         content = {
+            AnimatedVisibility(
+                visible = registrationState.value?.isLoading == true || loginState.value?.isLoading == true,
+                content = {
+                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                }
+            )
+
             BasicAuthForm(
                 acceptName = when (viewModel.screenState) {
                     AuthScreenState.SIGN_IN -> {
@@ -204,8 +213,10 @@ fun AuthenticationScreen(
             if (loginState.value?.isSuccess?.isNotEmpty() == true) {
                 val success = loginState.value?.isSuccess
                 Toast.makeText(context, "$success", Toast.LENGTH_SHORT).show()
+                val route =
+                    if (viewModel.userData?.role == "Staff") Screen.StaffHome.route else Screen.StudentHome.route
 
-                navController.navigate(Screen.StudentHome.route) {
+                navController.navigate(route) {
                     popUpTo(Screen.Authentication.route) {
                         inclusive = true
                     }

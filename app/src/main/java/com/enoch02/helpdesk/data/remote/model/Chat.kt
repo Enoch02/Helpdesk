@@ -5,6 +5,7 @@ import java.util.UUID
 
 data class Chat(
     val chatID: String? = UUID.randomUUID().toString(),
+    val ticketID: String? = null,
     val createdAt: Date? = null,
     val startedBy: String? = null,  // uid
     // TODO: the uid of the person assigned to this chat will be added here
@@ -17,6 +18,19 @@ data class Members(
     val staffID: String? = null
 )
 
-data class Chats(
-    val chats: MutableList<Chat>? = null
+data class Message(
+    val messageText: String? = null,
+    val sentAt: Date? = null,
+    val sentBy: String? = null,
+    val type: MessageType? = null
 )
+
+enum class MessageType {
+    TEXT,
+    IMAGE,
+    IMAGE_AND_TEXT
+}
+
+/*data class Chats(
+    val chats: MutableList<Chat>? = null
+)*/

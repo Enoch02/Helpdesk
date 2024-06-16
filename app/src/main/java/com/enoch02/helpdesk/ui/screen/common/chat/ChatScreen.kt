@@ -32,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,12 +41,11 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.enoch02.helpdesk.ui.screen.common.chat.component.BubbleType
+import com.enoch02.helpdesk.data.remote.model.MessageType
+import com.enoch02.helpdesk.ui.screen.common.chat.component.BubbleOwner
 import com.enoch02.helpdesk.ui.screen.common.chat.component.ChatBubble
-import com.enoch02.helpdesk.ui.screen.common.chat.component.ImageBubble
 import kotlinx.coroutines.launch
 
 //TODO: selected image previews??
@@ -57,7 +57,6 @@ fun ChatScreen(
     viewModel: ChatViewModel = hiltViewModel(),
 ) {
     val message = viewModel.message
-    val temp = viewModel.temp
     val selectedImages = viewModel.selectedAttachments
 
     val scope = rememberCoroutineScope()
@@ -84,9 +83,15 @@ fun ChatScreen(
     LaunchedEffect(
         key1 = Unit,
         block = {
-            listState.scrollToItem(temp.size - 1)
+            if ((viewModel.chat?.messages?.size ?: 0) > 1) {
+                listState.scrollToItem(viewModel.chat!!.messages!!.size - 1)
+            }
         }
     )
+
+    SideEffect {
+        viewModel.getChat(cid = chatID)
+    }
 
     Scaffold(
         topBar = {
@@ -110,28 +115,38 @@ fun ChatScreen(
                 state = listState,
                 content = {
                     item {
-                        Text(text = chatID)
+                        Text(text = viewModel.chat.toString())
                     }
 
-                    items(
-                        count = temp.size,
-                        itemContent = {
-                            val item = temp[it]
+                    viewModel.chat?.messages?.let { messages ->
+                        items(
+                            count = messages.size,
+                            itemContent = { index ->
+                                val item = messages[index]
 
-                            when (item.type) {
-                                BubbleType.TEXT -> {
-                                    ChatBubble(
-                                        content = item.text,
-                                        owner = item.owner
-                                    )
-                                }
+                                when (item.type) {
+                                    MessageType.TEXT -> {
+                                        ChatBubble(
+                                            content = item.messageText.toString(),
+                                            owner = if (item.sentBy == viewModel.getUID()) BubbleOwner.LOCAL else BubbleOwner.REMOTE
+                                        )
+                                    }
 
-                                BubbleType.IMAGE -> {
-                                    ImageBubble(content = item.url, owner = item.owner)
+                                    MessageType.IMAGE -> {
+
+                                    }
+
+                                    MessageType.IMAGE_AND_TEXT -> {
+
+                                    }
+
+                                    null -> {
+
+                                    }
                                 }
                             }
-                        }
-                    )
+                        )
+                    }
                 },
                 modifier = Modifier.padding(paddingValues)
             )
@@ -164,7 +179,11 @@ fun ChatScreen(
                                                         )
 
                                                         IconButton(
-                                                            onClick = { viewModel.removeAttachment(index) },
+                                                            onClick = {
+                                                                viewModel.removeAttachment(
+                                                                    index
+                                                                )
+                                                            },
                                                             content = {
                                                                 Icon(
                                                                     imageVector = Icons.Default.Clear,
@@ -223,11 +242,12 @@ fun ChatScreen(
                     trailingIcon = {
                         IconButton(
                             onClick = {
-                                viewModel.sendMessage()
+                                viewModel.sendMessage(cid = chatID)
                                     .onSuccess {
                                         scope.launch {
-                                            // TODO: replace with actual array of messages from the chat
-                                            listState.scrollToItem(temp.size - 1)
+                                            if ((viewModel.chat?.messages?.size ?: 0) > 1) {
+                                                listState.scrollToItem(viewModel.chat!!.messages!!.size - 1)
+                                            }
                                         }
                                     }
                             },

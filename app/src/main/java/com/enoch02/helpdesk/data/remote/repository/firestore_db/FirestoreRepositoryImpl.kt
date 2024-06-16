@@ -2,7 +2,7 @@ package com.enoch02.helpdesk.data.remote.repository.firestore_db
 
 import android.util.Log
 import com.enoch02.helpdesk.data.remote.model.Chat
-import com.enoch02.helpdesk.data.remote.model.Chats
+import com.enoch02.helpdesk.data.remote.model.Message
 import com.enoch02.helpdesk.data.remote.model.Ticket
 import com.enoch02.helpdesk.data.remote.model.Tickets
 import com.enoch02.helpdesk.data.remote.model.UserData
@@ -196,22 +196,12 @@ class FirestoreRepositoryImpl @Inject constructor(private val db: FirebaseFirest
         }
     }
 
-    override suspend fun startNewChat(chat: Chat, tid: String): Result<String> {
+    override suspend fun startNewChat(chat: Chat): Result<String> {
         return try {
             val collection = db.collection(CHATS_COLLECTION_NAME)
-            val documentRef = collection.document(tid)  // chats documents use tid as name
-            val chats = documentRef.get().await()
+            val documentRef = collection.document(chat.chatID.toString())
 
-            if (chats.exists()) {
-                val currentChats = chats.toObject(Chats::class.java)
-                currentChats?.chats?.add(chat)
-
-                if (currentChats != null)
-                    documentRef.set(currentChats)
-            } else {
-                documentRef
-                    .set(Chats(chats = mutableListOf(chat)))
-            }
+            documentRef.set(chat)
 
             Result.success(chat.chatID.toString())
         } catch (e: Exception) {
@@ -220,14 +210,39 @@ class FirestoreRepositoryImpl @Inject constructor(private val db: FirebaseFirest
         }
     }
 
-    override suspend fun getChat(tid: String, cid: String): Result<Chat> {
+    /**
+     * Get the chat object associated with a ticket object
+     * */
+    override suspend fun getChat(cid: String): Result<Chat> {
         return try {
-            val documentRef = db.collection(CHATS_COLLECTION_NAME).document(tid)
-            val chats = documentRef.get().await().toObject(Chats::class.java)?.chats
+            val documentRef = db.collection(CHATS_COLLECTION_NAME).document(cid)
+            val chat = documentRef.get().await().toObject(Chat::class.java)
 
-            Result.success(chats?.firstOrNull { it.chatID == cid } ?: Chat())
+            Result.success(chat ?: Chat())
         } catch (e: Exception) {
             Log.e(TAG, "getChat: ${e.message}")
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun sendMessage(cid: String, newMessage: Message): Result<Unit> {
+        return try {
+            val documentRef = db.collection(CHATS_COLLECTION_NAME).document(cid)
+            val chatObj = documentRef.get().await().toObject(Chat::class.java)
+
+            if (chatObj != null) {
+                val messages = chatObj.messages?.toMutableList()
+
+                messages?.add(newMessage)
+
+                documentRef
+                    .set(chatObj.copy(messages = messages))
+                    .await()
+            }
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e(TAG, "sendMessage: ${e.message}")
             Result.failure(e)
         }
     }

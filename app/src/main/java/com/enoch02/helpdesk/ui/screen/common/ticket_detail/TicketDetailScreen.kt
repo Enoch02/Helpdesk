@@ -264,7 +264,9 @@ fun TicketDetailScreen(
                                     }
 
                                     false -> {
-                                        navController.navigate(Screen.Chat.withArgs(viewModel.chatID))
+                                        navController.navigate(
+                                            Screen.Chat.withArgs(viewModel.chatID)
+                                        )
                                     }
                                 }
                             }

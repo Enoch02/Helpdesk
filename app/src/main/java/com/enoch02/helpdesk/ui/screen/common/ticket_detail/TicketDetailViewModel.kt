@@ -35,6 +35,7 @@ class TicketDetailViewModel @Inject constructor(private val firestoreRepository:
     var description by mutableStateOf("")
     var assignedTo by mutableStateOf("")
     var chatID by mutableStateOf("")
+    var ticketID by mutableStateOf("")
 
     var navigateToChatScreen by mutableStateOf(false)
 
@@ -52,7 +53,9 @@ class TicketDetailViewModel @Inject constructor(private val firestoreRepository:
                     creationDate = it.createdAt.toString()
                     description = it.description.toString()
                     assignedTo = it.staffID.toString()
+
                     chatID = it.chatID ?: ""
+                    ticketID = it.ticketID ?: ""
 
                     contentState = ContentState.COMPLETED
                 }
@@ -85,17 +88,17 @@ class TicketDetailViewModel @Inject constructor(private val firestoreRepository:
         }
     }
 
-    /*TODO: what if the chat already exists?*/
     fun startNewChat(uid: String, tid: String, staffID: String) {
         viewModelScope.launch {
             firestoreRepository.startNewChat(
-                tid = tid,
                 chat = Chat(
+                    ticketID = tid,
                     createdAt = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) Date.from(
                         Instant.now()
                     ) else Calendar.getInstance().time,
                     startedBy = uid,
-                    members = Members(userID = uid, staffID = staffID)
+                    members = Members(userID = uid, staffID = staffID),
+                    messages = emptyList()
                 )
             ).onSuccess {
                 // update the ticket with the chatID

@@ -24,6 +24,12 @@ android {
     }
 
     buildTypes {
+        create("staff") {
+            applicationIdSuffix = ".staff"
+            resValue("string", "app_name", "Helpdesk (Staff)")
+            signingConfig = signingConfigs.getByName("debug")
+        }
+
         getByName("debug") {
             applicationIdSuffix = ".debug"
             resValue("string", "app_name", "Helpdesk Debug")

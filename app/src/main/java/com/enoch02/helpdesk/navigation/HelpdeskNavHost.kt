@@ -23,6 +23,7 @@ import com.enoch02.helpdesk.ui.screen.common.chat.ChatScreen
 import com.enoch02.helpdesk.ui.screen.common.settings.SettingsScreen
 import com.enoch02.helpdesk.ui.screen.common.ticket_detail.TicketDetailScreen
 import com.enoch02.helpdesk.ui.screen.staff.home.StaffHomeScreen
+import com.enoch02.helpdesk.ui.screen.staff.ticket_list.StaffTicketLisScreen
 import com.enoch02.helpdesk.ui.screen.student.create_ticket.CreateTicketScreen
 import com.enoch02.helpdesk.ui.screen.student.feedback.FeedbackScreen
 import com.enoch02.helpdesk.ui.screen.student.home.StudentHomeScreen
@@ -75,7 +76,11 @@ fun HelpdeskNavHost(
                             }
 
                             composable(route = Screen.TicketList.route + "/{filter}",
-                                arguments = listOf(navArgument("filter") { type = NavType.StringType }),
+                                arguments = listOf(
+                                    navArgument("filter") {
+                                        type = NavType.StringType
+                                    }
+                                ),
                                 content = { entry ->
                                     TicketListScreen(
                                         filter = entry.arguments?.getString("filter").toString(),
@@ -100,7 +105,9 @@ fun HelpdeskNavHost(
 
                             composable(
                                 Screen.Chat.route + "/{cid}",
-                                arguments = listOf(navArgument("cid") { type = NavType.StringType }),
+                                arguments = listOf(navArgument("cid") {
+                                    type = NavType.StringType
+                                }),
                                 content = { entry ->
                                     ChatScreen(
                                         chatID = entry.arguments?.getString("cid").toString(),
@@ -125,6 +132,19 @@ fun HelpdeskNavHost(
                             composable(Screen.StaffHome.route) {
                                 StaffHomeScreen(navController = navController)
                             }
+
+                            composable(
+                                route = Screen.StaffTicketList.route + "/{filter}",
+                                arguments = listOf(
+                                    navArgument("filter") { type = NavType.StringType }
+                                ),
+                                content = { entry ->
+                                    StaffTicketLisScreen(
+                                        navController = navController,
+                                        filter = entry.arguments?.getString("filter").toString()
+                                    )
+                                },
+                            )
                         }
                     )
                 }

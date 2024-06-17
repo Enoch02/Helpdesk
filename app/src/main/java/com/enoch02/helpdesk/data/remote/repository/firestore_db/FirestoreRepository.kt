@@ -1,5 +1,6 @@
 package com.enoch02.helpdesk.data.remote.repository.firestore_db
 
+import com.enoch02.helpdesk.data.local.model.TicketStats
 import com.enoch02.helpdesk.data.remote.model.Chat
 import com.enoch02.helpdesk.data.remote.model.Message
 import com.enoch02.helpdesk.data.remote.model.Ticket
@@ -17,6 +18,8 @@ interface FirestoreRepository {
 
     suspend fun getTickets(uid: String): Result<Tickets>
 
+    suspend fun getTickets(): Result<List<Ticket>>
+
     suspend fun getTicket(uid: String, tid: String): Result<Ticket>
 
     suspend fun closeTicket(uid: String, tid: String): Result<Unit>
@@ -30,4 +33,6 @@ interface FirestoreRepository {
     suspend fun getChat(cid: String): Result<Chat>
 
     suspend fun sendMessage(cid: String, newMessage: Message): Result<Unit>
+
+    suspend fun getTicketStats(): Result<TicketStats>
 }

@@ -1,5 +1,6 @@
-package com.enoch02.helpdesk.ui.screen.student.ticket_list
+package com.enoch02.helpdesk.ui.screen.staff.ticket_list
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -16,14 +17,15 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class TicketListViewModel @Inject constructor(
+class StaffTicketListViewModel @Inject constructor(
     private val authRepository: FirebaseAuthRepository,
-    private val firestoreRepository: FirestoreRepository
+    private val firestoreRepository: FirestoreRepository,
 ) : ViewModel() {
     var contentState by mutableStateOf(ContentState.LOADING)
     var errorMessage by mutableStateOf("")
     var query by mutableStateOf("")
     var searchActive by mutableStateOf(false)
+
     var tickets by mutableStateOf(Tickets())
     var searchResult = mutableStateListOf<Ticket>()
 
@@ -41,17 +43,24 @@ class TicketListViewModel @Inject constructor(
 
     fun getTickets(filter: String) {
         viewModelScope.launch {
-            contentState = ContentState.LOADING
-            firestoreRepository.getTickets(authRepository.getUID())
+            firestoreRepository.getTickets()
                 .onSuccess {
-                    tickets = if (filter == "all") {
-                        it
-                    } else {
-                        it.copy(
-                            tickets = it.tickets?.filter { ticket ->
-                                ticket.status == filter
-                            }?.toMutableList()
-                        )
+                    when (filter) {
+                        "all" -> {
+                            tickets = tickets.copy(tickets = it.toMutableList())
+                        }
+                        "Unassigned" -> {
+                            tickets = tickets.copy(
+                                tickets = it.filter { ticket -> ticket.staffID.isNullOrBlank() }
+                                    .toMutableList()
+                            )
+                        }
+                        else -> {
+                            tickets = tickets.copy(
+                                tickets = it.filter { ticket -> ticket.status == filter }
+                                    .toMutableList()
+                            )
+                        }
                     }
 
                     contentState = ContentState.COMPLETED

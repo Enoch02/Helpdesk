@@ -25,10 +25,10 @@ class StudentHomeViewModel @Inject constructor(
     var profilePicture by mutableStateOf<Uri?>(null)
     var userData by mutableStateOf(UserData(displayName = null))
 
-    init {
+    /*init {
         getProfilePicture()
         getUserData()
-    }
+    }*/
 
     fun getUserData() {
         viewModelScope.launch(Dispatchers.IO) {

@@ -28,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,7 +53,7 @@ fun StudentHomeScreen(
     val profilePicture = viewModel.profilePicture
     val userData = viewModel.userData
 
-    LaunchedEffect(key1 = Unit) {
+    SideEffect {
         viewModel.getProfilePicture()
         viewModel.getUserData()
     }
@@ -110,7 +111,10 @@ fun StudentHomeScreen(
                                 content = {
                                     DropdownMenuItem(
                                         text = { Text(text = "Settings") },
-                                        onClick = { navController.navigate(Screen.Settings.route) }
+                                        onClick = {
+                                            showDropDown = false
+                                            navController.navigate(Screen.Settings.route)
+                                        }
                                     )
                                 }
                             )

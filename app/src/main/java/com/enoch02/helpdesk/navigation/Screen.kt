@@ -16,6 +16,7 @@ sealed class Screen(val route: String) {
 
     /*Staff only screens*/
     data object StaffHome: Screen("staff_home_screen")
+    data object StaffTicketList: Screen("staff_ticket_list")
 
     fun withArgs(vararg args: String): String {
         return buildString {

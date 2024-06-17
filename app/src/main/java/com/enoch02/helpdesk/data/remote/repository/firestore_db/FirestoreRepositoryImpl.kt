@@ -1,6 +1,7 @@
 package com.enoch02.helpdesk.data.remote.repository.firestore_db
 
 import android.util.Log
+import com.enoch02.helpdesk.data.local.model.TicketStats
 import com.enoch02.helpdesk.data.remote.model.Chat
 import com.enoch02.helpdesk.data.remote.model.Message
 import com.enoch02.helpdesk.data.remote.model.Ticket
@@ -83,6 +84,11 @@ class FirestoreRepositoryImpl @Inject constructor(private val db: FirebaseFirest
         }
     }
 
+    /**
+     * Get all [Ticket] associated with a particular [uid]
+     * @param uid user id
+     * @return [Tickets]
+     */
     override suspend fun getTickets(uid: String): Result<Tickets> {
         return try {
             val documentRef = db.collection(TICKETS_COLLECTION_NAME).document(uid)
@@ -96,6 +102,29 @@ class FirestoreRepositoryImpl @Inject constructor(private val db: FirebaseFirest
             }
         } catch (e: Exception) {
             Log.e(TAG, "createTicket: ${e.message}")
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * Get every [Ticket] stored in firestore (for staff)
+     * @return [Tickets]
+     */
+    override suspend fun getTickets(): Result<List<Ticket>> {
+        return try {
+            val temp = mutableListOf<Ticket>()
+            val tickets = db.collection(TICKETS_COLLECTION_NAME)
+                .get()
+                .await()
+
+            tickets.forEach { ticket ->
+                val obj = ticket.toObject(Tickets::class.java)
+                temp.addAll(obj.tickets?.toList() ?: emptyList())
+            }
+
+            Result.success(temp)
+        } catch (e: Exception) {
+            Log.e(TAG, "getTickets: ${e.message}")
             Result.failure(e)
         }
     }
@@ -243,6 +272,37 @@ class FirestoreRepositoryImpl @Inject constructor(private val db: FirebaseFirest
             Result.success(Unit)
         } catch (e: Exception) {
             Log.e(TAG, "sendMessage: ${e.message}")
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getTicketStats(): Result<TicketStats> {
+        return try {
+            var open = 0
+            var closed = 0
+            var unassigned = 0
+            val tickets = db.collection(TICKETS_COLLECTION_NAME)
+                .get()
+                .await()
+
+            tickets.forEach { ticket ->
+                val obj = ticket.toObject(Tickets::class.java)
+
+                open += obj.tickets?.filter { it.status == "Open" }?.size ?: 0
+                closed += obj.tickets?.filter { it.status == "Closed" }?.size ?: 0
+                unassigned += obj.tickets?.filter { it.staffID.isNullOrEmpty() }?.size ?: 0
+            }
+
+            Result.success(
+                TicketStats(
+                    total = closed + open,
+                    open = open,
+                    closed = closed,
+                    unassigned = unassigned
+                )
+            )
+        } catch (e: Exception) {
+            Log.e(TAG, "getStats: ${e.message}")
             Result.failure(e)
         }
     }

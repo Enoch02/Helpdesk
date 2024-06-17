@@ -1,4 +1,4 @@
-package com.enoch02.helpdesk.ui.screen.student.ticket_list
+package com.enoch02.helpdesk.ui.screen.staff.ticket_list
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -25,7 +25,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,14 +33,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.enoch02.helpdesk.data.local.model.ContentState
 import com.enoch02.helpdesk.navigation.Screen
-import com.enoch02.helpdesk.ui.screen.student.ticket_list.component.TicketListItem
+import com.enoch02.helpdesk.ui.screen.staff.ticket_list.component.StaffTicketListItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TicketListScreen(
+fun StaffTicketLisScreen(
     navController: NavController,
     filter: String,
-    viewModel: TicketListViewModel = hiltViewModel(),
+    viewModel: StaffTicketListViewModel = hiltViewModel(),
 ) {
     val contentState = viewModel.contentState
     val query = viewModel.query
@@ -49,7 +48,6 @@ fun TicketListScreen(
     val active = viewModel.searchActive
     val tickets = viewModel.tickets.tickets
 
-    /*LaunchedEffect(key1 = navController, block = { viewModel.getTickets(filter = filter) })*/
     SideEffect {
         viewModel.getTickets(filter = filter)
     }
@@ -134,9 +132,11 @@ fun TicketListScreen(
                                 itemContent = { index ->
                                     val item = searchResult[index]
 
-                                    TicketListItem(
-                                        subject = "${item.subject}",
-                                        status = "${item.status}",
+                                    StaffTicketListItem(
+                                        ticketID = item.ticketID.toString(),
+                                        subject = item.subject.toString(),
+                                        priority = item.priority.toString(),
+                                        status = item.status.toString(),
                                         onClick = {
                                             navController.navigate(
                                                 Screen.TicketDetail.withArgs(
@@ -192,9 +192,11 @@ fun TicketListScreen(
                                                             val item = tickets?.get(index)
 
                                                             if (item != null) {
-                                                                TicketListItem(
-                                                                    subject = "${item.subject}",
-                                                                    status = "${item.status}",
+                                                                StaffTicketListItem(
+                                                                    ticketID = item.ticketID.toString(),
+                                                                    subject = item.subject.toString(),
+                                                                    priority = item.priority.toString(),
+                                                                    status = item.status.toString(),
                                                                     onClick = {
                                                                         navController.navigate(
                                                                             Screen.TicketDetail.withArgs(
@@ -225,7 +227,7 @@ fun TicketListScreen(
                                         verticalArrangement = Arrangement.Center,
                                         horizontalAlignment = Alignment.CenterHorizontally,
                                         content = {
-                                            Text(text = "You do not have any tickets")
+                                            Text(text = "No ticket found")
                                         },
                                         modifier = Modifier.fillMaxSize()
                                     )

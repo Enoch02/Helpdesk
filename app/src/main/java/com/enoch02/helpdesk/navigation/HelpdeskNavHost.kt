@@ -24,6 +24,7 @@ import com.enoch02.helpdesk.ui.screen.common.settings.SettingsScreen
 import com.enoch02.helpdesk.ui.screen.common.ticket_detail.TicketDetailScreen
 import com.enoch02.helpdesk.ui.screen.staff.home.StaffHomeScreen
 import com.enoch02.helpdesk.ui.screen.staff.ticket_list.StaffTicketLisScreen
+import com.enoch02.helpdesk.ui.screen.staff.user_list.UserListScreen
 import com.enoch02.helpdesk.ui.screen.student.create_ticket.CreateTicketScreen
 import com.enoch02.helpdesk.ui.screen.student.feedback.FeedbackScreen
 import com.enoch02.helpdesk.ui.screen.student.home.StudentHomeScreen
@@ -145,6 +146,10 @@ fun HelpdeskNavHost(
                                     )
                                 },
                             )
+
+                            composable(Screen.UserList.route) {
+                                UserListScreen(navController = navController)
+                            }
                         }
                     )
                 }

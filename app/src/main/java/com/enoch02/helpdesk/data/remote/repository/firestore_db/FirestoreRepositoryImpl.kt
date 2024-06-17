@@ -19,9 +19,8 @@ private const val TAG = "FirestoreRepo"
 
 class FirestoreRepositoryImpl @Inject constructor(private val db: FirebaseFirestore) :
     FirestoreRepository {
-    override suspend fun createNewUserData(uid: String, name: String, role: String): Result<Unit> {
+    override suspend fun createNewUserData(uid: String, userData: UserData): Result<Unit> {
         return try {
-            val userData = UserData(displayName = name, role = role)
             val collection = db.collection(USER_COLLECTION_NAME)
 
             collection.document(uid).set(userData).await()
@@ -284,6 +283,9 @@ class FirestoreRepositoryImpl @Inject constructor(private val db: FirebaseFirest
             val tickets = db.collection(TICKETS_COLLECTION_NAME)
                 .get()
                 .await()
+            val users = db.collection(USER_COLLECTION_NAME)
+                .get()
+                .await()
 
             tickets.forEach { ticket ->
                 val obj = ticket.toObject(Tickets::class.java)
@@ -298,11 +300,31 @@ class FirestoreRepositoryImpl @Inject constructor(private val db: FirebaseFirest
                     total = closed + open,
                     open = open,
                     closed = closed,
-                    unassigned = unassigned
+                    unassigned = unassigned,
+                    users = users.size()
                 )
             )
         } catch (e: Exception) {
             Log.e(TAG, "getStats: ${e.message}")
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getUsers(): Result<List<UserData>> {
+        return try {
+            val temp = mutableListOf<UserData>()
+            val users = db.collection(USER_COLLECTION_NAME)
+                .get()
+                .await()
+
+            users.forEach { user ->
+                val obj = user.toObject(UserData::class.java)
+                temp.add(obj)
+            }
+
+            Result.success(temp)
+        } catch (e: Exception) {
+            Log.e(TAG, "getUsers: ${e.message}")
             Result.failure(e)
         }
     }

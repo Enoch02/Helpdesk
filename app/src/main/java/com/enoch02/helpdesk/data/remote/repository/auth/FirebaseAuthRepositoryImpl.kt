@@ -24,6 +24,7 @@ class FirebaseAuthRepositoryImpl @Inject constructor(private val firebaseAuth: F
     }
 
     override fun getUID(): String = firebaseAuth.currentUser?.uid.toString()
+    override fun getMail(): String = firebaseAuth.currentUser?.email.toString()
 
     override fun loginUser(email: String, password: String): Flow<Resource<AuthResult>> {
         return flow {

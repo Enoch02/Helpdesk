@@ -5,24 +5,15 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Sort
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -33,6 +24,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.enoch02.helpdesk.data.local.model.ContentState
 import com.enoch02.helpdesk.navigation.Screen
+import com.enoch02.helpdesk.ui.screen.common.component.TicketListSearchBar
 import com.enoch02.helpdesk.ui.screen.staff.ticket_list.component.StaffTicketListItem
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,7 +46,7 @@ fun StaffTicketLisScreen(
 
     Scaffold(
         topBar = {
-            SearchBar(
+            TicketListSearchBar(
                 query = query,
                 onQueryChange = {
                     viewModel.updateQuery(it)
@@ -74,89 +66,20 @@ fun StaffTicketLisScreen(
                         }
                     }
                 },
-                placeholder = { Text(text = "Subject") },
-                leadingIcon = {
-                    AnimatedContent(targetState = active, label = "") {
-                        when (it) {
-                            true -> {
-                                IconButton(
-                                    onClick = { viewModel.updateSearchStatus(false) },
-                                    content = {
-                                        Icon(
-                                            imageVector = Icons.Default.Clear,
-                                            contentDescription = "Clear searchbar"
-                                        )
-                                    }
-                                )
-                            }
-
-                            false -> {
-                                Icon(imageVector = Icons.Default.Search, contentDescription = null)
-                            }
-                        }
-                    }
-                },
-                trailingIcon = {
-                    AnimatedVisibility(
-                        visible = !active,
-                        content = {
-                            Row {
-                                IconButton(
-                                    onClick = { /*TODO*/ },
-                                    content = {
-                                        Icon(
-                                            imageVector = Icons.AutoMirrored.Default.Sort,
-                                            contentDescription = "Sort Tickets"
-                                        )
-                                    }
-                                )
-
-                                IconButton(
-                                    onClick = { /*TODO*/ },
-                                    content = {
-                                        Icon(
-                                            imageVector = Icons.Default.FilterList,
-                                            contentDescription = "Filter Tickets"
-                                        )
-                                    }
-                                )
-                            }
-                        }
+                placeHolder = "Subject",
+                onClearButtonClicked = { viewModel.updateSearchStatus(false) },
+                onNavBackButtonClicked = { navController.popBackStack() },
+                onSortButtonClicked = { /*TODO*/ },
+                onFilterButtonClicked = { /*TODO*/ },
+                list = searchResult,
+                onResultItemClicked = {
+                    navController.navigate(
+                        Screen.TicketDetail.withArgs(
+                            searchResult[it].uid.toString(),
+                            searchResult[it].ticketID.toString()
+                        )
                     )
-                },
-                content = {
-                    LazyColumn(
-                        content = {
-                            items(
-                                count = searchResult.size,
-                                itemContent = { index ->
-                                    val item = searchResult[index]
-
-                                    StaffTicketListItem(
-                                        ticketID = item.ticketID.toString(),
-                                        subject = item.subject.toString(),
-                                        priority = item.priority.toString(),
-                                        status = item.status.toString(),
-                                        onClick = {
-                                            navController.navigate(
-                                                Screen.TicketDetail.withArgs(
-                                                    item.uid.toString(),
-                                                    item.ticketID.toString()
-                                                )
-                                            )
-                                        }
-                                    )
-
-                                    if (index < searchResult.size - 1) {
-                                        Divider()
-                                    }
-                                }
-                            )
-                        },
-                        modifier = Modifier.fillMaxSize()
-                    )
-                },
-                modifier = Modifier.fillMaxWidth()
+                }
             )
         },
         content = { paddingValues ->

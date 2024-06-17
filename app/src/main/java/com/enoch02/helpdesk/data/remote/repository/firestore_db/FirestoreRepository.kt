@@ -8,7 +8,7 @@ import com.enoch02.helpdesk.data.remote.model.Tickets
 import com.enoch02.helpdesk.data.remote.model.UserData
 
 interface FirestoreRepository {
-    suspend fun createNewUserData(uid: String, name: String, role: String): Result<Unit>
+    suspend fun createNewUserData(uid: String, userData: UserData): Result<Unit>
 
     suspend fun getUserData(uid: String): Result<UserData?>
 
@@ -35,4 +35,6 @@ interface FirestoreRepository {
     suspend fun sendMessage(cid: String, newMessage: Message): Result<Unit>
 
     suspend fun getTicketStats(): Result<TicketStats>
+
+    suspend fun getUsers(): Result<List<UserData>>
 }

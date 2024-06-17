@@ -41,7 +41,6 @@ class TicketListViewModel @Inject constructor(
 
     fun getTickets(filter: String) {
         viewModelScope.launch {
-            contentState = ContentState.LOADING
             firestoreRepository.getTickets(authRepository.getUID())
                 .onSuccess {
                     tickets = if (filter == "all") {

@@ -10,6 +10,7 @@ interface FirebaseAuthRepository {
     fun isUserLoggedIn(): Boolean
     fun signOut()
     fun getUID(): String
+    fun getMail(): String
     fun loginUser(email: String, password: String): Flow<Resource<AuthResult>>
     fun registerUser(email: String, password: String): Flow<Resource<AuthResult>>
     fun getUser(): FirebaseUser?

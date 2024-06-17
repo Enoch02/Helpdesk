@@ -34,6 +34,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.enoch02.helpdesk.data.local.model.ContentState
 import com.enoch02.helpdesk.navigation.Screen
+import com.enoch02.helpdesk.ui.screen.common.component.TicketListSearchBar
 import com.enoch02.helpdesk.ui.screen.student.ticket_list.component.TicketListItem
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,7 +57,7 @@ fun TicketListScreen(
 
     Scaffold(
         topBar = {
-            SearchBar(
+            TicketListSearchBar(
                 query = query,
                 onQueryChange = {
                     viewModel.updateQuery(it)
@@ -76,87 +77,20 @@ fun TicketListScreen(
                         }
                     }
                 },
-                placeholder = { Text(text = "Subject") },
-                leadingIcon = {
-                    AnimatedContent(targetState = active, label = "") {
-                        when (it) {
-                            true -> {
-                                IconButton(
-                                    onClick = { viewModel.updateSearchStatus(false) },
-                                    content = {
-                                        Icon(
-                                            imageVector = Icons.Default.Clear,
-                                            contentDescription = "Clear searchbar"
-                                        )
-                                    }
-                                )
-                            }
-
-                            false -> {
-                                Icon(imageVector = Icons.Default.Search, contentDescription = null)
-                            }
-                        }
-                    }
-                },
-                trailingIcon = {
-                    AnimatedVisibility(
-                        visible = !active,
-                        content = {
-                            Row {
-                                IconButton(
-                                    onClick = { /*TODO*/ },
-                                    content = {
-                                        Icon(
-                                            imageVector = Icons.AutoMirrored.Default.Sort,
-                                            contentDescription = "Sort Tickets"
-                                        )
-                                    }
-                                )
-
-                                IconButton(
-                                    onClick = { /*TODO*/ },
-                                    content = {
-                                        Icon(
-                                            imageVector = Icons.Default.FilterList,
-                                            contentDescription = "Filter Tickets"
-                                        )
-                                    }
-                                )
-                            }
-                        }
+                placeHolder = "Subject",
+                onClearButtonClicked = { viewModel.updateSearchStatus(false) },
+                onNavBackButtonClicked = { navController.popBackStack() },
+                onSortButtonClicked = { /*TODO*/ },
+                onFilterButtonClicked = { /*TODO*/ },
+                list = searchResult,
+                onResultItemClicked = {
+                    navController.navigate(
+                        Screen.TicketDetail.withArgs(
+                            searchResult[it].uid.toString(),
+                            searchResult[it].ticketID.toString()
+                        )
                     )
-                },
-                content = {
-                    LazyColumn(
-                        content = {
-                            items(
-                                count = searchResult.size,
-                                itemContent = { index ->
-                                    val item = searchResult[index]
-
-                                    TicketListItem(
-                                        subject = "${item.subject}",
-                                        status = "${item.status}",
-                                        onClick = {
-                                            navController.navigate(
-                                                Screen.TicketDetail.withArgs(
-                                                    item.uid.toString(),
-                                                    item.ticketID.toString()
-                                                )
-                                            )
-                                        }
-                                    )
-
-                                    if (index < searchResult.size - 1) {
-                                        Divider()
-                                    }
-                                }
-                            )
-                        },
-                        modifier = Modifier.fillMaxSize()
-                    )
-                },
-                modifier = Modifier.fillMaxWidth()
+                }
             )
         },
         content = { paddingValues ->

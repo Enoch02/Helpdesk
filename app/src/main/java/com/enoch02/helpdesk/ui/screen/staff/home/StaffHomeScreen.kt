@@ -1,21 +1,15 @@
 package com.enoch02.helpdesk.ui.screen.staff.home
 
-import android.app.Notification.Action
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -163,10 +157,12 @@ fun StaffHomeScreen(navController: NavController, viewModel: StaffHomeViewModel 
                     }
 
                     item {
-                        ActionCard(
-                            icon = Icons.Default.AccountBox,
-                            label = "View Users",
-                            onClick = {}
+                        StatsCard(
+                            value = "${ticketStats.users}",
+                            label = "Users",
+                            onClick = {
+                                navController.navigate(Screen.UserList.route)
+                            }
                         )
                     }
 

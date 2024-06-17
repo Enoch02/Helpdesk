@@ -5,4 +5,5 @@ data class TicketStats(
     val open: Int = 0,
     val closed: Int = 0,
     val unassigned: Int = 0,
+    val users: Int = 0
 )

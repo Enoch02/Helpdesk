@@ -28,33 +28,21 @@ class AuthenticationViewModel @Inject constructor(
     val registrationState = _registrationState.receiveAsFlow()
     val loginState = _loginState.receiveAsFlow()
 
-    var userData by mutableStateOf<UserData?>(null)
-
     var screenState by mutableStateOf(AuthScreenState.SIGN_IN)
     var name by mutableStateOf("")
     var email by mutableStateOf("")
     var password by mutableStateOf("")
 
+    var userData by mutableStateOf<UserData?>(null)
+
     //TODO: load its value from shared prefs or firebase?
     var rememberMe by mutableStateOf(true)
 
-    var homeScreenContentState by mutableStateOf(ContentState.LOADING)
-
     init {
         if (authRepository.isUserLoggedIn()) {
-            /*viewModelScope.launch {
-                firestoreRepository.getUserData(uid = authRepository.getUID())
-                    .onSuccess {
-                        userData = it
-                        Log.e("TAG", "signIn: $userData")
-                    }
-            }*/
-            getUserData {
-
-            }
+            getUserData()
         }
     }
-
 
     fun changeState(newValue: AuthScreenState) {
         screenState = newValue
@@ -90,15 +78,7 @@ class AuthenticationViewModel @Inject constructor(
                     }
 
                     is Resource.Success -> {
-                        /*firestoreRepository.getUserData(uid = authRepository.getUID())
-                            .onSuccess {
-                                userData = it
-                                _loginState.send(AuthState(isSuccess = "Login Successful"))
-                            }*/
-
-                        getUserData {
-                            _loginState.send(AuthState(isSuccess = "Login Successful"))
-                        }
+                        _loginState.send(AuthState(isSuccess = "Login Successful"))
                     }
                 }
             }
@@ -135,17 +115,12 @@ class AuthenticationViewModel @Inject constructor(
         }
     }
 
-    fun getUserData(onSuccess: suspend () -> Unit) {
+    private fun getUserData() {
         viewModelScope.launch {
-            homeScreenContentState = ContentState.LOADING
             firestoreRepository.getUserData(uid = authRepository.getUID())
                 .onSuccess {
                     userData = it
-                    onSuccess()
-                    homeScreenContentState = ContentState.COMPLETED
                 }
         }
     }
-
-    fun isUserLoggedIn() = authRepository.isUserLoggedIn()
 }

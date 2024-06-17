@@ -37,6 +37,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -62,6 +63,7 @@ fun ChatScreen(
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
     val context = LocalContext.current
+    val keyboardController = LocalSoftwareKeyboardController.current
     val getContent =
         rememberLauncherForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris ->
             selectedImages.addAll(uris)
@@ -83,8 +85,15 @@ fun ChatScreen(
     LaunchedEffect(
         key1 = Unit,
         block = {
-            if ((viewModel.chat?.messages?.size ?: 0) > 1) {
-                listState.scrollToItem(viewModel.chat!!.messages!!.size - 1)
+            viewModel.updateChat(chatID)
+        }
+    )
+
+    LaunchedEffect(
+        key1 = viewModel.chat,
+        block = {
+            if (!viewModel.chat?.messages.isNullOrEmpty()) {
+                listState.animateScrollToItem((viewModel.chat?.messages?.size ?: 1) - 1)
             }
         }
     )
@@ -96,7 +105,7 @@ fun ChatScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Chat Name") },
+                title = { /*Text(text = "Chat Name")*/ },
                 navigationIcon = {
                     IconButton(
                         onClick = { navController.popBackStack() },
@@ -114,10 +123,6 @@ fun ChatScreen(
             LazyColumn(
                 state = listState,
                 content = {
-                    item {
-                        Text(text = viewModel.chat.toString())
-                    }
-
                     viewModel.chat?.messages?.let { messages ->
                         items(
                             count = messages.size,
@@ -242,11 +247,14 @@ fun ChatScreen(
                     trailingIcon = {
                         IconButton(
                             onClick = {
+                                keyboardController?.hide()
                                 viewModel.sendMessage(cid = chatID)
                                     .onSuccess {
                                         scope.launch {
-                                            if ((viewModel.chat?.messages?.size ?: 0) > 1) {
-                                                listState.scrollToItem(viewModel.chat!!.messages!!.size - 1)
+                                            if (!viewModel.chat?.messages.isNullOrEmpty()) {
+                                                listState.animateScrollToItem(
+                                                    (viewModel.chat?.messages?.size ?: 1) - 1
+                                                )
                                             }
                                         }
                                     }

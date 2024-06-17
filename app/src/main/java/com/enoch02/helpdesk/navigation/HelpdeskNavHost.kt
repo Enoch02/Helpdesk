@@ -6,6 +6,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -34,16 +39,22 @@ import com.enoch02.helpdesk.ui.screen.student.ticket_list.TicketListScreen
 @Composable
 fun HelpdeskNavHost(
     navController: NavHostController = rememberNavController(),
-    viewModel: AuthenticationViewModel = hiltViewModel(),
+    viewModel: NavHostViewModel = hiltViewModel(),
 ) {
-    val startDestination = if (viewModel.isUserLoggedIn()) {
-        if (viewModel.userData?.role == "Staff") {
-            Screen.StaffHome.route
+    var startDestination by remember {
+        mutableStateOf(Screen.Authentication.route)
+    }
+
+    SideEffect {
+        startDestination = if (viewModel.isUserLoggedIn()) {
+            if (viewModel.userData?.role == "Staff") {
+                Screen.StaffHome.route
+            } else {
+                Screen.StudentHome.route
+            }
         } else {
-            Screen.StudentHome.route
+            Screen.Authentication.route
         }
-    } else {
-        Screen.Authentication.route
     }
 
     AnimatedContent(targetState = viewModel.homeScreenContentState, label = "",

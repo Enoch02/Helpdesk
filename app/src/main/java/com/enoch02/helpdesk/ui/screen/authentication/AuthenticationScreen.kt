@@ -189,7 +189,7 @@ fun AuthenticationScreen(
                 val success = registrationState.value?.isSuccess
                 Toast.makeText(context, "$success", Toast.LENGTH_SHORT).show()
 
-                navController.navigate(Screen.StudentHome.route) {
+                navController.navigate(Screen.FindHome.route) {
                     popUpTo(Screen.Authentication.route) {
                         inclusive = true
                     }
@@ -212,10 +212,8 @@ fun AuthenticationScreen(
             if (loginState.value?.isSuccess?.isNotEmpty() == true) {
                 val success = loginState.value?.isSuccess
                 Toast.makeText(context, "$success", Toast.LENGTH_SHORT).show()
-                val route =
-                    if (viewModel.userData?.role == "Staff") Screen.StaffHome.route else Screen.StudentHome.route
 
-                navController.navigate(route) {
+                navController.navigate(Screen.FindHome.route) {
                     popUpTo(Screen.Authentication.route) {
                         inclusive = true
                     }

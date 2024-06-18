@@ -9,7 +9,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,7 +32,6 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.enoch02.helpdesk.navigation.Screen
 import com.enoch02.helpdesk.ui.screen.staff.home.component.StatsCard
-import com.enoch02.helpdesk.ui.screen.student.home.component.ActionCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

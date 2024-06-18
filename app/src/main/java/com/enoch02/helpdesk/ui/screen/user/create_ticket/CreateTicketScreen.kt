@@ -1,4 +1,4 @@
-package com.enoch02.helpdesk.ui.screen.student.create_ticket
+package com.enoch02.helpdesk.ui.screen.user.create_ticket
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
@@ -20,14 +20,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.enoch02.helpdesk.data.local.model.Category
 import com.enoch02.helpdesk.data.local.model.Priority
 import com.enoch02.helpdesk.data.local.model.toPriority
-import com.enoch02.helpdesk.ui.screen.student.create_ticket.component.AttachmentSelector
-import com.enoch02.helpdesk.ui.screen.student.create_ticket.component.FormDropdown
-import com.enoch02.helpdesk.ui.screen.student.create_ticket.component.FormTextField
+import com.enoch02.helpdesk.ui.screen.user.create_ticket.component.AttachmentSelector
+import com.enoch02.helpdesk.ui.screen.user.create_ticket.component.FormDropdown
+import com.enoch02.helpdesk.ui.screen.user.create_ticket.component.FormTextField
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

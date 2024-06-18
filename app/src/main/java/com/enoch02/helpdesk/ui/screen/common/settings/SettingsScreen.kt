@@ -1,6 +1,7 @@
 package com.enoch02.helpdesk.ui.screen.common.settings
 
 import android.Manifest
+import android.content.Intent
 import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.enoch02.helpdesk.MainActivity
 import com.enoch02.helpdesk.navigation.Screen
 import com.enoch02.helpdesk.ui.screen.common.settings.component.UserInfo
 
@@ -28,6 +30,7 @@ import com.enoch02.helpdesk.ui.screen.common.settings.component.UserInfo
 @Composable
 fun SettingsScreen(navController: NavController, viewModel: SettingsViewModel = hiltViewModel()) {
     val userInfo = viewModel.getUserInfo()
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -59,11 +62,12 @@ fun SettingsScreen(navController: NavController, viewModel: SettingsViewModel = 
                             },
                             onLogOutClicked = {
                                 viewModel.signOut()
-                                navController.popBackStack(
-                                    navController.graph.startDestinationRoute.toString(),
-                                    inclusive = true
-                                )
-                                navController.navigate(Screen.Authentication.route)
+
+                                val intent = Intent(context, MainActivity::class.java).apply {
+                                    addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+
+                                context.startActivity(intent)
                             },
                             modifier = Modifier.fillMaxWidth()
                         )

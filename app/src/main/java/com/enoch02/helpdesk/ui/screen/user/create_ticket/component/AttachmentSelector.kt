@@ -1,4 +1,4 @@
-package com.enoch02.helpdesk.ui.screen.student.create_ticket.component
+package com.enoch02.helpdesk.ui.screen.user.create_ticket.component
 
 import android.Manifest
 import android.net.Uri

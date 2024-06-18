@@ -1,4 +1,4 @@
-package com.enoch02.helpdesk.ui.screen.student.feedback.component
+package com.enoch02.helpdesk.ui.screen.user.feedback.component
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.clickable

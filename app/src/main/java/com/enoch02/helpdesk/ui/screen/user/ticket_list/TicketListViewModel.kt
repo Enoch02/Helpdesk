@@ -1,4 +1,4 @@
-package com.enoch02.helpdesk.ui.screen.student.ticket_list
+package com.enoch02.helpdesk.ui.screen.user.ticket_list
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf

@@ -1,4 +1,4 @@
-package com.enoch02.helpdesk.ui.screen.staff.user_list
+package com.enoch02.helpdesk.ui.screen.common.knowledge_base
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -22,30 +22,24 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
+import androidx.navigation.NavController
 import com.enoch02.helpdesk.data.local.model.ContentState
-import com.enoch02.helpdesk.ui.screen.staff.user_list.component.UserListItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserListScreen(
-    navController: NavHostController,
-    viewModel: UserListViewModel = hiltViewModel(),
+fun KnowledgeBaseScreen(
+    navController: NavController,
+    viewModel: KnowledgeBaseViewModel = hiltViewModel(),
 ) {
     val contentState = viewModel.contentState
     val query = viewModel.query
     val searchResult = viewModel.searchResult
     val active = viewModel.searchActive
-    val users = viewModel.users
-
-    SideEffect {
-        viewModel.getUsers()
-    }
+    val articles = viewModel.articles
 
     Scaffold(
         topBar = {
@@ -69,7 +63,7 @@ fun UserListScreen(
                         }
                     }
                 },
-                placeholder = { Text(text = "User") },
+                placeholder = { Text(text = "Title") },
                 leadingIcon = {
                     AnimatedContent(targetState = active, label = "") {
                         when (it) {
@@ -135,15 +129,7 @@ fun UserListScreen(
                                 itemContent = { index ->
                                     val item = searchResult[index]
 
-                                    UserListItem(
-                                        profilePicUrl = "", //TODO:
-                                        name = item.displayName.toString(),
-                                        role = item.role.toString(),
-                                        email = item.email.toString(),
-                                        onMenuClicked = {
 
-                                        }
-                                    )
 
                                     if (index < searchResult.size - 1) {
                                         Divider()
@@ -160,62 +146,50 @@ fun UserListScreen(
             )
         },
         content = { paddingValues ->
-            AnimatedContent(targetState = contentState, label = "") { targetState ->
-                when (targetState) {
-                    ContentState.LOADING -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center,
-                            content = {
-                                CircularProgressIndicator()
-                            }
-                        )
-                    }
-
-                    ContentState.COMPLETED -> {
-                        LazyColumn(
-                            content = {
-                                items(
-                                    count = users.size,
-                                    itemContent = { index ->
-                                        UserListItem(
-                                            profilePicUrl = "", //TODO:
-                                            name = users[index].displayName.toString(),
-                                            role = users[index].role.toString(),
-                                            email = users[index].email.toString(),
-                                            onMenuClicked = {
-
-                                            }
-                                        )
-
-                                        if (index < users.size - 1) {
-                                            Divider()
+            AnimatedContent(
+                targetState = contentState,
+                label = "",
+                content = {
+                    when (it) {
+                        ContentState.LOADING -> {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center,
+                                content = {
+                                    CircularProgressIndicator()
+                                }
+                            )
+                        }
+                        ContentState.COMPLETED -> {
+                            LazyColumn(
+                                content = {
+                                    items(
+                                        count = articles.size,
+                                        itemContent = {
+                                            /*KnowledgeBaseListItem(title =, author =, creationDate =)*/
                                         }
-                                    }
-                                )
-                            },
-                            modifier = Modifier.padding(paddingValues)
-                        )
-                    }
-
-                    ContentState.FAILURE -> {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center,
-                            content = {
-                                Text(
-                                    text = "An error has occurred. \n ${viewModel.errorMessage}",
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(12.dp)
-                                )
-                            }
-                        )
+                                    )
+                                },
+                                modifier = Modifier.padding(paddingValues)
+                            )
+                        }
+                        ContentState.FAILURE -> {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center,
+                                content = {
+                                    Text(
+                                        text = "An error has occurred. \n ${viewModel.errorMessage}",
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(12.dp)
+                                    )
+                                }
+                            )
+                        }
                     }
                 }
-
-            }
-
+            )
         }
     )
 }

@@ -1,4 +1,4 @@
-package com.enoch02.helpdesk.ui.screen.student.feedback
+package com.enoch02.helpdesk.ui.screen.user.feedback
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -24,7 +24,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.enoch02.helpdesk.ui.screen.student.feedback.component.RatingPicker
+import com.enoch02.helpdesk.ui.screen.user.feedback.component.RatingPicker
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

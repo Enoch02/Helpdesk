@@ -1,4 +1,4 @@
-package com.enoch02.helpdesk.ui.screen.student.home
+package com.enoch02.helpdesk.ui.screen.user.home
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
@@ -27,7 +27,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,8 +40,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.enoch02.helpdesk.navigation.Screen
-import com.enoch02.helpdesk.ui.screen.student.home.component.ActionCard
-import com.enoch02.helpdesk.ui.screen.student.home.component.Header
+import com.enoch02.helpdesk.ui.screen.user.home.component.ActionCard
+import com.enoch02.helpdesk.ui.screen.user.home.component.Header
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -159,9 +158,9 @@ fun StudentHomeScreen(
                             item {
                                 ActionCard(
                                     Icons.AutoMirrored.Filled.HelpCenter,
-                                    label = "FAQs",
+                                    label = "Knowledge Base",
                                     onClick = {
-
+                                        navController.navigate(Screen.KnowledgeBase.route)
                                     }
                                 )
                             }

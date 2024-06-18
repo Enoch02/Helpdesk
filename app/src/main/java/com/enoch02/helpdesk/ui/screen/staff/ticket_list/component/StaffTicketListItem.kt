@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.enoch02.helpdesk.ui.screen.student.ticket_list.component.TicketListItem
 
 @Composable
 fun StaffTicketListItem(

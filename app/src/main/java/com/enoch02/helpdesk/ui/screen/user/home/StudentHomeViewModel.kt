@@ -1,4 +1,4 @@
-package com.enoch02.helpdesk.ui.screen.student.home
+package com.enoch02.helpdesk.ui.screen.user.home
 
 import android.net.Uri
 import androidx.compose.runtime.getValue

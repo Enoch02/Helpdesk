@@ -1,4 +1,4 @@
-package com.enoch02.helpdesk.ui.screen.student.feedback
+package com.enoch02.helpdesk.ui.screen.user.feedback
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf

@@ -1,4 +1,4 @@
-package com.enoch02.helpdesk.ui.screen.student.create_ticket
+package com.enoch02.helpdesk.ui.screen.user.create_ticket
 
 import android.net.Uri
 import android.os.Build
@@ -16,7 +16,6 @@ import com.enoch02.helpdesk.data.remote.repository.firestore_db.FirestoreReposit
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.time.Instant
-import java.time.LocalDateTime
 import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject

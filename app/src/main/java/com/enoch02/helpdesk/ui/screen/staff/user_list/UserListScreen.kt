@@ -46,6 +46,7 @@ fun UserListScreen(
     val searchResult = viewModel.searchResult
     val active = viewModel.searchActive
     val users = viewModel.users
+    val profilePictures = viewModel.profilePictures
 
     val pullToRefreshState = rememberPullToRefreshState()
     val isRefreshing = viewModel.isRefreshing
@@ -157,10 +158,11 @@ fun UserListScreen(
                                     val item = searchResult[index]
 
                                     UserListItem(
-                                        profilePicUrl = "", //TODO:
+                                        profilePicUri = null,  //TODO: may or may not...
                                         name = item.displayName.toString(),
                                         role = item.role.toString(),
                                         email = item.email.toString(),
+                                        isUserMe = item.userID == viewModel.getUid() ,
                                         onMenuClicked = {
 
                                         }
@@ -202,10 +204,11 @@ fun UserListScreen(
                                             count = users.size,
                                             itemContent = { index ->
                                                 UserListItem(
-                                                    profilePicUrl = "", //TODO:
+                                                    profilePicUri = if (profilePictures.isNotEmpty()) profilePictures[index] else null,
                                                     name = users[index].displayName.toString(),
                                                     role = users[index].role.toString(),
                                                     email = users[index].email.toString(),
+                                                    isUserMe = users[index].userID == viewModel.getUid(),
                                                     onMenuClicked = {
 
                                                     }

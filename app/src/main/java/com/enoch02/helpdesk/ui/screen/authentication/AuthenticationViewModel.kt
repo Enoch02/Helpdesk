@@ -101,6 +101,7 @@ class AuthenticationViewModel @Inject constructor(
                         firestoreRepository.createNewUserData(
                             uid = authRepository.getUID(),
                             userData = UserData(
+                                userID = authRepository.getUID(),
                                 displayName = name,
                                 role = "User",
                                 email = authRepository.getMail()

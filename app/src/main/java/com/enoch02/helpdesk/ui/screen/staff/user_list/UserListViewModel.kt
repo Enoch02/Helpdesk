@@ -1,5 +1,6 @@
 package com.enoch02.helpdesk.ui.screen.staff.user_list
 
+import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -8,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.enoch02.helpdesk.data.local.model.ContentState
 import com.enoch02.helpdesk.data.remote.model.UserData
+import com.enoch02.helpdesk.data.remote.repository.auth.FirebaseAuthRepository
 import com.enoch02.helpdesk.data.remote.repository.cloud_storage.CloudStorageRepository
 import com.enoch02.helpdesk.data.remote.repository.firestore_db.FirestoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UserListViewModel @Inject constructor(
+    private val authRepository: FirebaseAuthRepository,
     private val cloudStorageRepository: CloudStorageRepository,
     private val firestoreRepository: FirestoreRepository,
 ) :
@@ -24,8 +27,10 @@ class UserListViewModel @Inject constructor(
     var contentState by mutableStateOf(ContentState.LOADING)
     var errorMessage by mutableStateOf("")
     var users by mutableStateOf(listOf<UserData>())
+    var profilePictures by mutableStateOf(emptyList<Uri?>())
     var query by mutableStateOf("")
     var searchActive by mutableStateOf(false)
+
     var searchResult = mutableStateListOf<UserData>()
 
     var isRefreshing by mutableStateOf(false)
@@ -63,6 +68,7 @@ class UserListViewModel @Inject constructor(
             firestoreRepository.getUsers()
                 .onSuccess {
                     users = it
+                    getProfilePictures()
                     contentState = ContentState.COMPLETED
                     isRefreshing = false
                 }
@@ -73,4 +79,26 @@ class UserListViewModel @Inject constructor(
                 }
         }
     }
+
+    private fun getProfilePictures() {
+        val temp = mutableListOf<Uri?>()
+
+        viewModelScope.launch {
+            users.forEach { data ->
+                data.userID?.let { id ->
+                    cloudStorageRepository.getProfilePicture(id)
+                        .onSuccess {
+                            temp.add(it)
+                        }
+                        .onFailure {
+                            temp.add(null)
+                        }
+                }
+            }
+
+            profilePictures = temp
+        }
+    }
+
+    fun getUid() = authRepository.getUID()
 }

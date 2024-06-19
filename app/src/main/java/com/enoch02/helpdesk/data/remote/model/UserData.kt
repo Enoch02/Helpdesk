@@ -4,6 +4,7 @@ import com.google.firebase.firestore.IgnoreExtraProperties
 
 @IgnoreExtraProperties
 data class UserData(
+    val userID: String? = null,
     val displayName: String? = null,
     val email: String? = null,
     val role: String? = null,

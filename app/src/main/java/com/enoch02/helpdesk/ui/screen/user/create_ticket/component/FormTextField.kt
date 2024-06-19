@@ -21,7 +21,7 @@ fun FormTextField(
     value: String,
     onValueChange: (String) -> Unit,
     maxLines: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -33,7 +33,7 @@ fun FormTextField(
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.Sentences,
             keyboardType = KeyboardType.Text,
-            imeAction = ImeAction.Next,
+            imeAction = if (maxLines > 1) ImeAction.None else ImeAction.Next,
             autoCorrect = true
         ),
         keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) }),

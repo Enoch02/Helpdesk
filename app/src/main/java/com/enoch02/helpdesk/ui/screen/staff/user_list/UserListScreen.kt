@@ -14,17 +14,21 @@ import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -43,8 +47,25 @@ fun UserListScreen(
     val active = viewModel.searchActive
     val users = viewModel.users
 
+    val pullToRefreshState = rememberPullToRefreshState()
+    val isRefreshing = viewModel.isRefreshing
+
     SideEffect {
         viewModel.getUsers()
+    }
+
+    if (pullToRefreshState.isRefreshing) {
+        LaunchedEffect(true) {
+            viewModel.onRefresh()
+        }
+    }
+
+    LaunchedEffect(isRefreshing) {
+        if (isRefreshing) {
+            pullToRefreshState.startRefresh()
+        } else {
+            pullToRefreshState.endRefresh()
+        }
     }
 
     Scaffold(
@@ -146,7 +167,7 @@ fun UserListScreen(
                                     )
 
                                     if (index < searchResult.size - 1) {
-                                        Divider()
+                                        HorizontalDivider()
                                     }
                                 }
                             )
@@ -173,28 +194,43 @@ fun UserListScreen(
                     }
 
                     ContentState.COMPLETED -> {
-                        LazyColumn(
+                        Box(
                             content = {
-                                items(
-                                    count = users.size,
-                                    itemContent = { index ->
-                                        UserListItem(
-                                            profilePicUrl = "", //TODO:
-                                            name = users[index].displayName.toString(),
-                                            role = users[index].role.toString(),
-                                            email = users[index].email.toString(),
-                                            onMenuClicked = {
+                                LazyColumn(
+                                    content = {
+                                        items(
+                                            count = users.size,
+                                            itemContent = { index ->
+                                                UserListItem(
+                                                    profilePicUrl = "", //TODO:
+                                                    name = users[index].displayName.toString(),
+                                                    role = users[index].role.toString(),
+                                                    email = users[index].email.toString(),
+                                                    onMenuClicked = {
 
+                                                    }
+                                                )
+
+                                                if (index < users.size - 1) {
+                                                    HorizontalDivider()
+                                                }
                                             }
                                         )
-
-                                        if (index < users.size - 1) {
-                                            Divider()
-                                        }
-                                    }
+                                    },
+                                    modifier = Modifier
+                                        .padding(paddingValues)
+                                        .nestedScroll(
+                                            pullToRefreshState.nestedScrollConnection
+                                        )
                                 )
-                            },
-                            modifier = Modifier.padding(paddingValues)
+
+                                PullToRefreshContainer(
+                                    state = pullToRefreshState,
+                                    modifier = Modifier.align(
+                                        Alignment.TopCenter
+                                    )
+                                )
+                            }
                         )
                     }
 

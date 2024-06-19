@@ -28,6 +28,13 @@ class UserListViewModel @Inject constructor(
     var searchActive by mutableStateOf(false)
     var searchResult = mutableStateListOf<UserData>()
 
+    var isRefreshing by mutableStateOf(false)
+
+    fun onRefresh() {
+        isRefreshing = true
+        getUsers()
+    }
+
     fun clearQuery() {
         query = ""
     }
@@ -57,10 +64,12 @@ class UserListViewModel @Inject constructor(
                 .onSuccess {
                     users = it
                     contentState = ContentState.COMPLETED
+                    isRefreshing = false
                 }
                 .onFailure {
                     errorMessage = it.message.toString()
                     contentState = ContentState.FAILURE
+                    isRefreshing = false
                 }
         }
     }

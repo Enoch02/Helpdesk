@@ -30,6 +30,7 @@ import com.enoch02.helpdesk.data.remote.repository.firestore_db.FirestoreReposit
 import com.enoch02.helpdesk.ui.screen.authentication.AuthenticationScreen
 import com.enoch02.helpdesk.ui.screen.common.account.AccountScreen
 import com.enoch02.helpdesk.ui.screen.common.chat.ChatScreen
+import com.enoch02.helpdesk.ui.screen.common.knowledge_base.KnowledgeBaseScreen
 import com.enoch02.helpdesk.ui.screen.common.settings.SettingsScreen
 import com.enoch02.helpdesk.ui.screen.common.ticket_detail.TicketDetailScreen
 import com.enoch02.helpdesk.ui.screen.staff.home.StaffHomeScreen
@@ -172,6 +173,10 @@ fun HelpdeskNavHost(
 
                             composable(Screen.UserList.route) {
                                 UserListScreen(navController = navController)
+                            }
+
+                            composable(Screen.KnowledgeBase.route) {
+                                KnowledgeBaseScreen(navController = navController)
                             }
                         }
                     )

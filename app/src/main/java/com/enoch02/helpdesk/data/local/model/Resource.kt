@@ -1,4 +1,4 @@
-package com.enoch02.helpdesk.util
+package com.enoch02.helpdesk.data.local.model
 
 sealed class Resource<out T>(val data: T? = null, val message: String? = null) {
     class Success<T>(data: T) : Resource<T>()

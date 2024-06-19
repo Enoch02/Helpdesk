@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.HelpCenter
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
@@ -32,6 +33,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.enoch02.helpdesk.navigation.Screen
 import com.enoch02.helpdesk.ui.screen.staff.home.component.StatsCard
+import com.enoch02.helpdesk.ui.screen.user.home.component.ActionCard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -171,6 +173,16 @@ fun StaffHomeScreen(navController: NavController, viewModel: StaffHomeViewModel 
                             label = "Assigned Tickets",
                             onClick = {
                                 //navController.navigate(Screen.StaffTicketList.withArgs("Assigned"))
+                            }
+                        )
+                    }
+
+                    item {
+                        ActionCard(
+                            Icons.AutoMirrored.Filled.HelpCenter,
+                            label = "Knowledge Base",
+                            onClick = {
+                                navController.navigate(Screen.KnowledgeBase.route)
                             }
                         )
                     }

@@ -11,14 +11,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -40,9 +44,25 @@ fun TicketListScreen(
     val active = viewModel.searchActive
     val tickets = viewModel.tickets.tickets
 
-    /*LaunchedEffect(key1 = navController, block = { viewModel.getTickets(filter = filter) })*/
+    val pullToRefreshState = rememberPullToRefreshState()
+    val isRefreshing = viewModel.isRefreshing
+
     SideEffect {
         viewModel.getTickets(filter = filter)
+    }
+
+    if (pullToRefreshState.isRefreshing) {
+        LaunchedEffect(true) {
+            viewModel.onRefresh(filter)
+        }
+    }
+
+    LaunchedEffect(isRefreshing) {
+        if(isRefreshing) {
+            pullToRefreshState.startRefresh()
+        } else {
+            pullToRefreshState.endRefresh()
+        }
     }
 
     Scaffold(
@@ -108,32 +128,46 @@ fun TicketListScreen(
                                             .padding(paddingValues)
                                             .padding(horizontal = 8.dp, vertical = 4.dp),
                                         content = {
-                                            LazyColumn(
+                                            Box(
                                                 content = {
-                                                    items(
-                                                        count = tickets?.size ?: 0,
-                                                        itemContent = { index ->
-                                                            val item = tickets?.get(index)
+                                                    LazyColumn(
+                                                        content = {
+                                                            items(
+                                                                count = tickets?.size ?: 0,
+                                                                itemContent = { index ->
+                                                                    val item = tickets?.get(index)
 
-                                                            if (item != null) {
-                                                                TicketListItem(
-                                                                    subject = "${item.subject}",
-                                                                    status = "${item.status}",
-                                                                    onClick = {
-                                                                        navController.navigate(
-                                                                            Screen.TicketDetail.withArgs(
-                                                                                item.uid.toString(),
-                                                                                item.ticketID.toString()
-                                                                            )
+                                                                    if (item != null) {
+                                                                        TicketListItem(
+                                                                            subject = "${item.subject}",
+                                                                            status = "${item.status}",
+                                                                            onClick = {
+                                                                                navController.navigate(
+                                                                                    Screen.TicketDetail.withArgs(
+                                                                                        item.uid.toString(),
+                                                                                        item.ticketID.toString()
+                                                                                    )
+                                                                                )
+                                                                            }
                                                                         )
-                                                                    }
-                                                                )
 
-                                                                if (index < tickets.size - 1) {
-                                                                    Divider()
+                                                                        if (index < tickets.size - 1) {
+                                                                            HorizontalDivider()
+                                                                        }
+                                                                    }
                                                                 }
-                                                            }
-                                                        }
+                                                            )
+                                                        },
+                                                        modifier = Modifier.nestedScroll(
+                                                            pullToRefreshState.nestedScrollConnection
+                                                        )
+                                                    )
+
+                                                    PullToRefreshContainer(
+                                                        state = pullToRefreshState,
+                                                        modifier = Modifier.align(
+                                                            Alignment.TopCenter
+                                                        )
                                                     )
                                                 }
                                             )

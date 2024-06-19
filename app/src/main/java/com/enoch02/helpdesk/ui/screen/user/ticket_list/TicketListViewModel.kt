@@ -27,6 +27,13 @@ class TicketListViewModel @Inject constructor(
     var tickets by mutableStateOf(Tickets())
     var searchResult = mutableStateListOf<Ticket>()
 
+    var isRefreshing by mutableStateOf(false)
+
+    fun onRefresh(filter: String) {
+        isRefreshing = true
+        getTickets(filter)
+    }
+
     fun clearQuery() {
         query = ""
     }
@@ -54,9 +61,11 @@ class TicketListViewModel @Inject constructor(
                     }
 
                     contentState = ContentState.COMPLETED
+                    isRefreshing = false
                 }
                 .onFailure {
                     contentState = ContentState.FAILURE
+                    isRefreshing = false
                     errorMessage = it.message.toString()
                 }
         }

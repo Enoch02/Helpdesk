@@ -1,8 +1,7 @@
 package com.enoch02.helpdesk.data.remote.repository.auth
 
-import android.net.Uri
 import android.util.Log
-import com.enoch02.helpdesk.util.Resource
+import com.enoch02.helpdesk.data.local.model.Resource
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth

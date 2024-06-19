@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpCenter
+import androidx.compose.material.icons.automirrored.filled.Message
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ConfirmationNumber
 import androidx.compose.material.icons.filled.Create
@@ -171,6 +172,16 @@ fun StudentHomeScreen(
                                     label = "All Tickets",
                                     onClick = {
                                         navController.navigate(Screen.TicketList.withArgs("all"))
+                                    }
+                                )
+                            }
+
+                            item {
+                                ActionCard(
+                                    icon = Icons.AutoMirrored.Filled.Message,
+                                    label = "View Messages",
+                                    onClick = {
+
                                     }
                                 )
                             }

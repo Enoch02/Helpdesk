@@ -35,7 +35,6 @@ class NavHostViewModel @Inject constructor(
                 .onSuccess {
                     userData = it
                     homeScreenContentState = ContentState.COMPLETED
-                    Log.e("TAG", "getUserData: $userData", )
                 }
         }
     }

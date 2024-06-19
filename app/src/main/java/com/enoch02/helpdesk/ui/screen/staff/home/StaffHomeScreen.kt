@@ -170,7 +170,7 @@ fun StaffHomeScreen(navController: NavController, viewModel: StaffHomeViewModel 
                         /*TODO:*/
                         StatsCard(
                             value = "",
-                            label = "Assigned Tickets",
+                            label = "Assigned To Me",
                             onClick = {
                                 //navController.navigate(Screen.StaffTicketList.withArgs("Assigned"))
                             }

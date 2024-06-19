@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SearchBar
@@ -24,10 +25,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.enoch02.helpdesk.data.remote.model.Ticket
 import com.enoch02.helpdesk.ui.screen.staff.ticket_list.component.StaffTicketListItem
+import com.enoch02.helpdesk.ui.screen.user.ticket_list.component.TicketListItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun <T> TicketListSearchBar(
+    type: SearchBarType,
     query: String,
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit,
@@ -40,6 +43,7 @@ fun <T> TicketListSearchBar(
     onFilterButtonClicked: () -> Unit,
     list: SnapshotStateList<T>,
     onResultItemClicked: (index: Int) -> Unit,
+    onAssignToSelf: () -> Unit = {},
 ) {
     SearchBar(
         query = query,
@@ -119,18 +123,34 @@ fun <T> TicketListSearchBar(
                         itemContent = { index ->
                             val item = list[index] as Ticket
 
-                            StaffTicketListItem(
-                                ticketID = item.ticketID.toString(),
-                                subject = item.subject.toString(),
-                                priority = item.priority.toString(),
-                                status = item.status.toString(),
-                                onClick = {
-                                    onResultItemClicked(index)
+                            when (type) {
+                                SearchBarType.USER -> {
+                                    TicketListItem(
+                                        subject = item.subject.toString(),
+                                        status = item.status.toString(),
+                                        onClick = {
+                                            onResultItemClicked(index)
+                                        }
+                                    )
                                 }
-                            )
+                                SearchBarType.STAFF -> {
+                                    StaffTicketListItem(
+                                        ticketID = item.ticketID.toString(),
+                                        subject = item.subject.toString(),
+                                        priority = item.priority.toString(),
+                                        status = item.status.toString(),
+                                        onClick = {
+                                            onResultItemClicked(index)
+                                        },
+                                        onAssignToSelfItemClicked = {
+                                            onAssignToSelf()
+                                        }
+                                    )
+                                }
+                            }
 
                             if (index < list.size - 1) {
-                                Divider()
+                                HorizontalDivider()
                             }
                         }
                     )
@@ -142,4 +162,9 @@ fun <T> TicketListSearchBar(
             .fillMaxWidth()
             .then(if (active) Modifier else Modifier.padding(horizontal = 8.dp))
     )
+}
+
+enum class SearchBarType {
+    USER,
+    STAFF
 }

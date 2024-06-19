@@ -194,7 +194,7 @@ class FirestoreRepositoryImpl @Inject constructor(private val db: FirebaseFirest
     }
 
     /**
-     * [uid] - user's id
+     * [uid] - user id of the ticket's owner
      * [tid] - ticket id
      * [newTicket] - modified ticket object
      *

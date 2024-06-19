@@ -13,6 +13,7 @@ import com.enoch02.helpdesk.data.remote.model.Tickets
 import com.enoch02.helpdesk.data.remote.repository.auth.FirebaseAuthRepository
 import com.enoch02.helpdesk.data.remote.repository.firestore_db.FirestoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -49,19 +50,21 @@ class StaffTicketListViewModel @Inject constructor(
     }
 
     fun getTickets(filter: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             firestoreRepository.getTickets()
                 .onSuccess {
                     when (filter) {
                         "all" -> {
                             tickets = tickets.copy(tickets = it.toMutableList())
                         }
+
                         "Unassigned" -> {
                             tickets = tickets.copy(
                                 tickets = it.filter { ticket -> ticket.staffID.isNullOrBlank() }
                                     .toMutableList()
                             )
                         }
+
                         else -> {
                             tickets = tickets.copy(
                                 tickets = it.filter { ticket -> ticket.status == filter }
@@ -92,5 +95,23 @@ class StaffTicketListViewModel @Inject constructor(
         if (temp != null) {
             searchResult.addAll(temp)
         }
+    }
+
+    fun getUID() = authRepository.getUID()
+
+    fun assignTicketToSelf(sid: String = getUID(), ticket: Ticket) {
+        viewModelScope.launch(Dispatchers.IO) {
+            firestoreRepository.updateTicket(
+                uid = ticket.uid.toString(),
+                tid = ticket.ticketID.toString(),
+                newTicket = ticket.copy(
+                    staffID = sid
+                )
+            )
+        }
+    }
+
+    fun reassignTicket(sid: String, ticket: Ticket) {
+        /*TODO*/
     }
 }

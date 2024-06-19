@@ -29,6 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.enoch02.helpdesk.data.local.model.ContentState
 import com.enoch02.helpdesk.navigation.Screen
+import com.enoch02.helpdesk.ui.screen.common.component.SearchBarType
 import com.enoch02.helpdesk.ui.screen.common.component.TicketListSearchBar
 import com.enoch02.helpdesk.ui.screen.staff.ticket_list.component.StaffTicketListItem
 
@@ -69,6 +70,7 @@ fun StaffTicketLisScreen(
     Scaffold(
         topBar = {
             TicketListSearchBar(
+                type = SearchBarType.STAFF,
                 query = query,
                 onQueryChange = {
                     viewModel.updateQuery(it)
@@ -150,6 +152,11 @@ fun StaffTicketLisScreen(
                                                                                         item.uid.toString(),
                                                                                         item.ticketID.toString()
                                                                                     )
+                                                                                )
+                                                                            },
+                                                                            onAssignToSelfItemClicked = {
+                                                                                viewModel.assignTicketToSelf(
+                                                                                    ticket = item
                                                                                 )
                                                                             }
                                                                         )

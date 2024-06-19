@@ -68,7 +68,7 @@ fun UserListItem(
         },
         trailingContent = {
             IconButton(
-                onClick = { onMenuClicked() },
+                onClick = { showDropdownMenu = true },
                 content = {
                     Icon(
                         imageVector = Icons.Default.MoreVert,
@@ -76,23 +76,23 @@ fun UserListItem(
                     )
                 }
             )
-        }
-    )
 
-    AnimatedVisibility(
-        visible = showDropdownMenu,
-        content = {
-            DropdownMenu(
-                expanded = showDropdownMenu,
-                onDismissRequest = { showDropdownMenu = false },
+            AnimatedVisibility(
+                visible = showDropdownMenu,
                 content = {
-                    DropdownMenuItem(
-                        text = { Text(text = "Message") },
-                        onClick = {
-                            showDropdownMenu = false
-                            /*TODO*/
-                        },
-                        enabled = !isUserMe
+                    DropdownMenu(
+                        expanded = showDropdownMenu,
+                        onDismissRequest = { showDropdownMenu = false },
+                        content = {
+                            DropdownMenuItem(
+                                text = { Text(text = "Message") },
+                                onClick = {
+                                    showDropdownMenu = false
+                                    /*TODO*/
+                                },
+                                enabled = !isUserMe
+                            )
+                        }
                     )
                 }
             )

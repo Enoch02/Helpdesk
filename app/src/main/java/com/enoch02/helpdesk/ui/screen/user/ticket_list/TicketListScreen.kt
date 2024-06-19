@@ -28,6 +28,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.enoch02.helpdesk.data.local.model.ContentState
 import com.enoch02.helpdesk.navigation.Screen
+import com.enoch02.helpdesk.ui.screen.common.component.SearchBarType
 import com.enoch02.helpdesk.ui.screen.common.component.TicketListSearchBar
 import com.enoch02.helpdesk.ui.screen.user.ticket_list.component.TicketListItem
 
@@ -68,6 +69,7 @@ fun TicketListScreen(
     Scaffold(
         topBar = {
             TicketListSearchBar(
+                type = SearchBarType.USER,
                 query = query,
                 onQueryChange = {
                     viewModel.updateQuery(it)

@@ -12,7 +12,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Sort
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -134,7 +133,9 @@ fun <T> TicketListSearchBar(
                                     )
                                 }
                                 SearchBarType.STAFF -> {
-                                    StaffTicketListItem(
+                                    //TODO
+                                    /*StaffTicketListItem(
+                                        isAssignedToMe =
                                         ticketID = item.ticketID.toString(),
                                         subject = item.subject.toString(),
                                         priority = item.priority.toString(),
@@ -142,10 +143,13 @@ fun <T> TicketListSearchBar(
                                         onClick = {
                                             onResultItemClicked(index)
                                         },
-                                        onAssignToSelfItemClicked = {
+                                        onAssignToSelf = {
                                             onAssignToSelf()
+                                        },
+                                        onReassign = {
+                                            *//*TODO*//*
                                         }
-                                    )
+                                    )*/
                                 }
                             }
 

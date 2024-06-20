@@ -15,16 +15,17 @@ import com.enoch02.helpdesk.data.remote.repository.firestore_db.FirestoreReposit
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class StaffHomeViewModel @Inject constructor(
     private val firebaseAuthRepository: FirebaseAuthRepository,
     private val cloudStorageRepository: CloudStorageRepository,
-    private val firestoreRepository: FirestoreRepository
+    private val firestoreRepository: FirestoreRepository,
 ) : ViewModel() {
     var profilePicture by mutableStateOf<Uri?>(null)
-    var userData by mutableStateOf(UserData(displayName = null))
+    var userData by mutableStateOf(UserData())
     var ticketStats by mutableStateOf(TicketStats())
 
     init {
@@ -38,8 +39,13 @@ class StaffHomeViewModel @Inject constructor(
             firestoreRepository.getUserData(firebaseAuthRepository.getUID())
                 .onSuccess {
                     if (it != null) {
-                        userData = it
+                        withContext(Dispatchers.Main) {
+                            userData = it
+                        }
                     }
+                }
+                .onFailure {
+                    userData = UserData()
                 }
         }
     }

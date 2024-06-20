@@ -1,7 +1,10 @@
 package com.enoch02.helpdesk.ui.screen.staff.ticket_list
 
-import android.util.Log
+import android.content.Context
+import android.net.Uri
+import android.widget.Toast
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,17 +13,21 @@ import androidx.lifecycle.viewModelScope
 import com.enoch02.helpdesk.data.local.model.ContentState
 import com.enoch02.helpdesk.data.remote.model.Ticket
 import com.enoch02.helpdesk.data.remote.model.Tickets
+import com.enoch02.helpdesk.data.remote.model.UserData
 import com.enoch02.helpdesk.data.remote.repository.auth.FirebaseAuthRepository
+import com.enoch02.helpdesk.data.remote.repository.cloud_storage.CloudStorageRepository
 import com.enoch02.helpdesk.data.remote.repository.firestore_db.FirestoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class StaffTicketListViewModel @Inject constructor(
     private val authRepository: FirebaseAuthRepository,
     private val firestoreRepository: FirestoreRepository,
+    private val cloudStorageRepository: CloudStorageRepository
 ) : ViewModel() {
     var contentState by mutableStateOf(ContentState.LOADING)
     var errorMessage by mutableStateOf("")
@@ -31,6 +38,13 @@ class StaffTicketListViewModel @Inject constructor(
     var searchResult = mutableStateListOf<Ticket>()
 
     var isRefreshing by mutableStateOf(false)
+
+    var reassignDialogContentState by mutableStateOf(ContentState.LOADING)
+    var staff by mutableStateOf(emptyList<UserData>())
+    // It should be safe to make the index zero here, users can not access the buttons when the lazycolumn is empty
+    var selectedStaffIndex by mutableIntStateOf(0)
+    var selectedTicketIndex by mutableIntStateOf(0)
+    var profilePictures by mutableStateOf(emptyList<Uri?>())
 
     fun onRefresh(filter: String) {
         isRefreshing = true
@@ -47,6 +61,10 @@ class StaffTicketListViewModel @Inject constructor(
 
     fun updateSearchStatus(newStatus: Boolean) {
         searchActive = newStatus
+    }
+
+    fun updateSelectedStaff(index: Int) {
+        selectedStaffIndex = index
     }
 
     fun getTickets(filter: String) {
@@ -99,7 +117,7 @@ class StaffTicketListViewModel @Inject constructor(
 
     fun getUID() = authRepository.getUID()
 
-    fun assignTicketToSelf(sid: String = getUID(), ticket: Ticket) {
+    fun assignTicketToSelf(context: Context, sid: String = getUID(), ticket: Ticket) {
         viewModelScope.launch(Dispatchers.IO) {
             firestoreRepository.updateTicket(
                 uid = ticket.uid.toString(),
@@ -107,11 +125,48 @@ class StaffTicketListViewModel @Inject constructor(
                 newTicket = ticket.copy(
                     staffID = sid
                 )
-            )
+            ).onSuccess {
+                withContext(Dispatchers.Main) {
+                    isRefreshing = true
+                    Toast.makeText(context, "Ticket Assigned", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 
-    fun reassignTicket(sid: String, ticket: Ticket) {
-        /*TODO*/
+    fun getUsers() {
+        reassignDialogContentState = ContentState.LOADING
+        viewModelScope.launch(Dispatchers.IO) {
+            firestoreRepository.getUsers()
+                .onSuccess { userData ->
+                    staff = userData.filter { it.role == "Staff" && it.userID != getUID()}
+                    getProfilePictures()
+                    reassignDialogContentState = ContentState.COMPLETED
+                }
+        }
+    }
+
+    fun assignTicket(context: Context, sid: String, ticket: Ticket) {
+        assignTicketToSelf(context, sid, ticket)
+    }
+
+    private fun getProfilePictures() {
+        val temp = mutableListOf<Uri?>()
+
+        viewModelScope.launch {
+            staff.forEach { data ->
+                data.userID?.let { id ->
+                    cloudStorageRepository.getProfilePicture(id)
+                        .onSuccess {
+                            temp.add(it)
+                        }
+                        .onFailure {
+                            temp.add(null)
+                        }
+                }
+            }
+
+            profilePictures = temp
+        }
     }
 }

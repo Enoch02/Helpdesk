@@ -2,6 +2,7 @@ package com.enoch02.helpdesk.ui.screen.staff.user_list.component
 
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -12,6 +13,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemColors
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,12 +29,15 @@ import coil.compose.AsyncImage
 
 @Composable
 fun UserListItem(
+    modifier: Modifier = Modifier,
+    showMenu: Boolean = true,
     profilePicUri: Uri?,
     name: String,
     role: String,
     email: String,
     isUserMe: Boolean,
-    onMenuClicked: () -> Unit,  //TODO: replace
+    colors: ListItemColors = ListItemDefaults.colors(),
+    onMenuClicked: () -> Unit = {}  //TODO: remove?
 ) {
     var showDropdownMenu by remember {
         mutableStateOf(false)
@@ -67,35 +73,39 @@ fun UserListItem(
             Text(text = "$email ($role)")
         },
         trailingContent = {
-            IconButton(
-                onClick = { showDropdownMenu = true },
-                content = {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = null
-                    )
-                }
-            )
+            if (showMenu) {
+                IconButton(
+                    onClick = { showDropdownMenu = true },
+                    content = {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = null
+                        )
+                    }
+                )
 
-            AnimatedVisibility(
-                visible = showDropdownMenu,
-                content = {
-                    DropdownMenu(
-                        expanded = showDropdownMenu,
-                        onDismissRequest = { showDropdownMenu = false },
-                        content = {
-                            DropdownMenuItem(
-                                text = { Text(text = "Message") },
-                                onClick = {
-                                    showDropdownMenu = false
-                                    /*TODO*/
-                                },
-                                enabled = !isUserMe
-                            )
-                        }
-                    )
-                }
-            )
-        }
+                AnimatedVisibility(
+                    visible = showDropdownMenu,
+                    content = {
+                        DropdownMenu(
+                            expanded = showDropdownMenu,
+                            onDismissRequest = { showDropdownMenu = false },
+                            content = {
+                                DropdownMenuItem(
+                                    text = { Text(text = "Message") },
+                                    onClick = {
+                                        showDropdownMenu = false
+                                        /*TODO*/
+                                    },
+                                    enabled = !isUserMe
+                                )
+                            }
+                        )
+                    }
+                )
+            }
+        },
+        colors = colors,
+        modifier = modifier
     )
 }

@@ -1,37 +1,52 @@
 package com.enoch02.helpdesk.ui.screen.staff.ticket_list
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.enoch02.helpdesk.data.local.model.ContentState
+import com.enoch02.helpdesk.data.remote.model.Ticket
 import com.enoch02.helpdesk.navigation.Screen
+import com.enoch02.helpdesk.ui.screen.common.LoadingView
 import com.enoch02.helpdesk.ui.screen.common.component.SearchBarType
 import com.enoch02.helpdesk.ui.screen.common.component.TicketListSearchBar
 import com.enoch02.helpdesk.ui.screen.staff.ticket_list.component.StaffTicketListItem
+import com.enoch02.helpdesk.ui.screen.staff.user_list.component.UserListItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,6 +55,7 @@ fun StaffTicketLisScreen(
     filter: String,
     viewModel: StaffTicketListViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
     val contentState = viewModel.contentState
     val query = viewModel.query
     val searchResult = viewModel.searchResult
@@ -48,6 +64,10 @@ fun StaffTicketLisScreen(
 
     val pullToRefreshState = rememberPullToRefreshState()
     val isRefreshing = viewModel.isRefreshing
+
+    var reassigningTicket by remember {
+        mutableStateOf(false)
+    }
 
     SideEffect {
         viewModel.getTickets(filter = filter)
@@ -142,6 +162,7 @@ fun StaffTicketLisScreen(
 
                                                                     if (item != null) {
                                                                         StaffTicketListItem(
+                                                                            isAssignedToMe = item.staffID.toString() == viewModel.getUID(),
                                                                             ticketID = item.ticketID.toString(),
                                                                             subject = item.subject.toString(),
                                                                             priority = item.priority.toString(),
@@ -154,10 +175,22 @@ fun StaffTicketLisScreen(
                                                                                     )
                                                                                 )
                                                                             },
-                                                                            onAssignToSelfItemClicked = {
+                                                                            onAssignToSelf = {
                                                                                 viewModel.assignTicketToSelf(
+                                                                                    context,
                                                                                     ticket = item
                                                                                 )
+                                                                                viewModel.isRefreshing =
+                                                                                    true
+                                                                            },
+                                                                            onReassign = {
+                                                                                viewModel.getUsers()
+                                                                                reassigningTicket =
+                                                                                    true
+                                                                                viewModel.isRefreshing =
+                                                                                    true
+                                                                                viewModel.selectedTicketIndex =
+                                                                                    index
                                                                             }
                                                                         )
 
@@ -179,7 +212,8 @@ fun StaffTicketLisScreen(
                                                             Alignment.TopCenter
                                                         )
                                                     )
-                                                })
+                                                }
+                                            )
                                         }
                                     )
                                 }
@@ -215,6 +249,98 @@ fun StaffTicketLisScreen(
                             )
                         }
                     }
+                }
+            )
+
+            AnimatedVisibility(
+                visible = reassigningTicket,
+                content = {
+                    val staff = viewModel.staff
+                    val profilePics = viewModel.profilePictures
+                    val selectedStaffIndex = viewModel.selectedStaffIndex
+
+                    AlertDialog(
+                        onDismissRequest = { reassigningTicket = false },
+                        title = { Text(text = "Assign To") },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    reassigningTicket = false
+                                    viewModel.assignTicket(
+                                        context = context,
+                                        sid = staff[selectedStaffIndex].userID.toString(),
+                                        ticket = tickets?.get(viewModel.selectedTicketIndex)
+                                            ?: Ticket()
+                                    )
+                                },
+                                content = {
+                                    Text(text = "OK")
+                                }
+                            )
+                        },
+                        dismissButton = {
+                            TextButton(
+                                onClick = { reassigningTicket = false },
+                                content = {
+                                    Text(text = "Cancel")
+                                }
+                            )
+                        },
+                        text = {
+                            when (viewModel.reassignDialogContentState) {
+                                ContentState.LOADING -> {
+                                    LoadingView(modifier = Modifier.size(200.dp))
+                                }
+
+                                ContentState.COMPLETED -> {
+                                    Card {
+                                        LazyColumn(
+                                            content = {
+                                                items(
+                                                    count = staff.size,
+                                                    itemContent = { index ->
+                                                        val bg = if (selectedStaffIndex == index) {
+                                                            MaterialTheme.colorScheme.primary
+                                                        } else {
+                                                            Color.Transparent
+                                                        }
+
+                                                        UserListItem(
+                                                            showMenu = false,
+                                                            profilePicUri = if (profilePics.isNotEmpty()) profilePics[index] else null,
+                                                            name = staff[index].displayName.toString(),
+                                                            role = staff[index].role.toString(),
+                                                            email = staff[index].email.toString(),
+                                                            isUserMe = false,
+                                                            colors = ListItemDefaults.colors(
+                                                                containerColor = bg
+                                                            ),
+                                                            modifier = Modifier
+                                                                .clickable {
+                                                                    viewModel.updateSelectedStaff(
+                                                                        index
+                                                                    )
+                                                                }
+                                                        )
+                                                    }
+                                                )
+
+                                                item {
+                                                    if (staff.isEmpty()) {
+                                                        Text(text = "No staff available")
+                                                    }
+                                                }
+                                            }
+                                        )
+                                    }
+                                }
+
+                                ContentState.FAILURE -> {
+
+                                }
+                            }
+                        }
+                    )
                 }
             )
         }

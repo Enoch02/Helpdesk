@@ -9,6 +9,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemColors
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,12 +22,14 @@ import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun StaffTicketListItem(
+    isAssignedToMe: Boolean,
     ticketID: String,
     subject: String,
     priority: String,
     status: String,
     onClick: () -> Unit,
-    onAssignToSelfItemClicked: () -> Unit,
+    onAssignToSelf: () -> Unit,
+    onReassign: () -> Unit,
 ) {
     var showMenu by remember {
         mutableStateOf(false)
@@ -54,16 +58,16 @@ fun StaffTicketListItem(
                                 text = { Text(text = "Assign to self") },
                                 onClick = {
                                     showMenu = false
-                                    onAssignToSelfItemClicked()
-                                }
+                                    onAssignToSelf()
+                                },
+                                enabled = !isAssignedToMe
                             )
 
-                            /*TODO: check if the ticket is assigned to this uid*/
                             DropdownMenuItem(
-                                text = { Text(text = "Reassign Ticket") },
+                                text = { Text(text = "Assign Ticket") },
                                 onClick = {
                                     showMenu = false
-                                    onAssignToSelfItemClicked()
+                                    onReassign()
                                 }
                             )
                         }
@@ -81,11 +85,13 @@ fun StaffTicketListItem(
 @Composable
 private fun Preview() {
     StaffTicketListItem(
+        isAssignedToMe = true,
         ticketID = "abfksbkbsjbfdb",
         subject = "Help",
         priority = "HIGH",
         status = "Open",
         onClick = {},
-        onAssignToSelfItemClicked = {}
+        onAssignToSelf = {},
+        onReassign = {}
     )
 }

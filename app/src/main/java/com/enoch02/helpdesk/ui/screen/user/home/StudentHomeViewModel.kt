@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.enoch02.helpdesk.data.local.repository.MessageUpdatesRepository
 import com.enoch02.helpdesk.data.remote.model.UserData
 import com.enoch02.helpdesk.data.remote.repository.auth.FirebaseAuthRepository
 import com.enoch02.helpdesk.data.remote.repository.cloud_storage.CloudStorageRepository
@@ -19,11 +20,16 @@ import javax.inject.Inject
 class StudentHomeViewModel @Inject constructor(
     private val firebaseAuthRepository: FirebaseAuthRepository,
     private val cloudStorageRepository: CloudStorageRepository,
-    private val firestoreRepository: FirestoreRepository
+    private val firestoreRepository: FirestoreRepository,
+    private val messageUpdatesRepository: MessageUpdatesRepository
 ) :
     ViewModel() {
     var profilePicture by mutableStateOf<Uri?>(null)
     var userData by mutableStateOf(UserData(displayName = null))
+
+    init {
+        messageUpdatesRepository.checkForUpdates()
+    }
 
     fun getUserData() {
         viewModelScope.launch(Dispatchers.IO) {

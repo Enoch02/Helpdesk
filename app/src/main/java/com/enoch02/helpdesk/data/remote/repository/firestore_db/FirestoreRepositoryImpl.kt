@@ -13,8 +13,7 @@ import javax.inject.Inject
 
 private const val USER_COLLECTION_NAME = "users/"
 private const val TICKETS_COLLECTION_NAME = "tickets/"
-private const val CHATS_COLLECTION_NAME = "chats/"
-private const val MESSAGES_COLLECTION_NAME = "messages/"
+const val CHATS_COLLECTION_NAME = "chats/"
 private const val TAG = "FirestoreRepo"
 
 class FirestoreRepositoryImpl @Inject constructor(private val db: FirebaseFirestore) :

@@ -47,6 +47,7 @@ import coil.compose.AsyncImage
 import com.enoch02.helpdesk.data.remote.model.MessageType
 import com.enoch02.helpdesk.ui.screen.common.chat.component.BubbleOwner
 import com.enoch02.helpdesk.ui.screen.common.chat.component.ChatBubble
+import com.enoch02.helpdesk.ui.screen.common.chat.component.ImageBubble
 import kotlinx.coroutines.launch
 
 //TODO: selected image previews??
@@ -128,21 +129,30 @@ fun ChatScreen(
                             count = messages.size,
                             itemContent = { index ->
                                 val item = messages[index]
+                                val owner =
+                                    if (item.sentBy == viewModel.getUID()) BubbleOwner.LOCAL else BubbleOwner.REMOTE
 
                                 when (item.type) {
                                     MessageType.TEXT -> {
                                         ChatBubble(
                                             content = item.messageText.toString(),
-                                            owner = if (item.sentBy == viewModel.getUID()) BubbleOwner.LOCAL else BubbleOwner.REMOTE
+                                            owner = owner
                                         )
                                     }
 
                                     MessageType.IMAGE -> {
-
+                                        ImageBubble(
+                                            content = viewModel.getPictureAt(index),
+                                            owner = owner
+                                        )
                                     }
 
                                     MessageType.IMAGE_AND_TEXT -> {
-
+                                        ImageBubble(
+                                            content = viewModel.getPictureAt(index),
+                                            text = item.messageText.toString(),
+                                            owner = owner
+                                        )
                                     }
 
                                     null -> {
@@ -248,7 +258,7 @@ fun ChatScreen(
                         IconButton(
                             onClick = {
                                 keyboardController?.hide()
-                                viewModel.sendMessage(cid = chatID)
+                                viewModel.sendMessage(context = context, cid = chatID)
                                     .onSuccess {
                                         scope.launch {
                                             if (!viewModel.chat?.messages.isNullOrEmpty()) {

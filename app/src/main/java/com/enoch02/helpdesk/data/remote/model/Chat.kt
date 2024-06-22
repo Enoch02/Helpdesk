@@ -18,8 +18,12 @@ data class Members(
     val staffID: String? = null
 )
 
+/**
+ * [imageId] should be set only when the message is being sent with an image
+ * */
 data class Message(
     val messageText: String? = null,
+    val imageId: String? = null,
     val sentAt: Date? = null,
     val sentBy: String? = null,
     val type: MessageType? = null

@@ -94,4 +94,5 @@ dependencies {
     implementation(libs.coil.compose)
 
     implementation(platform(libs.firebase.bom))
+    implementation(libs.androidx.work.runtime.ktx)
 }

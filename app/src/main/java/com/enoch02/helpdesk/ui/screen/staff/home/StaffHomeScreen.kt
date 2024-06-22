@@ -32,6 +32,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.enoch02.helpdesk.navigation.Screen
+import com.enoch02.helpdesk.data.local.model.Filter
 import com.enoch02.helpdesk.ui.screen.staff.home.component.StatsCard
 import com.enoch02.helpdesk.ui.screen.user.home.component.ActionCard
 
@@ -122,7 +123,7 @@ fun StaffHomeScreen(navController: NavController, viewModel: StaffHomeViewModel 
                             value = "${ticketStats.total}",
                             label = "Total Tickets",
                             onClick = {
-                                navController.navigate(Screen.StaffTicketList.withArgs("all"))
+                                navController.navigate(Screen.StaffTicketList.withArgs(Filter.All.value))
                             }
                         )
                     }
@@ -132,7 +133,7 @@ fun StaffHomeScreen(navController: NavController, viewModel: StaffHomeViewModel 
                             value = "${ticketStats.open}",
                             label = "Open Tickets",
                             onClick = {
-                                navController.navigate(Screen.StaffTicketList.withArgs("Open"))
+                                navController.navigate(Screen.StaffTicketList.withArgs(Filter.Open.value))
                             }
                         )
                     }
@@ -142,7 +143,7 @@ fun StaffHomeScreen(navController: NavController, viewModel: StaffHomeViewModel 
                             value = "${ticketStats.closed}",
                             label = "Closed Tickets",
                             onClick = {
-                                navController.navigate(Screen.StaffTicketList.withArgs("Closed"))
+                                navController.navigate(Screen.StaffTicketList.withArgs(Filter.Closed.value))
                             }
                         )
                     }
@@ -151,7 +152,7 @@ fun StaffHomeScreen(navController: NavController, viewModel: StaffHomeViewModel 
                             value = "${ticketStats.unassigned}",
                             label = "Unassigned Tickets",
                             onClick = {
-                                navController.navigate(Screen.StaffTicketList.withArgs("Unassigned"))
+                                navController.navigate(Screen.StaffTicketList.withArgs(Filter.Unassigned.value))
                             }
                         )
                     }
@@ -169,10 +170,10 @@ fun StaffHomeScreen(navController: NavController, viewModel: StaffHomeViewModel 
                     item {
                         /*TODO:*/
                         StatsCard(
-                            value = "",
+                            value = "${ticketStats.assignedToMe}",
                             label = "Assigned To Me",
                             onClick = {
-                                //navController.navigate(Screen.StaffTicketList.withArgs("Assigned"))
+                                navController.navigate(Screen.StaffTicketList.withArgs(Filter.AssignedToMe.value))
                             }
                         )
                     }

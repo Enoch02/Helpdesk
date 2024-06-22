@@ -50,4 +50,6 @@ class StudentHomeViewModel @Inject constructor(
                 }
         }
     }
+
+    fun signOut() = firebaseAuthRepository.signOut()
 }

@@ -1,4 +1,4 @@
-package com.enoch02.helpdesk.ui.screen.user.home.component
+package com.enoch02.helpdesk.ui.screen.common.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column

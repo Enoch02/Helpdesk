@@ -1,6 +1,8 @@
 package com.enoch02.helpdesk.ui.screen.staff.home
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -27,18 +29,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.enoch02.helpdesk.navigation.Screen
 import com.enoch02.helpdesk.data.local.model.Filter
+import com.enoch02.helpdesk.ui.screen.common.component.Header
 import com.enoch02.helpdesk.ui.screen.staff.home.component.StatsCard
 import com.enoch02.helpdesk.ui.screen.user.home.component.ActionCard
+import com.enoch02.helpdesk.util.restartActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StaffHomeScreen(navController: NavController, viewModel: StaffHomeViewModel = hiltViewModel()) {
+    val context = LocalContext.current
     val profilePicture = viewModel.profilePicture
     val userData = viewModel.userData
     val ticketStats = viewModel.ticketStats
@@ -101,10 +107,11 @@ fun StaffHomeScreen(navController: NavController, viewModel: StaffHomeViewModel 
                                 onDismissRequest = { showDropDown = false },
                                 content = {
                                     DropdownMenuItem(
-                                        text = { Text(text = "Settings") },
+                                        text = { Text(text = "Sign Out") },
                                         onClick = {
                                             showDropDown = false
-                                            navController.navigate(Screen.Settings.route)
+                                            viewModel.signOut()
+                                            restartActivity(context = context)
                                         }
                                     )
                                 }
@@ -115,78 +122,108 @@ fun StaffHomeScreen(navController: NavController, viewModel: StaffHomeViewModel 
             )
         },
         content = { paddingValues ->
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
+            Column(
                 content = {
-                    item {
-                        StatsCard(
-                            value = "${ticketStats.total}",
-                            label = "Total Tickets",
-                            onClick = {
-                                navController.navigate(Screen.StaffTicketList.withArgs(Filter.All.value))
-                            }
-                        )
-                    }
+                    Header(
+                        userName = userData.displayName ?: "User",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    )
 
-                    item {
-                        StatsCard(
-                            value = "${ticketStats.open}",
-                            label = "Open Tickets",
-                            onClick = {
-                                navController.navigate(Screen.StaffTicketList.withArgs(Filter.Open.value))
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        content = {
+                            item {
+                                StatsCard(
+                                    value = "${ticketStats.total}",
+                                    label = "Total Tickets",
+                                    onClick = {
+                                        navController.navigate(
+                                            Screen.StaffTicketList.withArgs(
+                                                Filter.All.value
+                                            )
+                                        )
+                                    }
+                                )
                             }
-                        )
-                    }
 
-                    item {
-                        StatsCard(
-                            value = "${ticketStats.closed}",
-                            label = "Closed Tickets",
-                            onClick = {
-                                navController.navigate(Screen.StaffTicketList.withArgs(Filter.Closed.value))
+                            item {
+                                StatsCard(
+                                    value = "${ticketStats.open}",
+                                    label = "Open Tickets",
+                                    onClick = {
+                                        navController.navigate(
+                                            Screen.StaffTicketList.withArgs(
+                                                Filter.Open.value
+                                            )
+                                        )
+                                    }
+                                )
                             }
-                        )
-                    }
-                    item {
-                        StatsCard(
-                            value = "${ticketStats.unassigned}",
-                            label = "Unassigned Tickets",
-                            onClick = {
-                                navController.navigate(Screen.StaffTicketList.withArgs(Filter.Unassigned.value))
-                            }
-                        )
-                    }
 
-                    item {
-                        StatsCard(
-                            value = "${ticketStats.users}",
-                            label = "Users",
-                            onClick = {
-                                navController.navigate(Screen.UserList.route)
+                            item {
+                                StatsCard(
+                                    value = "${ticketStats.closed}",
+                                    label = "Closed Tickets",
+                                    onClick = {
+                                        navController.navigate(
+                                            Screen.StaffTicketList.withArgs(
+                                                Filter.Closed.value
+                                            )
+                                        )
+                                    }
+                                )
                             }
-                        )
-                    }
+                            item {
+                                StatsCard(
+                                    value = "${ticketStats.unassigned}",
+                                    label = "Unassigned Tickets",
+                                    onClick = {
+                                        navController.navigate(
+                                            Screen.StaffTicketList.withArgs(
+                                                Filter.Unassigned.value
+                                            )
+                                        )
+                                    }
+                                )
+                            }
 
-                    item {
-                        /*TODO:*/
-                        StatsCard(
-                            value = "${ticketStats.assignedToMe}",
-                            label = "Assigned To Me",
-                            onClick = {
-                                navController.navigate(Screen.StaffTicketList.withArgs(Filter.AssignedToMe.value))
+                            item {
+                                StatsCard(
+                                    value = "${ticketStats.users}",
+                                    label = "Users",
+                                    onClick = {
+                                        navController.navigate(Screen.UserList.route)
+                                    }
+                                )
                             }
-                        )
-                    }
 
-                    item {
-                        ActionCard(
-                            Icons.AutoMirrored.Filled.HelpCenter,
-                            label = "Knowledge Base",
-                            onClick = {
-                                navController.navigate(Screen.KnowledgeBase.route)
+                            item {
+                                StatsCard(
+                                    value = "${ticketStats.assignedToMe}",
+                                    label = "Assigned To Me",
+                                    onClick = {
+                                        navController.navigate(
+                                            Screen.StaffTicketList.withArgs(
+                                                Filter.AssignedToMe.value
+                                            )
+                                        )
+                                    }
+                                )
                             }
-                        )
-                    }
+
+                            item {
+                                ActionCard(
+                                    Icons.AutoMirrored.Filled.HelpCenter,
+                                    label = "Knowledge Base",
+                                    onClick = {
+                                        navController.navigate(Screen.KnowledgeBase.route)
+                                    }
+                                )
+                            }
+                        }
+                    )
                 },
                 modifier = Modifier.padding(paddingValues)
             )

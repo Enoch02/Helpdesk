@@ -36,13 +36,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.enoch02.helpdesk.navigation.Screen
 import com.enoch02.helpdesk.ui.screen.user.home.component.ActionCard
-import com.enoch02.helpdesk.ui.screen.user.home.component.Header
+import com.enoch02.helpdesk.ui.screen.common.component.Header
+import com.enoch02.helpdesk.util.restartActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,6 +52,7 @@ fun StudentHomeScreen(
     navController: NavController,
     viewModel: StudentHomeViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
     val profilePicture = viewModel.profilePicture
     val userData = viewModel.userData
 
@@ -110,10 +113,11 @@ fun StudentHomeScreen(
                                 onDismissRequest = { showDropDown = false },
                                 content = {
                                     DropdownMenuItem(
-                                        text = { Text(text = "Settings") },
+                                        text = { Text(text = "Sign Out") },
                                         onClick = {
                                             showDropDown = false
-                                            navController.navigate(Screen.Settings.route)
+                                            viewModel.signOut()
+                                            restartActivity(context = context)
                                         }
                                     )
                                 }

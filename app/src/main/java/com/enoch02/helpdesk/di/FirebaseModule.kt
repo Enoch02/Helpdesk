@@ -45,6 +45,6 @@ object FirebaseModule {
 
     @Provides
     @Singleton
-    fun provideRealtimeDatabaseRepository(firestoreDatabase: FirebaseFirestore): FirestoreRepository =
-        FirestoreRepositoryImpl(firestoreDatabase)
+    fun provideRealtimeDatabaseRepository(firestoreDatabase: FirebaseFirestore, authRepository: FirebaseAuthRepository): FirestoreRepository =
+        FirestoreRepositoryImpl(firestoreDatabase, authRepository)
 }

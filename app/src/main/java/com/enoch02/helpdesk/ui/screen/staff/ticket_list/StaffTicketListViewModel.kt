@@ -11,6 +11,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.enoch02.helpdesk.data.local.model.ContentState
+import com.enoch02.helpdesk.data.local.model.Filter
 import com.enoch02.helpdesk.data.remote.model.Ticket
 import com.enoch02.helpdesk.data.remote.model.Tickets
 import com.enoch02.helpdesk.data.remote.model.UserData
@@ -72,13 +73,20 @@ class StaffTicketListViewModel @Inject constructor(
             firestoreRepository.getTickets()
                 .onSuccess {
                     when (filter) {
-                        "all" -> {
+                        Filter.All.value -> {
                             tickets = tickets.copy(tickets = it.toMutableList())
                         }
 
-                        "Unassigned" -> {
+                        Filter.Unassigned.value -> {
                             tickets = tickets.copy(
                                 tickets = it.filter { ticket -> ticket.staffID.isNullOrBlank() }
+                                    .toMutableList()
+                            )
+                        }
+
+                        Filter.AssignedToMe.value -> {
+                            tickets = tickets.copy(
+                                tickets = it.filter { ticket -> ticket.staffID == getUID() }
                                     .toMutableList()
                             )
                         }

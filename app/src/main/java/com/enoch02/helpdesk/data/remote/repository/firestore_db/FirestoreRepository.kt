@@ -37,4 +37,6 @@ interface FirestoreRepository {
     suspend fun getTicketStats(): Result<TicketStats>
 
     suspend fun getUsers(): Result<List<UserData>>
+
+    suspend fun getUserName(uid: String): Result<String>
 }

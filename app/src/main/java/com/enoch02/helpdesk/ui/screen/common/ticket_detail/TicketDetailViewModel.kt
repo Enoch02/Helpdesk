@@ -1,7 +1,6 @@
 package com.enoch02.helpdesk.ui.screen.common.ticket_detail
 
 import android.os.Build
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -11,6 +10,8 @@ import com.enoch02.helpdesk.data.local.model.ContentState
 import com.enoch02.helpdesk.data.remote.model.Chat
 import com.enoch02.helpdesk.data.remote.model.Members
 import com.enoch02.helpdesk.data.remote.model.Ticket
+import com.enoch02.helpdesk.data.remote.model.UserData
+import com.enoch02.helpdesk.data.remote.repository.auth.FirebaseAuthRepository
 import com.enoch02.helpdesk.data.remote.repository.firestore_db.FirestoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -21,9 +22,13 @@ import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
-class TicketDetailViewModel @Inject constructor(private val firestoreRepository: FirestoreRepository) :
+class TicketDetailViewModel @Inject constructor(
+    private val firestoreRepository: FirestoreRepository,
+    private val authRepository: FirebaseAuthRepository
+) :
     ViewModel() {
     private var theTicket by mutableStateOf(Ticket())
+    var userData by mutableStateOf(UserData())
 
     var contentState by mutableStateOf(ContentState.LOADING)
     var errorMessage by mutableStateOf("")
@@ -34,6 +39,7 @@ class TicketDetailViewModel @Inject constructor(private val firestoreRepository:
     var creationDate by mutableStateOf("")
     var description by mutableStateOf("")
     var assignedTo by mutableStateOf("")
+    var createdBy by mutableStateOf("")
     var chatID by mutableStateOf("")
     var ticketID by mutableStateOf("")
 
@@ -52,7 +58,24 @@ class TicketDetailViewModel @Inject constructor(private val firestoreRepository:
                     status = it.status.toString()
                     creationDate = it.createdAt.toString()
                     description = it.description.toString()
-                    assignedTo = it.staffID.toString()
+                    /*assignedTo = it.staffID.toString()*/
+
+                    firestoreRepository.getUserName(it.staffID.toString())
+                        .onSuccess { name ->
+                            assignedTo = name
+                        }
+                        .onFailure { _ ->
+                            assignedTo = it.staffID.toString()
+                        }
+
+                    firestoreRepository.getUserName(it.uid.toString())
+                        .onSuccess { name ->
+                            createdBy = name
+                        }
+                        .onFailure { _ ->
+                            createdBy = it.staffID.toString()
+                        }
+
 
                     chatID = it.chatID ?: ""
                     ticketID = it.ticketID ?: ""
@@ -110,6 +133,17 @@ class TicketDetailViewModel @Inject constructor(private val firestoreRepository:
                 chatID = it
                 navigateToChatScreen = true
             }
+        }
+    }
+
+    fun getUserData() {
+        viewModelScope.launch(Dispatchers.IO) {
+            firestoreRepository.getUserData(authRepository.getUID())
+                .onSuccess {
+                    if (it != null) {
+                        userData = it
+                    }
+                }
         }
     }
 }

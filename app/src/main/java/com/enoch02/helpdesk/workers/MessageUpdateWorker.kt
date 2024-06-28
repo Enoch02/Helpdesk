@@ -40,6 +40,7 @@ class MessageUpdateWorker(
                 documentSnapshot.forEach { document ->
                     val chatObj = document.toObject(Chat::class.java)
 
+                    // TODO: fix
                     if (chatObj.members?.userID.toString() == auth.currentUser?.uid.toString()) {
                         val messages = chatObj.messages
 

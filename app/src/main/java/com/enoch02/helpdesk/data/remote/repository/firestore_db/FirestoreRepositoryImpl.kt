@@ -8,7 +8,9 @@ import com.enoch02.helpdesk.data.remote.model.Ticket
 import com.enoch02.helpdesk.data.remote.model.Tickets
 import com.enoch02.helpdesk.data.remote.model.UserData
 import com.enoch02.helpdesk.data.remote.repository.auth.FirebaseAuthRepository
+import com.enoch02.helpdesk.util.DEFAULT_DISPLAY_NAME
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -334,6 +336,20 @@ class FirestoreRepositoryImpl @Inject constructor(
             Result.success(temp)
         } catch (e: Exception) {
             Log.e(TAG, "getUsers: ${e.message}")
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getUserName(uid: String): Result<String> {
+        return try {
+            val user = db.collection(USER_COLLECTION_NAME).document(uid)
+                .get()
+                .await()
+                .toObject(UserData::class.java)
+
+            Result.success(user?.displayName ?: DEFAULT_DISPLAY_NAME)
+        } catch (e: Exception) {
+            Log.e(TAG, "getUserName: ${e.message}")
             Result.failure(e)
         }
     }

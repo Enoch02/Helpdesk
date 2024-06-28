@@ -38,6 +38,7 @@ import com.enoch02.helpdesk.data.local.model.ContentState
 import com.enoch02.helpdesk.navigation.Screen
 import com.enoch02.helpdesk.ui.screen.common.ticket_detail.component.TicketActionRow
 import com.enoch02.helpdesk.ui.screen.common.ticket_detail.component.TicketDetailCard
+import com.enoch02.helpdesk.util.STAFF_ROLE
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,6 +54,7 @@ fun TicketDetailScreen(
     val context = LocalContext.current
     val contentState = viewModel.contentState
 
+    val userData = viewModel.userData
     val subject = viewModel.subject
     val category = viewModel.category
     val priority = viewModel.priority
@@ -60,9 +62,11 @@ fun TicketDetailScreen(
     val creationDate = viewModel.creationDate
     val description = viewModel.description
     val assignedTo = viewModel.assignedTo
+    val createdBy = viewModel.createdBy
 
     SideEffect {
         viewModel.getTicket(uid, tid)
+        viewModel.getUserData()
     }
 
     Scaffold(
@@ -170,12 +174,22 @@ fun TicketDetailScreen(
                                     }
 
                                     item {
-                                        /*TODO: get display name from uid*/
                                         TicketDetailCard(
                                             label = "Assigned To",
                                             value = assignedTo,
                                             modifier = Modifier.padding(vertical = 8.dp)
                                         )
+                                    }
+
+
+                                    item {
+                                        if (userData.role.toString() == STAFF_ROLE) {
+                                            TicketDetailCard(
+                                                label = "Created By",
+                                                value = createdBy,
+                                                modifier = Modifier.padding(vertical = 8.dp)
+                                            )
+                                        }
                                     }
 
                                     item {
@@ -244,7 +258,7 @@ fun TicketDetailScreen(
                             if (assignedTo.isBlank() || assignedTo == "null") {
                                 Toast.makeText(
                                     context,
-                                    "Your ticket has not been assigned to someone",
+                                    "Ticket has not been assigned",
                                     Toast.LENGTH_SHORT
                                 ).show()
                             } else {

@@ -1,5 +1,6 @@
 package com.enoch02.helpdesk.ui.screen.common.ticket_detail
 
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -15,29 +16,41 @@ import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.enoch02.helpdesk.data.local.model.ContentState
 import com.enoch02.helpdesk.navigation.Screen
+import com.enoch02.helpdesk.ui.screen.common.ticket_detail.component.AttachmentViewer
 import com.enoch02.helpdesk.ui.screen.common.ticket_detail.component.TicketActionRow
 import com.enoch02.helpdesk.ui.screen.common.ticket_detail.component.TicketDetailCard
+import com.enoch02.helpdesk.util.DEFAULT_DISPLAY_NAME
 import com.enoch02.helpdesk.util.STAFF_ROLE
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,6 +76,15 @@ fun TicketDetailScreen(
     val description = viewModel.description
     val assignedTo = viewModel.assignedTo
     val createdBy = viewModel.createdBy
+    val attachments = viewModel.attachments
+
+    val sheetState = rememberModalBottomSheetState()
+    var showBottomSheet by remember {
+        mutableStateOf(false)
+    }
+    var bottomSheetContent by remember {
+        mutableStateOf(Uri.EMPTY)
+    }
 
     SideEffect {
         viewModel.getTicket(uid, tid)
@@ -92,16 +114,6 @@ fun TicketDetailScreen(
                     )
                 },
                 actions = {
-                    IconButton(
-                        onClick = { /*TODO*/ },
-                        content = {
-                            Icon(
-                                imageVector = Icons.Default.AttachFile,
-                                contentDescription = null
-                            )
-                        }
-                    )
-
                     IconButton(
                         onClick = { /*TODO*/ },
                         content = {
@@ -174,11 +186,13 @@ fun TicketDetailScreen(
                                     }
 
                                     item {
-                                        TicketDetailCard(
-                                            label = "Assigned To",
-                                            value = assignedTo,
-                                            modifier = Modifier.padding(vertical = 8.dp)
-                                        )
+                                        if (assignedTo != DEFAULT_DISPLAY_NAME) {
+                                            TicketDetailCard(
+                                                label = "Assigned To",
+                                                value = assignedTo,
+                                                modifier = Modifier.padding(vertical = 8.dp)
+                                            )
+                                        }
                                     }
 
 
@@ -193,35 +207,22 @@ fun TicketDetailScreen(
                                     }
 
                                     item {
-                                        TicketDetailCard(
-                                            label = "Description",
-                                            value = description,
-                                            modifier = Modifier.padding(vertical = 8.dp)
-                                        )
+                                        if (description.isNotEmpty()) {
+                                            TicketDetailCard(
+                                                label = "Description",
+                                                value = description,
+                                                modifier = Modifier.padding(vertical = 8.dp)
+                                            )
+                                        }
                                     }
 
                                     item {
-                                        TicketActionRow(
-                                            status = status,
-                                            onCloseClicked = {
-                                                viewModel.closeTicket(
-                                                    uid = uid,
-                                                    tid = tid,
-                                                    onSuccess = {
-                                                        viewModel.getTicket(uid, tid)
-                                                    }
-                                                )
-                                            },
-                                            onReopenClicked = {
-                                                viewModel.reopenTicket(
-                                                    uid = uid,
-                                                    tid = tid,
-                                                    onSuccess = {
-                                                        viewModel.getTicket(uid, tid)
-                                                    }
-                                                )
-                                            },
-                                            modifier = Modifier.padding(8.dp)
+                                        AttachmentViewer(
+                                            attachments = attachments,
+                                            onAttachmentViewed = { index ->
+                                                bottomSheetContent = attachments[index]
+                                                showBottomSheet = true
+                                            }
                                         )
                                     }
                                 },
@@ -249,13 +250,37 @@ fun TicketDetailScreen(
                 }
             )
         },
+        bottomBar = {
+            TicketActionRow(
+                status = status,
+                onCloseClicked = {
+                    viewModel.closeTicket(
+                        uid = uid,
+                        tid = tid,
+                        onSuccess = {
+                            viewModel.getTicket(uid, tid)
+                        }
+                    )
+                },
+                onReopenClicked = {
+                    viewModel.reopenTicket(
+                        uid = uid,
+                        tid = tid,
+                        onSuccess = {
+                            viewModel.getTicket(uid, tid)
+                        }
+                    )
+                },
+                modifier = Modifier.padding(8.dp)
+            )
+        },
         floatingActionButton = {
             AnimatedVisibility(
                 visible = contentState == ContentState.COMPLETED,
                 content = {
                     FloatingActionButton(
                         onClick = {
-                            if (assignedTo.isBlank() || assignedTo == "null") {
+                            if (assignedTo.isBlank() || assignedTo == DEFAULT_DISPLAY_NAME) {
                                 Toast.makeText(
                                     context,
                                     "Ticket has not been assigned",
@@ -295,8 +320,27 @@ fun TicketDetailScreen(
                 }
             )
         },
+        floatingActionButtonPosition = if (attachments.isEmpty()) FabPosition.End else FabPosition.Center,
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
     )
+
+    if (showBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                showBottomSheet = false
+                bottomSheetContent = Uri.EMPTY
+            },
+            sheetState = sheetState,
+            content = {
+                AsyncImage(
+                    model = bottomSheetContent,
+                    contentDescription = null,
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
+            }
+        )
+    }
 
     //TODO: find better alternative
     if (viewModel.navigateToChatScreen) {

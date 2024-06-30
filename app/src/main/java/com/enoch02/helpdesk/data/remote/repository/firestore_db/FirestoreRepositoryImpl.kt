@@ -244,7 +244,7 @@ class FirestoreRepositoryImpl @Inject constructor(
     }
 
     /**
-     * Get the chat object associated with a ticket object
+     * Get the [Chat] associated with a ticket object
      * */
     override suspend fun getChat(cid: String): Result<Chat> {
         return try {

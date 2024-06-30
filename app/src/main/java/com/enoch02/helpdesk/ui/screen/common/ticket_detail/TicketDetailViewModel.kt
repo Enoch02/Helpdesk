@@ -1,5 +1,6 @@
 package com.enoch02.helpdesk.ui.screen.common.ticket_detail
 
+import android.net.Uri
 import android.os.Build
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -12,6 +13,7 @@ import com.enoch02.helpdesk.data.remote.model.Members
 import com.enoch02.helpdesk.data.remote.model.Ticket
 import com.enoch02.helpdesk.data.remote.model.UserData
 import com.enoch02.helpdesk.data.remote.repository.auth.FirebaseAuthRepository
+import com.enoch02.helpdesk.data.remote.repository.cloud_storage.CloudStorageRepository
 import com.enoch02.helpdesk.data.remote.repository.firestore_db.FirestoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +26,8 @@ import javax.inject.Inject
 @HiltViewModel
 class TicketDetailViewModel @Inject constructor(
     private val firestoreRepository: FirestoreRepository,
-    private val authRepository: FirebaseAuthRepository
+    private val authRepository: FirebaseAuthRepository,
+    private val cloudStorageRepository: CloudStorageRepository,
 ) :
     ViewModel() {
     private var theTicket by mutableStateOf(Ticket())
@@ -42,6 +45,7 @@ class TicketDetailViewModel @Inject constructor(
     var createdBy by mutableStateOf("")
     var chatID by mutableStateOf("")
     var ticketID by mutableStateOf("")
+    var attachments by mutableStateOf(emptyList<Uri>())
 
     var navigateToChatScreen by mutableStateOf(false)
 
@@ -74,6 +78,11 @@ class TicketDetailViewModel @Inject constructor(
                         }
                         .onFailure { _ ->
                             createdBy = it.staffID.toString()
+                        }
+
+                    cloudStorageRepository.getTicketAttachments(it.ticketID.toString())
+                        .onSuccess { ticketAttachments ->
+                            attachments = ticketAttachments
                         }
 
 

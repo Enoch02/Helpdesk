@@ -9,12 +9,16 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.enoch02.helpdesk.data.local.model.Category
+import com.enoch02.helpdesk.data.local.model.ContentState
 import com.enoch02.helpdesk.data.local.model.Priority
 import com.enoch02.helpdesk.data.remote.model.Ticket
 import com.enoch02.helpdesk.data.remote.repository.auth.FirebaseAuthRepository
+import com.enoch02.helpdesk.data.remote.repository.cloud_storage.CloudStorageRepository
 import com.enoch02.helpdesk.data.remote.repository.firestore_db.FirestoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.util.Calendar
 import java.util.Date
@@ -23,9 +27,11 @@ import javax.inject.Inject
 @HiltViewModel
 class CreateTicketViewModel @Inject constructor(
     private val authRepository: FirebaseAuthRepository,
-    private val firestoreRepository: FirestoreRepository
+    private val firestoreRepository: FirestoreRepository,
+    private val cloudStorageRepository: CloudStorageRepository,
 ) :
     ViewModel() {
+    var contentState by mutableStateOf(ContentState.COMPLETED)
     var subject by mutableStateOf("")
     var category by mutableStateOf(Category.builtInCategories[0])
     var priority by mutableStateOf(Priority.LOW)
@@ -53,6 +59,8 @@ class CreateTicketViewModel @Inject constructor(
     }
 
     fun submitTicket(onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+        contentState = ContentState.LOADING
+
         viewModelScope.launch {
             val newTicket = Ticket(
                 uid = authRepository.getUID(),
@@ -66,9 +74,27 @@ class CreateTicketViewModel @Inject constructor(
 
             firestoreRepository.createTicket(newTicket)
                 .onSuccess {
-                    onSuccess()
+                    cloudStorageRepository.uploadTicketAttachments(
+                        selectedAttachments,
+                        newTicket.ticketID.toString()
+                    )
+                        .onSuccess {
+                            withContext(Dispatchers.Main) {
+                                contentState = ContentState.COMPLETED
+                            }
+                            onSuccess()
+                        }
+                        .onFailure {
+                            withContext(Dispatchers.Main) {
+                                contentState = ContentState.FAILURE
+                            }
+                            onFailure(it.message.toString())
+                        }
                 }
                 .onFailure {
+                    withContext(Dispatchers.Main) {
+                        contentState = ContentState.FAILURE
+                    }
                     onFailure(it.message.toString())
                 }
         }

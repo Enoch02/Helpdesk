@@ -10,4 +10,8 @@ interface CloudStorageRepository {
     suspend fun uploadChatImage(uri: Uri, chatId: String, imageId: String): Result<Unit>
 
     suspend fun getChatImage(chatID: String, imageId: String): Result<Uri>
+
+    suspend fun uploadTicketAttachments(attachments: List<Uri>, ticketId: String): Result<Unit>
+
+    suspend fun getTicketAttachments(ticketId: String): Result<List<Uri>>
 }

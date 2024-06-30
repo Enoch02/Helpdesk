@@ -12,6 +12,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -22,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.enoch02.helpdesk.data.local.model.Category
+import com.enoch02.helpdesk.data.local.model.ContentState
 import com.enoch02.helpdesk.data.local.model.Priority
 import com.enoch02.helpdesk.data.local.model.toPriority
 import com.enoch02.helpdesk.ui.screen.user.create_ticket.component.AttachmentSelector
@@ -32,9 +34,10 @@ import com.enoch02.helpdesk.ui.screen.user.create_ticket.component.FormTextField
 @Composable
 fun CreateTicketScreen(
     navController: NavController,
-    viewModel: CreateTicketViewModel = hiltViewModel()
+    viewModel: CreateTicketViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
+    val contentState = viewModel.contentState
     val subject = viewModel.subject
     val category = viewModel.category
     val priority = viewModel.priority
@@ -61,6 +64,10 @@ fun CreateTicketScreen(
         content = { paddingValues ->
             Column(
                 content = {
+                    if (contentState == ContentState.LOADING) {
+                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    }
+
                     FormTextField(
                         label = "Subject",
                         value = subject,
@@ -115,10 +122,13 @@ fun CreateTicketScreen(
 
                     Button(
                         onClick = {
-                            //TODO: use snack bars?
                             viewModel.submitTicket(
                                 onSuccess = {
-                                    Toast.makeText(context, "Ticket created successfully", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Ticket created successfully",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                     navController.popBackStack()
                                 },
                                 onFailure = {
@@ -129,7 +139,8 @@ fun CreateTicketScreen(
                         content = {
                             Text(text = "Submit Ticket")
                         },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = contentState != ContentState.LOADING
                     )
                 },
                 modifier = Modifier

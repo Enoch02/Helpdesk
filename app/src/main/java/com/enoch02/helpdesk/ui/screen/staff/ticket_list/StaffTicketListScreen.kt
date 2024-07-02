@@ -1,6 +1,5 @@
 package com.enoch02.helpdesk.ui.screen.staff.ticket_list
 
-import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
@@ -26,7 +25,6 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,8 +40,9 @@ import androidx.navigation.NavController
 import com.enoch02.helpdesk.data.local.model.ContentState
 import com.enoch02.helpdesk.data.remote.model.Ticket
 import com.enoch02.helpdesk.navigation.Screen
-import com.enoch02.helpdesk.ui.screen.common.LoadingView
+import com.enoch02.helpdesk.ui.screen.common.component.LoadingView
 import com.enoch02.helpdesk.ui.screen.common.component.SearchBarType
+import com.enoch02.helpdesk.ui.screen.common.component.SortingDialog
 import com.enoch02.helpdesk.ui.screen.common.component.TicketListSearchBar
 import com.enoch02.helpdesk.ui.screen.staff.ticket_list.component.StaffTicketListItem
 import com.enoch02.helpdesk.ui.screen.staff.user_list.component.UserListItem
@@ -69,8 +68,13 @@ fun StaffTicketLisScreen(
         mutableStateOf(false)
     }
 
-    SideEffect {
-        viewModel.getTickets(filter = filter)
+    var showSortingDialog by remember {
+        mutableStateOf(false)
+    }
+    val currentSorting = viewModel.currentSorting
+
+    LaunchedEffect(Unit) {
+        viewModel.getAndSortTickets(filter = filter, sorting = currentSorting)
     }
 
     if (pullToRefreshState.isRefreshing) {
@@ -113,8 +117,7 @@ fun StaffTicketLisScreen(
                 placeHolder = "Subject",
                 onClearButtonClicked = { viewModel.updateSearchStatus(false) },
                 onNavBackButtonClicked = { navController.popBackStack() },
-                onSortButtonClicked = { /*TODO*/ },
-                onFilterButtonClicked = { /*TODO*/ },
+                onSortButtonClicked = { showSortingDialog = true },
                 list = searchResult,
                 onResultItemClicked = {
                     navController.navigate(
@@ -252,6 +255,7 @@ fun StaffTicketLisScreen(
                 }
             )
 
+            // staff selection dialog
             AnimatedVisibility(
                 visible = reassigningTicket,
                 content = {
@@ -300,7 +304,7 @@ fun StaffTicketLisScreen(
                                                     count = staff.size,
                                                     itemContent = { index ->
                                                         val bg = if (selectedStaffIndex == index) {
-                                                            MaterialTheme.colorScheme.primary
+                                                            MaterialTheme.colorScheme.primary.copy(0.5f)
                                                         } else {
                                                             Color.Transparent
                                                         }
@@ -343,6 +347,20 @@ fun StaffTicketLisScreen(
                     )
                 }
             )
+        }
+    )
+
+    SortingDialog(
+        showSortingDialog = showSortingDialog,
+        onDismiss = { showSortingDialog = false },
+        onConfirm = {
+            showSortingDialog = false
+        },
+        currentSorting = currentSorting,
+        onSelectionChange = {
+            showSortingDialog = false
+            viewModel.updateCurrentSorting(it)
+            viewModel.sortTickets(it)
         }
     )
 }

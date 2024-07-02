@@ -12,12 +12,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.enoch02.helpdesk.data.local.model.ContentState
 import com.enoch02.helpdesk.data.local.model.Filter
+import com.enoch02.helpdesk.data.local.model.toPriority
 import com.enoch02.helpdesk.data.remote.model.Ticket
 import com.enoch02.helpdesk.data.remote.model.Tickets
 import com.enoch02.helpdesk.data.remote.model.UserData
 import com.enoch02.helpdesk.data.remote.repository.auth.FirebaseAuthRepository
 import com.enoch02.helpdesk.data.remote.repository.cloud_storage.CloudStorageRepository
 import com.enoch02.helpdesk.data.remote.repository.firestore_db.FirestoreRepository
+import com.enoch02.helpdesk.util.SORTING_CRITERIA
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,7 +30,7 @@ import javax.inject.Inject
 class StaffTicketListViewModel @Inject constructor(
     private val authRepository: FirebaseAuthRepository,
     private val firestoreRepository: FirestoreRepository,
-    private val cloudStorageRepository: CloudStorageRepository
+    private val cloudStorageRepository: CloudStorageRepository,
 ) : ViewModel() {
     var contentState by mutableStateOf(ContentState.LOADING)
     var errorMessage by mutableStateOf("")
@@ -42,10 +44,13 @@ class StaffTicketListViewModel @Inject constructor(
 
     var reassignDialogContentState by mutableStateOf(ContentState.LOADING)
     var staff by mutableStateOf(emptyList<UserData>())
+
     // It should be safe to make the index zero here, users can not access the buttons when the lazycolumn is empty
     var selectedStaffIndex by mutableIntStateOf(0)
     var selectedTicketIndex by mutableIntStateOf(0)
     var profilePictures by mutableStateOf(emptyList<Uri?>())
+
+    var currentSorting by mutableStateOf(SORTING_CRITERIA[2])
 
     fun onRefresh(filter: String) {
         isRefreshing = true
@@ -68,7 +73,11 @@ class StaffTicketListViewModel @Inject constructor(
         selectedStaffIndex = index
     }
 
-    fun getTickets(filter: String) {
+    fun updateCurrentSorting(newSorting: String) {
+        currentSorting = newSorting
+    }
+
+    private fun getTickets(filter: String) {
         viewModelScope.launch(Dispatchers.IO) {
             firestoreRepository.getTickets()
                 .onSuccess {
@@ -147,7 +156,7 @@ class StaffTicketListViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             firestoreRepository.getUsers()
                 .onSuccess { userData ->
-                    staff = userData.filter { it.role == "Staff" && it.userID != getUID()}
+                    staff = userData.filter { it.role == "Staff" && it.userID != getUID() }
                     getProfilePictures()
                     reassignDialogContentState = ContentState.COMPLETED
                 }
@@ -176,5 +185,42 @@ class StaffTicketListViewModel @Inject constructor(
 
             profilePictures = temp
         }
+    }
+
+    fun sortTickets(order: String) {
+        val temp = tickets.tickets
+
+        when (order) {
+            SORTING_CRITERIA[0] -> {
+                temp?.sortBy { it.subject }
+            }
+
+            SORTING_CRITERIA[1] -> {
+                temp?.sortByDescending { it.subject }
+            }
+
+            SORTING_CRITERIA[2] -> {
+                temp?.sortBy { it.createdAt }
+            }
+
+            SORTING_CRITERIA[3] -> {
+                temp?.sortByDescending { it.createdAt }
+            }
+
+            SORTING_CRITERIA[4] -> {
+                temp?.sortByDescending { it.priority?.toPriority() }
+            }
+
+            SORTING_CRITERIA[5] -> {
+                temp?.sortBy { it.priority?.toPriority() }
+            }
+        }
+
+        tickets = tickets.copy(tickets = temp)
+    }
+
+    fun getAndSortTickets(filter: String, sorting: String) {
+        getTickets(filter)
+        sortTickets(sorting)
     }
 }

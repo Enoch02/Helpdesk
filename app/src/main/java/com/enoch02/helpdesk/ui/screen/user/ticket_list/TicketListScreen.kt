@@ -19,7 +19,10 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -29,6 +32,7 @@ import androidx.navigation.NavController
 import com.enoch02.helpdesk.data.local.model.ContentState
 import com.enoch02.helpdesk.navigation.Screen
 import com.enoch02.helpdesk.ui.screen.common.component.SearchBarType
+import com.enoch02.helpdesk.ui.screen.common.component.SortingDialog
 import com.enoch02.helpdesk.ui.screen.common.component.TicketListSearchBar
 import com.enoch02.helpdesk.ui.screen.user.ticket_list.component.TicketListItem
 
@@ -48,8 +52,13 @@ fun TicketListScreen(
     val pullToRefreshState = rememberPullToRefreshState()
     val isRefreshing = viewModel.isRefreshing
 
-    SideEffect {
-        viewModel.getTickets(filter = filter)
+    var showSortingDialog by remember {
+        mutableStateOf(false)
+    }
+    val currentSorting = viewModel.currentSorting
+
+    LaunchedEffect(Unit) {
+        viewModel.getAndSortTickets(filter = filter, sorting = currentSorting)
     }
 
     if (pullToRefreshState.isRefreshing) {
@@ -59,7 +68,7 @@ fun TicketListScreen(
     }
 
     LaunchedEffect(isRefreshing) {
-        if(isRefreshing) {
+        if (isRefreshing) {
             pullToRefreshState.startRefresh()
         } else {
             pullToRefreshState.endRefresh()
@@ -92,8 +101,7 @@ fun TicketListScreen(
                 placeHolder = "Subject",
                 onClearButtonClicked = { viewModel.updateSearchStatus(false) },
                 onNavBackButtonClicked = { navController.popBackStack() },
-                onSortButtonClicked = { /*TODO*/ },
-                onFilterButtonClicked = { /*TODO*/ },
+                onSortButtonClicked = { showSortingDialog = true },
                 list = searchResult,
                 onResultItemClicked = {
                     navController.navigate(
@@ -210,6 +218,20 @@ fun TicketListScreen(
                     }
                 }
             )
+        }
+    )
+
+    SortingDialog(
+        showSortingDialog = showSortingDialog,
+        onDismiss = { showSortingDialog = false },
+        onConfirm = {
+            showSortingDialog = false
+        },
+        currentSorting = currentSorting,
+        onSelectionChange = {
+            showSortingDialog = false
+            viewModel.updateCurrentSorting(it)
+            viewModel.sortTickets(it)
         }
     )
 }

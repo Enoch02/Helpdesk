@@ -39,7 +39,6 @@ fun <T> TicketListSearchBar(
     onClearButtonClicked: () -> Unit,
     onNavBackButtonClicked: () -> Unit,
     onSortButtonClicked: () -> Unit,
-    onFilterButtonClicked: () -> Unit,
     list: SnapshotStateList<T>,
     onResultItemClicked: (index: Int) -> Unit,
     onAssignToSelf: () -> Unit = {},
@@ -90,27 +89,15 @@ fun <T> TicketListSearchBar(
             AnimatedVisibility(
                 visible = !active,
                 content = {
-                    Row {
-                        IconButton(
-                            onClick = { onSortButtonClicked() },
-                            content = {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Default.Sort,
-                                    contentDescription = "Sort Tickets"
-                                )
-                            }
-                        )
-
-                        IconButton(
-                            onClick = { onFilterButtonClicked() },
-                            content = {
-                                Icon(
-                                    imageVector = Icons.Default.FilterList,
-                                    contentDescription = "Filter Tickets"
-                                )
-                            }
-                        )
-                    }
+                    IconButton(
+                        onClick = { onSortButtonClicked() },
+                        content = {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Default.Sort,
+                                contentDescription = "Sort Tickets"
+                            )
+                        }
+                    )
                 }
             )
         },
@@ -132,6 +119,7 @@ fun <T> TicketListSearchBar(
                                         }
                                     )
                                 }
+
                                 SearchBarType.STAFF -> {
                                     //TODO
                                     /*StaffTicketListItem(

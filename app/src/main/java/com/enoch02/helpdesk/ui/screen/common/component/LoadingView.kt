@@ -1,4 +1,4 @@
-package com.enoch02.helpdesk.ui.screen.common
+package com.enoch02.helpdesk.ui.screen.common.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.CircularProgressIndicator

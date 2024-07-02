@@ -7,10 +7,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.enoch02.helpdesk.data.local.model.ContentState
+import com.enoch02.helpdesk.data.local.model.toPriority
 import com.enoch02.helpdesk.data.remote.model.Ticket
 import com.enoch02.helpdesk.data.remote.model.Tickets
 import com.enoch02.helpdesk.data.remote.repository.auth.FirebaseAuthRepository
 import com.enoch02.helpdesk.data.remote.repository.firestore_db.FirestoreRepository
+import com.enoch02.helpdesk.util.SORTING_CRITERIA
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -29,6 +31,8 @@ class TicketListViewModel @Inject constructor(
 
     var isRefreshing by mutableStateOf(false)
 
+    var currentSorting by mutableStateOf(SORTING_CRITERIA[2])
+
     fun onRefresh(filter: String) {
         isRefreshing = true
         getTickets(filter)
@@ -46,7 +50,11 @@ class TicketListViewModel @Inject constructor(
         searchActive = newStatus
     }
 
-    fun getTickets(filter: String) {
+    fun updateCurrentSorting(newSorting: String) {
+        currentSorting = newSorting
+    }
+
+    private fun getTickets(filter: String) {
         viewModelScope.launch {
             firestoreRepository.getTickets(authRepository.getUID())
                 .onSuccess {
@@ -82,5 +90,42 @@ class TicketListViewModel @Inject constructor(
         if (temp != null) {
             searchResult.addAll(temp)
         }
+    }
+
+    fun sortTickets(order: String) {
+        val temp = tickets.tickets
+
+        when (order) {
+            SORTING_CRITERIA[0] -> {
+                temp?.sortBy { it.subject }
+            }
+
+            SORTING_CRITERIA[1] -> {
+                temp?.sortByDescending { it.subject }
+            }
+
+            SORTING_CRITERIA[2] -> {
+                temp?.sortBy { it.createdAt }
+            }
+
+            SORTING_CRITERIA[3] -> {
+                temp?.sortByDescending { it.createdAt }
+            }
+
+            SORTING_CRITERIA[4] -> {
+                temp?.sortByDescending { it.priority?.toPriority() }
+            }
+
+            SORTING_CRITERIA[5] -> {
+                temp?.sortBy { it.priority?.toPriority() }
+            }
+        }
+
+        tickets = tickets.copy(tickets = temp)
+    }
+
+    fun getAndSortTickets(filter: String, sorting: String) {
+        getTickets(filter)
+        sortTickets(sorting)
     }
 }

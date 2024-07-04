@@ -49,7 +49,7 @@ import com.enoch02.helpdesk.ui.screen.staff.user_list.component.UserListItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StaffTicketLisScreen(
+fun StaffTicketListScreen(
     navController: NavController,
     filter: String,
     viewModel: StaffTicketListViewModel = hiltViewModel(),
@@ -74,7 +74,7 @@ fun StaffTicketLisScreen(
     val currentSorting = viewModel.currentSorting
 
     LaunchedEffect(Unit) {
-        viewModel.getAndSortTickets(filter = filter, sorting = currentSorting)
+        viewModel.getTickets(filter)
     }
 
     if (pullToRefreshState.isRefreshing) {
@@ -360,7 +360,7 @@ fun StaffTicketLisScreen(
         onSelectionChange = {
             showSortingDialog = false
             viewModel.updateCurrentSorting(it)
-            viewModel.sortTickets(it)
+            viewModel.getTickets(filter)
         }
     )
 }

@@ -7,12 +7,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.enoch02.helpdesk.data.local.model.ContentState
-import com.enoch02.helpdesk.data.local.model.toPriority
 import com.enoch02.helpdesk.data.remote.model.Ticket
 import com.enoch02.helpdesk.data.remote.model.Tickets
 import com.enoch02.helpdesk.data.remote.repository.auth.FirebaseAuthRepository
 import com.enoch02.helpdesk.data.remote.repository.firestore_db.FirestoreRepository
 import com.enoch02.helpdesk.util.SORTING_CRITERIA
+import com.enoch02.helpdesk.util.sortTickets
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,7 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TicketListViewModel @Inject constructor(
     private val authRepository: FirebaseAuthRepository,
-    private val firestoreRepository: FirestoreRepository
+    private val firestoreRepository: FirestoreRepository,
 ) : ViewModel() {
     var contentState by mutableStateOf(ContentState.LOADING)
     var errorMessage by mutableStateOf("")
@@ -31,11 +31,11 @@ class TicketListViewModel @Inject constructor(
 
     var isRefreshing by mutableStateOf(false)
 
-    var currentSorting by mutableStateOf(SORTING_CRITERIA[2])
+    var currentSorting by mutableStateOf(SORTING_CRITERIA[3])
 
-    fun onRefresh(filter: String) {
+    fun onRefresh(filter: String, sorting: String) {
         isRefreshing = true
-        getTickets(filter)
+        getTickets(filter, sorting)
     }
 
     fun clearQuery() {
@@ -54,17 +54,22 @@ class TicketListViewModel @Inject constructor(
         currentSorting = newSorting
     }
 
-    private fun getTickets(filter: String) {
+    fun getTickets(filter: String, sorting: String) {
+        if (contentState != ContentState.LOADING) { // needed to update the list properly
+            isRefreshing = true
+        }
+
         viewModelScope.launch {
             firestoreRepository.getTickets(authRepository.getUID())
                 .onSuccess {
-                    tickets = if (filter == "all") {
-                        it
-                    } else {
-                        it.copy(
-                            tickets = it.tickets?.filter { ticket ->
-                                ticket.status == filter
-                            }?.toMutableList()
+                    val filtered = it.tickets?.let { it1 -> filterTickets(it1, filter) }
+
+                    if (filtered != null) {
+                        tickets = tickets.copy(
+                            tickets = sortTickets(
+                                filtered,
+                                sorting
+                            ).toMutableList()
                         )
                     }
 
@@ -79,6 +84,15 @@ class TicketListViewModel @Inject constructor(
         }
     }
 
+    private fun filterTickets(tickets: List<Ticket>, filter: String): List<Ticket> {
+
+        return if (filter == "all") {
+            tickets
+        } else {
+            tickets.filter { ticket -> ticket.status == filter }.toMutableList()
+        }
+    }
+
     fun startSearch() {
         if (searchResult.isNotEmpty()) {
             searchResult.clear()
@@ -90,42 +104,5 @@ class TicketListViewModel @Inject constructor(
         if (temp != null) {
             searchResult.addAll(temp)
         }
-    }
-
-    fun sortTickets(order: String) {
-        val temp = tickets.tickets
-
-        when (order) {
-            SORTING_CRITERIA[0] -> {
-                temp?.sortBy { it.subject }
-            }
-
-            SORTING_CRITERIA[1] -> {
-                temp?.sortByDescending { it.subject }
-            }
-
-            SORTING_CRITERIA[2] -> {
-                temp?.sortBy { it.createdAt }
-            }
-
-            SORTING_CRITERIA[3] -> {
-                temp?.sortByDescending { it.createdAt }
-            }
-
-            SORTING_CRITERIA[4] -> {
-                temp?.sortByDescending { it.priority?.toPriority() }
-            }
-
-            SORTING_CRITERIA[5] -> {
-                temp?.sortBy { it.priority?.toPriority() }
-            }
-        }
-
-        tickets = tickets.copy(tickets = temp)
-    }
-
-    fun getAndSortTickets(filter: String, sorting: String) {
-        getTickets(filter)
-        sortTickets(sorting)
     }
 }

@@ -26,7 +26,8 @@ data class Message(
     val imageId: String? = null,
     val sentAt: Date? = null,
     val sentBy: String? = null,
-    val type: MessageType? = null
+    val type: MessageType? = null,
+    val read: Boolean? = false
 )
 
 enum class MessageType {

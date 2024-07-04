@@ -9,12 +9,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -35,7 +33,7 @@ import com.enoch02.helpdesk.ui.screen.common.knowledge_base.KnowledgeBaseScreen
 import com.enoch02.helpdesk.ui.screen.common.settings.SettingsScreen
 import com.enoch02.helpdesk.ui.screen.common.ticket_detail.TicketDetailScreen
 import com.enoch02.helpdesk.ui.screen.staff.home.StaffHomeScreen
-import com.enoch02.helpdesk.ui.screen.staff.ticket_list.StaffTicketLisScreen
+import com.enoch02.helpdesk.ui.screen.staff.ticket_list.StaffTicketListScreen
 import com.enoch02.helpdesk.ui.screen.staff.user_list.UserListScreen
 import com.enoch02.helpdesk.ui.screen.user.create_ticket.CreateTicketScreen
 import com.enoch02.helpdesk.ui.screen.user.feedback.FeedbackScreen
@@ -165,7 +163,7 @@ fun HelpdeskNavHost(
                                     navArgument("filter") { type = NavType.StringType }
                                 ),
                                 content = { entry ->
-                                    StaffTicketLisScreen(
+                                    StaffTicketListScreen(
                                         navController = navController,
                                         filter = entry.arguments?.getString("filter").toString()
                                     )

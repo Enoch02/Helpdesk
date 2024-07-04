@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Message
-import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,7 +32,6 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -74,6 +72,7 @@ fun TicketDetailScreen(
     val status = viewModel.status
     val creationDate = viewModel.creationDate
     val description = viewModel.description
+    val staffID = viewModel.staffID
     val assignedTo = viewModel.assignedTo
     val createdBy = viewModel.createdBy
     val attachments = viewModel.attachments
@@ -280,7 +279,7 @@ fun TicketDetailScreen(
                 content = {
                     FloatingActionButton(
                         onClick = {
-                            if (assignedTo.isBlank() || assignedTo == DEFAULT_DISPLAY_NAME) {
+                            if (staffID.isBlank()) {
                                 Toast.makeText(
                                     context,
                                     "Ticket has not been assigned",
@@ -298,7 +297,7 @@ fun TicketDetailScreen(
                                         viewModel.startNewChat(
                                             uid = uid,
                                             tid = tid,
-                                            staffID = assignedTo
+                                            staffID = staffID
                                         )
                                     }
 
@@ -342,7 +341,6 @@ fun TicketDetailScreen(
         )
     }
 
-    //TODO: find better alternative
     if (viewModel.navigateToChatScreen) {
         viewModel.navigateToChatScreen = false
         navController.navigate(Screen.Chat.withArgs(viewModel.chatID))

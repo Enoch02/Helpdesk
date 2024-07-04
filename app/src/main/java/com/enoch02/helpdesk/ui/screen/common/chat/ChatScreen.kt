@@ -5,10 +5,12 @@ import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,10 +19,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Attachment
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,6 +40,8 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -60,6 +66,8 @@ fun ChatScreen(
 ) {
     val message = viewModel.message
     val selectedImages = viewModel.selectedAttachments
+    val recepientName = viewModel.recepientName
+    val recipientPic = viewModel.recipientProfilePic
 
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
@@ -101,19 +109,53 @@ fun ChatScreen(
 
     SideEffect {
         viewModel.getChat(cid = chatID)
+        viewModel.getRecepientName()
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { /*Text(text = "Chat Name")*/ },
+                title = {
+                    Text(text = recepientName)
+                },
                 navigationIcon = {
-                    IconButton(
-                        onClick = { navController.popBackStack() },
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
                         content = {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                                contentDescription = null
+                            IconButton(
+                                onClick = { navController.popBackStack() },
+                                content = {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                                        contentDescription = null
+                                    )
+                                }
+                            )
+
+                            AnimatedContent(
+                                targetState = recipientPic == null,
+                                content = { state ->
+                                    when (state) {
+                                        true -> {
+                                            Icon(
+                                                imageVector = Icons.Default.AccountCircle,
+                                                contentDescription = null
+                                            )
+                                        }
+
+                                        false -> {
+                                            AsyncImage(
+                                                model = recipientPic,
+                                                contentDescription = null,
+                                                contentScale = ContentScale.Crop,
+                                                modifier = Modifier
+                                                    .size(24.dp)
+                                                    .clip(CircleShape)
+                                            )
+                                        }
+                                    }
+                                },
+                                label = "profile pic anim"
                             )
                         }
                     )

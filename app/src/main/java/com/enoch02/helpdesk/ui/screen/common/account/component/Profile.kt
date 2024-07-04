@@ -3,7 +3,6 @@ package com.enoch02.helpdesk.ui.screen.common.account.component
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -113,7 +112,7 @@ fun Profile(
                 )
             }
 
-            item {
+            /*item {
                 Card(
                     modifier = Modifier
                         .padding(8.dp)
@@ -147,7 +146,7 @@ fun Profile(
 
                     }
                 )
-            }
+            }*/
         }
     )
 }

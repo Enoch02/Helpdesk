@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -56,7 +57,6 @@ import com.enoch02.helpdesk.ui.screen.common.chat.component.ChatBubble
 import com.enoch02.helpdesk.ui.screen.common.chat.component.ImageBubble
 import kotlinx.coroutines.launch
 
-//TODO: selected image previews??
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ChatScreen(
@@ -205,7 +205,8 @@ fun ChatScreen(
                         )
                     }
                 },
-                modifier = Modifier.padding(paddingValues)
+                modifier = Modifier
+                    .padding(paddingValues)
             )
         },
         bottomBar = {
@@ -321,6 +322,7 @@ fun ChatScreen(
                     }
                 )
             }
-        }
+        },
+        modifier = Modifier.imePadding()
     )
 }

@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.enoch02.helpdesk.data.local.repository.MessageUpdatesRepository
+import com.enoch02.helpdesk.data.remote.model.Chat
 import com.enoch02.helpdesk.data.remote.model.UserData
 import com.enoch02.helpdesk.data.remote.repository.auth.FirebaseAuthRepository
 import com.enoch02.helpdesk.data.remote.repository.cloud_storage.CloudStorageRepository
@@ -26,6 +27,7 @@ class StudentHomeViewModel @Inject constructor(
     ViewModel() {
     var profilePicture by mutableStateOf<Uri?>(null)
     var userData by mutableStateOf(UserData(displayName = null))
+    var chats by mutableStateOf(emptyList<Chat>())
 
     init {
         messageUpdatesRepository.checkForUpdates()
@@ -52,4 +54,18 @@ class StudentHomeViewModel @Inject constructor(
     }
 
     fun signOut() = firebaseAuthRepository.signOut()
+
+    fun getChats() {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (userData.userID != null) {
+                firestoreRepository.getChats(userData.userID!!)
+                    .onSuccess {
+                        chats = it
+                    }
+                    .onFailure {
+                        chats = emptyList()
+                    }
+            }
+        }
+    }
 }

@@ -44,6 +44,7 @@ import coil.compose.AsyncImage
 import com.enoch02.helpdesk.navigation.Screen
 import com.enoch02.helpdesk.ui.screen.user.home.component.ActionCard
 import com.enoch02.helpdesk.ui.screen.common.component.Header
+import com.enoch02.helpdesk.ui.screen.common.component.OpenChatsBottomSheet
 import com.enoch02.helpdesk.util.DEFAULT_DISPLAY_NAME
 import com.enoch02.helpdesk.util.restartActivity
 
@@ -56,10 +57,16 @@ fun StudentHomeScreen(
     val context = LocalContext.current
     val profilePicture = viewModel.profilePicture
     val userData = viewModel.userData
+    val chats = viewModel.chats
+
+    var showBottomSheet by remember {
+        mutableStateOf(false)
+    }
 
     SideEffect {
         viewModel.getProfilePicture()
         viewModel.getUserData()
+        viewModel.getChats()
     }
 
     Scaffold(
@@ -186,7 +193,7 @@ fun StudentHomeScreen(
                                     icon = Icons.AutoMirrored.Filled.Message,
                                     label = "View Chats",
                                     onClick = {
-
+                                        showBottomSheet = true
                                     }
                                 )
                             }
@@ -197,6 +204,12 @@ fun StudentHomeScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
                     .padding(8.dp)
+            )
+
+            OpenChatsBottomSheet(
+                showBottomSheet = showBottomSheet,
+                onDismiss = { showBottomSheet = false },
+                chats = chats
             )
         }
     )

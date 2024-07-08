@@ -352,4 +352,18 @@ class FirestoreRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
+    /**
+     * Get the list of [Chat] associated with a [uid]
+     * */
+    override suspend fun getChats(uid: String): Result<List<Chat>> {
+        return try {
+            val chats = db.collection(CHATS_COLLECTION_NAME).get().await().toObjects(Chat::class.java)
+
+            Result.success(chats.filter { it.startedBy == uid })
+        } catch (e: Exception) {
+            Log.e(TAG, "getChats: ${e.message}")
+            Result.failure(e)
+        }
+    }
 }

@@ -41,6 +41,7 @@ class TicketDetailViewModel @Inject constructor(
     var status by mutableStateOf("")
     var creationDate by mutableStateOf("")
     var description by mutableStateOf("")
+    var staffID by mutableStateOf("")
     var assignedTo by mutableStateOf("")
     var createdBy by mutableStateOf("")
     var chatID by mutableStateOf("")
@@ -62,7 +63,7 @@ class TicketDetailViewModel @Inject constructor(
                     status = it.status.toString()
                     creationDate = it.createdAt.toString()
                     description = it.description.toString()
-                    /*assignedTo = it.staffID.toString()*/
+                    staffID = it.staffID ?: ""
 
                     firestoreRepository.getUserName(it.staffID.toString())
                         .onSuccess { name ->

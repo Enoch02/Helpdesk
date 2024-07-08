@@ -44,6 +44,7 @@ import coil.compose.AsyncImage
 import com.enoch02.helpdesk.navigation.Screen
 import com.enoch02.helpdesk.ui.screen.user.home.component.ActionCard
 import com.enoch02.helpdesk.ui.screen.common.component.Header
+import com.enoch02.helpdesk.util.DEFAULT_DISPLAY_NAME
 import com.enoch02.helpdesk.util.restartActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -131,7 +132,7 @@ fun StudentHomeScreen(
             Column(
                 content = {
                     Header(
-                        userName = userData.displayName ?: "User",
+                        userName = userData.displayName ?: DEFAULT_DISPLAY_NAME,
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -183,7 +184,7 @@ fun StudentHomeScreen(
                             item {
                                 ActionCard(
                                     icon = Icons.AutoMirrored.Filled.Message,
-                                    label = "View Messages",
+                                    label = "View Chats",
                                     onClick = {
 
                                     }

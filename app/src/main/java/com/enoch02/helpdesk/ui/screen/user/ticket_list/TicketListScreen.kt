@@ -58,12 +58,12 @@ fun TicketListScreen(
     val currentSorting = viewModel.currentSorting
 
     LaunchedEffect(Unit) {
-        viewModel.getAndSortTickets(filter = filter, sorting = currentSorting)
+        viewModel.getTickets(filter, currentSorting)
     }
 
     if (pullToRefreshState.isRefreshing) {
         LaunchedEffect(true) {
-            viewModel.onRefresh(filter)
+            viewModel.onRefresh(filter, currentSorting)
         }
     }
 
@@ -231,7 +231,7 @@ fun TicketListScreen(
         onSelectionChange = {
             showSortingDialog = false
             viewModel.updateCurrentSorting(it)
-            viewModel.sortTickets(it)
+            viewModel.getTickets(filter, currentSorting)
         }
     )
 }

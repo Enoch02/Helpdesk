@@ -72,6 +72,7 @@ fun TicketDetailScreen(
     val status = viewModel.status
     val creationDate = viewModel.creationDate
     val description = viewModel.description
+    val staffID = viewModel.staffID
     val assignedTo = viewModel.assignedTo
     val createdBy = viewModel.createdBy
     val attachments = viewModel.attachments
@@ -278,7 +279,7 @@ fun TicketDetailScreen(
                 content = {
                     FloatingActionButton(
                         onClick = {
-                            if (assignedTo.isBlank() || assignedTo == DEFAULT_DISPLAY_NAME) {
+                            if (staffID.isBlank()) {
                                 Toast.makeText(
                                     context,
                                     "Ticket has not been assigned",
@@ -296,7 +297,7 @@ fun TicketDetailScreen(
                                         viewModel.startNewChat(
                                             uid = uid,
                                             tid = tid,
-                                            staffID = assignedTo
+                                            staffID = staffID
                                         )
                                     }
 
@@ -341,7 +342,6 @@ fun TicketDetailScreen(
             }
         )
     }
-
 
     if (viewModel.navigateToChatScreen) {
         viewModel.navigateToChatScreen = false

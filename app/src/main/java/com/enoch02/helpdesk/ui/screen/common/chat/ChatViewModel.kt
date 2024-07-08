@@ -41,7 +41,9 @@ class ChatViewModel @Inject constructor(
     val selectedAttachments = mutableStateListOf<Uri>()
 
     var chat by mutableStateOf<Chat?>(null)
-    var chatPictures by mutableStateOf(emptyList<Uri?>())
+    var recepientName by mutableStateOf("")
+    var recipientProfilePic: Uri? by mutableStateOf(null)
+    private var chatPictures by mutableStateOf(emptyList<Uri?>())
 
     private var chatUpdateJob: Job? = null
 
@@ -188,6 +190,38 @@ class ChatViewModel @Inject constructor(
 
     fun removeAttachment(index: Int) {
         selectedAttachments.removeAt(index)
+    }
+
+    fun getRecepientName() {
+        if (recepientName.isEmpty()) { // should only get it once for the chat
+            viewModelScope.launch(Dispatchers.IO) {
+                if (chat?.members?.userID == getUID()) {
+                    chat?.members?.staffID?.let {
+                        firestoreRepository.getUserName(it)
+                            .onSuccess { name ->
+                                recepientName = name
+                            }
+
+                        cloudStorageRepository.getProfilePicture(it)
+                            .onSuccess { pic ->
+                                recipientProfilePic = pic
+                            }
+                    }
+                } else {
+                    chat?.members?.userID?.let {
+                        firestoreRepository.getUserName(it)
+                            .onSuccess { name ->
+                                recepientName = name
+                            }
+
+                        cloudStorageRepository.getProfilePicture(it)
+                            .onSuccess { pic ->
+                                recipientProfilePic = pic
+                            }
+                    }
+                }
+            }
+        }
     }
 
     override fun onPause(owner: LifecycleOwner) {

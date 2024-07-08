@@ -77,7 +77,7 @@ fun TicketDetailScreen(
     val createdBy = viewModel.createdBy
     val attachments = viewModel.attachments
 
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showBottomSheet by remember {
         mutableStateOf(false)
     }
@@ -335,7 +335,9 @@ fun TicketDetailScreen(
                     model = bottomSheetContent,
                     contentDescription = null,
                     contentScale = ContentScale.FillBounds,
-                    modifier = Modifier.padding(horizontal = 8.dp)
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .align(Alignment.CenterHorizontally)
                 )
             }
         )

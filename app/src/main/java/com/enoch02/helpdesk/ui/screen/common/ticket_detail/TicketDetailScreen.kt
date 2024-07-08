@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Message
-import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,7 +32,6 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -78,7 +76,7 @@ fun TicketDetailScreen(
     val createdBy = viewModel.createdBy
     val attachments = viewModel.attachments
 
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var showBottomSheet by remember {
         mutableStateOf(false)
     }
@@ -336,13 +334,15 @@ fun TicketDetailScreen(
                     model = bottomSheetContent,
                     contentDescription = null,
                     contentScale = ContentScale.FillBounds,
-                    modifier = Modifier.padding(horizontal = 8.dp)
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .align(Alignment.CenterHorizontally)
                 )
             }
         )
     }
 
-    //TODO: find better alternative
+
     if (viewModel.navigateToChatScreen) {
         viewModel.navigateToChatScreen = false
         navController.navigate(Screen.Chat.withArgs(viewModel.chatID))

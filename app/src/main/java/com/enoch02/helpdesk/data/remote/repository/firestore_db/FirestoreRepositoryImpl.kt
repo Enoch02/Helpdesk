@@ -144,7 +144,6 @@ class FirestoreRepositoryImpl @Inject constructor(
         }
     }
 
-    //TODO: get around to combining these 2 functions
     override suspend fun closeTicket(uid: String, tid: String): Result<Unit> {
         return try {
             val documentRef = db.collection(TICKETS_COLLECTION_NAME).document(uid)

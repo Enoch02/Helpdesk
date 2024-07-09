@@ -11,9 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.enoch02.helpdesk.util.DEFAULT_DISPLAY_NAME
 
 @Composable
-fun Header(userName: String, modifier: Modifier) {
+fun Header(userName: String, role: String = DEFAULT_DISPLAY_NAME, modifier: Modifier) {
     val showMessage = when (userName) {
         "User" -> false
         else -> true
@@ -32,7 +33,8 @@ fun Header(userName: String, modifier: Modifier) {
                 }
             )
 
-            Text(text = "What would you like to do?", modifier = Modifier.padding(start = 4.dp))
+            if (role == DEFAULT_DISPLAY_NAME)
+                Text(text = "What would you like to do?", modifier = Modifier.padding(start = 4.dp))
         }
     )
 }

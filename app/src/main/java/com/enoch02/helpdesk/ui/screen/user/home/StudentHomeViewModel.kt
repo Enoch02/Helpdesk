@@ -28,6 +28,7 @@ class StudentHomeViewModel @Inject constructor(
     var profilePicture by mutableStateOf<Uri?>(null)
     var userData by mutableStateOf(UserData(displayName = null))
     var chats by mutableStateOf(emptyList<Chat>())
+    var allChatsData by mutableStateOf(emptyList<ChatsData>())
 
     init {
         messageUpdatesRepository.checkForUpdates()
@@ -68,4 +69,54 @@ class StudentHomeViewModel @Inject constructor(
             }
         }
     }
+
+    fun getChatData() {
+        viewModelScope.launch {
+            val temp = mutableListOf<ChatsData>()
+
+            chats.forEach { chat ->
+                var name: String? = null
+                var ticketSubject: String? = null
+                var profilePic = Uri.EMPTY
+                val mostRecentMessage: String? = chat.messages?.last()?.messageText
+                var timeSent = chat.messages?.last()?.sentAt
+
+                firestoreRepository.getUserName(chat.members?.staffID.toString())
+                    .onSuccess {
+                        name = it
+                    }
+
+                firestoreRepository.getTicket(
+                    firebaseAuthRepository.getUID(),
+                    chat.ticketID.toString()
+                )
+                    .onSuccess {
+                        ticketSubject = it.subject
+                    }
+
+                cloudStorageRepository.getProfilePicture(chat.members?.staffID.toString())
+                    .onSuccess {
+                        profilePic = it
+                    }
+
+                temp.add(
+                    ChatsData(
+                        profilePic = profilePic,
+                        name = name,
+                        ticketSubject = ticketSubject,
+                        mostRecentMessage = mostRecentMessage
+                    )
+                )
+            }
+
+            allChatsData = temp
+        }
+    }
+
+    data class ChatsData(
+        val profilePic: Uri?,
+        val name: String?,
+        val ticketSubject: String?,
+        val mostRecentMessage: String?
+    )
 }

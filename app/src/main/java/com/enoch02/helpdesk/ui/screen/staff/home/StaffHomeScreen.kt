@@ -39,6 +39,7 @@ import com.enoch02.helpdesk.data.local.model.Filter
 import com.enoch02.helpdesk.ui.screen.common.component.Header
 import com.enoch02.helpdesk.ui.screen.staff.home.component.StatsCard
 import com.enoch02.helpdesk.ui.screen.user.home.component.ActionCard
+import com.enoch02.helpdesk.util.STAFF_ROLE
 import com.enoch02.helpdesk.util.restartActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -126,6 +127,7 @@ fun StaffHomeScreen(navController: NavController, viewModel: StaffHomeViewModel 
                 content = {
                     Header(
                         userName = userData.displayName ?: "User",
+                        role = STAFF_ROLE,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp)

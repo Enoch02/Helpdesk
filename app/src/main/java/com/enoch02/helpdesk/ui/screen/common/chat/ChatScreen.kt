@@ -82,7 +82,6 @@ fun ChatScreen(
             if (permissionStatusMap.values.all { true }) {
                 getContent.launch("image/*")
             } else {
-                //TODO: replace with snack bar.
                 Toast.makeText(
                     context,
                     "This permission is needed to select attachments",

@@ -58,6 +58,8 @@ fun StudentHomeScreen(
     val profilePicture = viewModel.profilePicture
     val userData = viewModel.userData
     val chats = viewModel.chats
+    val chatsData = viewModel.allChatsData
+
 
     var showBottomSheet by remember {
         mutableStateOf(false)
@@ -67,6 +69,7 @@ fun StudentHomeScreen(
         viewModel.getProfilePicture()
         viewModel.getUserData()
         viewModel.getChats()
+        viewModel.getChatData()
     }
 
     Scaffold(
@@ -209,7 +212,13 @@ fun StudentHomeScreen(
             OpenChatsBottomSheet(
                 showBottomSheet = showBottomSheet,
                 onDismiss = { showBottomSheet = false },
-                chats = chats
+                chats = chats,
+                chatsData = chatsData,
+                onChatItemClicked = { chatID ->
+                    navController.navigate(
+                        Screen.Chat.withArgs(chatID)
+                    )
+                }
             )
         }
     )

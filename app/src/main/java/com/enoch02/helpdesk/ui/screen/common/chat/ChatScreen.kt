@@ -56,7 +56,6 @@ import com.enoch02.helpdesk.ui.screen.common.chat.component.ChatBubble
 import com.enoch02.helpdesk.ui.screen.common.chat.component.ImageBubble
 import kotlinx.coroutines.launch
 
-//TODO: selected image previews??
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ChatScreen(
@@ -66,7 +65,7 @@ fun ChatScreen(
 ) {
     val message = viewModel.message
     val selectedImages = viewModel.selectedAttachments
-    val recepientName = viewModel.recepientName
+    val recipientName = viewModel.recepientName
     val recipientPic = viewModel.recipientProfilePic
 
     val scope = rememberCoroutineScope()
@@ -115,7 +114,7 @@ fun ChatScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = recepientName)
+                    Text(text = recipientName)
                 },
                 navigationIcon = {
                     Row(

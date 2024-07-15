@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.ConfirmationNumber
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,10 +43,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.enoch02.helpdesk.navigation.Screen
-import com.enoch02.helpdesk.ui.screen.user.home.component.ActionCard
 import com.enoch02.helpdesk.ui.screen.common.component.Header
 import com.enoch02.helpdesk.ui.screen.common.component.OpenChatsBottomSheet
+import com.enoch02.helpdesk.ui.screen.user.home.component.ActionCard
 import com.enoch02.helpdesk.util.DEFAULT_DISPLAY_NAME
+import com.enoch02.helpdesk.util.openUrlInBrowser
 import com.enoch02.helpdesk.util.restartActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -197,6 +199,19 @@ fun StudentHomeScreen(
                                     label = "View Chats",
                                     onClick = {
                                         showBottomSheet = true
+                                    }
+                                )
+                            }
+
+                            item {
+                                ActionCard(
+                                    icon = Icons.Default.Payments,
+                                    label = "Generate Invoice",
+                                    onClick = {
+                                        openUrlInBrowser(
+                                            context = context,
+                                            url = "https://payments.oouagoiwoye.edu.ng/new-transaction.php"
+                                        )
                                     }
                                 )
                             }

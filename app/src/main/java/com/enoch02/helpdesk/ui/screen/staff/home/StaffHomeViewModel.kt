@@ -29,11 +29,20 @@ class StaffHomeViewModel @Inject constructor(
     var userData by mutableStateOf(UserData())
     var ticketStats by mutableStateOf(TicketStats())
 
+    var isRefreshing by mutableStateOf(false)
+
     init {
         getProfilePicture()
         getUserData()
         getStats()
         messageUpdatesRepository.checkForUpdates()
+    }
+
+    fun onRefresh() {
+        isRefreshing = true
+        getProfilePicture()
+        getUserData()
+        getStats()
     }
 
     fun getUserData() {
@@ -43,11 +52,13 @@ class StaffHomeViewModel @Inject constructor(
                     if (it != null) {
                         withContext(Dispatchers.Main) {
                             userData = it
+                            isRefreshing = false
                         }
                     }
                 }
                 .onFailure {
                     userData = UserData()
+                    isRefreshing = false
                 }
         }
     }
@@ -57,15 +68,23 @@ class StaffHomeViewModel @Inject constructor(
             cloudStorageRepository.getProfilePicture(firebaseAuthRepository.getUID())
                 .onSuccess {
                     profilePicture = it
+                    isRefreshing = false
+                }
+                .onFailure {
+                    isRefreshing = false
                 }
         }
     }
 
-    fun getStats() {
+    private fun getStats() {
         viewModelScope.launch {
             firestoreRepository.getTicketStats()
                 .onSuccess {
                     ticketStats = it
+                    isRefreshing = false
+                }
+                .onFailure {
+                    isRefreshing = false
                 }
         }
     }

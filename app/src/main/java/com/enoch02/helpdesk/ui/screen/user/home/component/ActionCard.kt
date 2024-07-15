@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ConfirmationNumber
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,9 +19,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ActionCard(icon: ImageVector, label: String, onClick: () -> Unit = {}) {
+fun ActionCard(
+    icon: ImageVector,
+    label: String,
+    onClick: () -> Unit = {},
+) {
     Card(
         onClick = { onClick() },
         content = {
@@ -40,7 +42,7 @@ fun ActionCard(icon: ImageVector, label: String, onClick: () -> Unit = {}) {
             )
         },
         modifier = Modifier
-            .size(120.dp)
+            .size(160.dp)
             .padding(8.dp)
     )
 }

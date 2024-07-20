@@ -9,6 +9,7 @@ import com.enoch02.helpdesk.data.remote.model.Tickets
 import com.enoch02.helpdesk.data.remote.model.UserData
 import com.enoch02.helpdesk.data.remote.repository.auth.FirebaseAuthRepository
 import com.enoch02.helpdesk.util.DEFAULT_DISPLAY_NAME
+import com.enoch02.helpdesk.util.getCurrentDateTime
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -20,7 +21,7 @@ private const val TAG = "FirestoreRepo"
 
 class FirestoreRepositoryImpl @Inject constructor(
     private val db: FirebaseFirestore,
-    private val authRepository: FirebaseAuthRepository
+    private val authRepository: FirebaseAuthRepository,
 ) :
     FirestoreRepository {
     override suspend fun createNewUserData(uid: String, userData: UserData): Result<Unit> {
@@ -155,7 +156,10 @@ class FirestoreRepositoryImpl @Inject constructor(
                 if (ticketIndex != null) {
                     val ticket = tickets[ticketIndex]
 
-                    tickets[ticketIndex] = ticket.copy(status = "Closed")
+                    tickets[ticketIndex] = ticket.copy(
+                        status = "Closed",
+                        closedAt = getCurrentDateTime()
+                    )
                 }
 
                 documentRef
@@ -357,7 +361,8 @@ class FirestoreRepositoryImpl @Inject constructor(
      * */
     override suspend fun getChats(uid: String): Result<List<Chat>> {
         return try {
-            val chats = db.collection(CHATS_COLLECTION_NAME).get().await().toObjects(Chat::class.java)
+            val chats =
+                db.collection(CHATS_COLLECTION_NAME).get().await().toObjects(Chat::class.java)
 
             Result.success(chats.filter { it.startedBy == uid })
         } catch (e: Exception) {

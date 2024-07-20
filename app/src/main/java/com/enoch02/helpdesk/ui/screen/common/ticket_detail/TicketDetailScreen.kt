@@ -12,7 +12,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Message
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
@@ -113,15 +112,16 @@ fun TicketDetailScreen(
                     )
                 },
                 actions = {
-                    IconButton(
-                        onClick = { /*TODO*/ },
+                    // TODO: should ticket editing be allowed?
+                    /*IconButton(
+                        onClick = { *//*TODO*//* },
                         content = {
                             Icon(
                                 imageVector = Icons.Default.Edit,
                                 contentDescription = null
                             )
                         }
-                    )
+                    )*/
                 }
             )
         },

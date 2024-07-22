@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Message
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
@@ -22,6 +23,7 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -346,5 +348,36 @@ fun TicketDetailScreen(
     if (viewModel.navigateToChatScreen) {
         viewModel.navigateToChatScreen = false
         navController.navigate(Screen.Chat.withArgs(viewModel.chatID))
+    }
+
+    if (viewModel.showFeedbackDialog && contentState != ContentState.LOADING) {
+        AlertDialog(
+            onDismissRequest = { viewModel.showFeedbackDialog = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.showFeedbackDialog = false
+                        navController.navigate(Screen.Feedback.withArgs(viewModel.ticketOwnerId, viewModel.ticketID))
+                    },
+                    content = {
+                        Text(text = "Yes")
+                    }
+                )
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { viewModel.showFeedbackDialog = false },
+                    content = {
+                        Text(text = "No")
+                    }
+                )
+            },
+            title = {
+                Text(text = "Info")
+            },
+            text = {
+                Text(text = "Would you like to give feedback?")
+            }
+        )
     }
 }

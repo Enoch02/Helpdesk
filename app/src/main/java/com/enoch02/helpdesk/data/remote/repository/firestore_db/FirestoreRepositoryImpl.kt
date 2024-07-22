@@ -3,6 +3,7 @@ package com.enoch02.helpdesk.data.remote.repository.firestore_db
 import android.util.Log
 import com.enoch02.helpdesk.data.local.model.TicketStats
 import com.enoch02.helpdesk.data.remote.model.Chat
+import com.enoch02.helpdesk.data.remote.model.Feedback
 import com.enoch02.helpdesk.data.remote.model.Message
 import com.enoch02.helpdesk.data.remote.model.Ticket
 import com.enoch02.helpdesk.data.remote.model.Tickets
@@ -17,6 +18,7 @@ import javax.inject.Inject
 private const val USER_COLLECTION_NAME = "users/"
 private const val TICKETS_COLLECTION_NAME = "tickets/"
 const val CHATS_COLLECTION_NAME = "chats/"
+const val FEEDBACK_COLLECTION_NAME = "feedbacks/"
 private const val TAG = "FirestoreRepo"
 
 class FirestoreRepositoryImpl @Inject constructor(
@@ -367,6 +369,22 @@ class FirestoreRepositoryImpl @Inject constructor(
             Result.success(chats.filter { it.startedBy == uid })
         } catch (e: Exception) {
             Log.e(TAG, "getChats: ${e.message}")
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * Send a feedback that is not associated with any user to the database
+     */
+    override suspend fun sendFeedback(feedback: Feedback): Result<Unit> {
+        return try {
+            db.collection(FEEDBACK_COLLECTION_NAME)
+                .add(feedback)
+                .await()
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e(TAG, "sendFeedback: ${e.message}")
             Result.failure(e)
         }
     }

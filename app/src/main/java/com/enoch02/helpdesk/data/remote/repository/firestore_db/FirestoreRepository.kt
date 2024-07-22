@@ -2,6 +2,7 @@ package com.enoch02.helpdesk.data.remote.repository.firestore_db
 
 import com.enoch02.helpdesk.data.local.model.TicketStats
 import com.enoch02.helpdesk.data.remote.model.Chat
+import com.enoch02.helpdesk.data.remote.model.Feedback
 import com.enoch02.helpdesk.data.remote.model.Message
 import com.enoch02.helpdesk.data.remote.model.Ticket
 import com.enoch02.helpdesk.data.remote.model.Tickets
@@ -41,4 +42,6 @@ interface FirestoreRepository {
     suspend fun getUserName(uid: String): Result<String>
 
     suspend fun getChats(uid: String): Result<List<Chat>>
+
+    suspend fun sendFeedback(feedback: Feedback): Result<Unit>
 }

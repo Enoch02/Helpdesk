@@ -15,7 +15,8 @@ data class Ticket(
     val createdAt: Date? = null,
     val updatedAt: Date? = null,
     val closedAt: Date? = null,
-    val chatID: String? = null
+    val chatID: String? = null,
+    val feedBackGiven: Boolean? = null
     //TODO
     //val history: List<String> = emptyList()
 )

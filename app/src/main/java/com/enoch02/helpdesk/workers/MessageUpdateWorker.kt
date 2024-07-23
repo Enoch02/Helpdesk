@@ -18,7 +18,6 @@ import com.enoch02.helpdesk.data.remote.repository.firestore_db.CHATS_COLLECTION
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
-import java.util.Date
 
 class MessageUpdateWorker(
     private val context: Context,
@@ -39,24 +38,18 @@ class MessageUpdateWorker(
             } else {
                 documentSnapshot.forEach { document ->
                     val chatObj = document.toObject(Chat::class.java)
+                    val messages = chatObj.messages
 
-                    // TODO: fix
-                    if (chatObj.members?.userID.toString() == auth.currentUser?.uid.toString()) {
-                        val messages = chatObj.messages
+                    if (messages?.isNotEmpty() == true) {
+                        val mostRecentMsg = messages.last()
 
-                        if (messages?.isNotEmpty() == true) {
-                            val mostRecentMsg = messages.last()
-
-                            // check if most recent message is not from this user
-                            if (mostRecentMsg.sentBy != auth.currentUser?.uid.toString()) {
-                                val messageDate = mostRecentMsg.sentAt
-
-                                messageDate?.let {
-                                    if (isWithin30MinutesBefore(it)) {
-                                        sendNotification(context)
-                                        return@forEach
-                                    }
-                                }
+                        if (mostRecentMsg.sentBy != auth.currentUser?.uid.toString()) {
+                            if (mostRecentMsg.read == false) {
+                                sendNotification(
+                                    context,
+                                    title = mostRecentMsg.sentBy.toString(),
+                                    message = mostRecentMsg.messageText.toString()
+                                )
                             }
                         }
                     }
@@ -98,7 +91,8 @@ class MessageUpdateWorker(
 
     private fun sendNotification(
         context: Context,
-        message: String = "You might have new messages..",
+        title: String = "New Message",
+        message: String = "You might have new messages",
     ) {
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -121,7 +115,7 @@ class MessageUpdateWorker(
         }
 
         val notification = NotificationCompat.Builder(context, "message_updates")
-            .setContentTitle("New Message")
+            .setContentTitle(title)
             .setContentText(message)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentIntent(pendingIntent)
@@ -133,19 +127,5 @@ class MessageUpdateWorker(
 
     companion object {
         private const val NOTIFICATION_ID = 1001
-
-        fun isWithin30MinutesBefore(date1: Date, date2: Date = Date()): Boolean {
-            // Get the time in milliseconds for both dates
-            val time1 = date1.time
-            val time2 = date2.time
-
-            val timeDifference = time2 - time1
-
-            // Convert 30 minutes to milliseconds
-            val thirtyMinutesInMillis = 30 * 60 * 1000
-
-            // Check if date1 is within 30 minutes before date2
-            return timeDifference in 0..thirtyMinutesInMillis
-        }
     }
 }

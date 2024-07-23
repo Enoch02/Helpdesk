@@ -44,4 +44,6 @@ interface FirestoreRepository {
     suspend fun getChats(uid: String): Result<List<Chat>>
 
     suspend fun sendFeedback(feedback: Feedback): Result<Unit>
+
+    suspend fun changeMessageReadStatus(uid: String, cid: String): Result<Unit>
 }

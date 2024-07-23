@@ -41,11 +41,12 @@ class ChatViewModel @Inject constructor(
     val selectedAttachments = mutableStateListOf<Uri>()
 
     var chat by mutableStateOf<Chat?>(null)
-    var recepientName by mutableStateOf("")
+    var recipientName by mutableStateOf("")
     var recipientProfilePic: Uri? by mutableStateOf(null)
     private var chatPictures by mutableStateOf(emptyList<Uri?>())
 
     private var chatUpdateJob: Job? = null
+    private var readStatusUpdateJob: Job? = null
 
     fun updateMessage(newMessage: String) {
         message = newMessage
@@ -97,21 +98,34 @@ class ChatViewModel @Inject constructor(
     }
 
     fun updateChat(cid: String) {
-        chatUpdateJob = viewModelScope.launch {
+        chatUpdateJob = viewModelScope.launch(Dispatchers.IO) {
             while (isActive) {
                 getChat(cid = cid)
 
                 delay(1000)
             }
         }
+
+        updateReadStatus(cid)
     }
 
-    private fun stopChatUpdate() {
+    private fun updateReadStatus(cid: String) {
+        readStatusUpdateJob = viewModelScope.launch(Dispatchers.IO) {
+            firestoreRepository.changeMessageReadStatus(
+                uid = authRepository.getUID(),
+                cid = cid
+            )
+        }
+    }
+
+    private fun stopUpdate() {
         chatUpdateJob?.cancel()
+        readStatusUpdateJob?.cancel()
     }
 
-    private fun resumeChatUpdate() {
+    private fun resumeUpdate() {
         chatUpdateJob?.start()
+        readStatusUpdateJob?.start()
     }
 
     fun sendMessage(context: Context, cid: String): Result<Unit> {
@@ -134,7 +148,7 @@ class ChatViewModel @Inject constructor(
                     val temp =
                         // only the 1st attachment gets the text if attachments > 1
                         Message(
-                            messageText = if (index == 0 && message.isNotBlank()) message else null,
+                            messageText = if (index == 0 && message.isNotBlank()) message else "",
                             imageId = id,
                             sentAt = sentAt,
                             sentBy = authRepository.getUID(),
@@ -192,14 +206,14 @@ class ChatViewModel @Inject constructor(
         selectedAttachments.removeAt(index)
     }
 
-    fun getRecepientName() {
-        if (recepientName.isEmpty()) { // should only get it once for the chat
+    fun getRecipientName() {
+        if (recipientName.isEmpty()) { // should only get it once for the chat
             viewModelScope.launch(Dispatchers.IO) {
                 if (chat?.members?.userID == getUID()) {
                     chat?.members?.staffID?.let {
                         firestoreRepository.getUserName(it)
                             .onSuccess { name ->
-                                recepientName = name
+                                recipientName = name
                             }
 
                         cloudStorageRepository.getProfilePicture(it)
@@ -211,7 +225,7 @@ class ChatViewModel @Inject constructor(
                     chat?.members?.userID?.let {
                         firestoreRepository.getUserName(it)
                             .onSuccess { name ->
-                                recepientName = name
+                                recipientName = name
                             }
 
                         cloudStorageRepository.getProfilePicture(it)
@@ -226,11 +240,11 @@ class ChatViewModel @Inject constructor(
 
     override fun onPause(owner: LifecycleOwner) {
         super.onPause(owner)
-        stopChatUpdate()
+        stopUpdate()
     }
 
     override fun onResume(owner: LifecycleOwner) {
         super.onResume(owner)
-        resumeChatUpdate()
+        resumeUpdate()
     }
 }

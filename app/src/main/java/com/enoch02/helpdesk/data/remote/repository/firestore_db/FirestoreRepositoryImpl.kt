@@ -388,4 +388,36 @@ class FirestoreRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
+    /**
+     * Mark the latest message in the chat as seen
+     * */
+    override suspend fun changeMessageReadStatus(uid: String, cid: String): Result<Unit> {
+        return try {
+            val documentRef = db.collection(CHATS_COLLECTION_NAME).document(cid)
+            val chatObj = documentRef.get().await().toObject(Chat::class.java)
+
+            if (chatObj != null) {
+                val messages = chatObj.messages?.toMutableList()
+                var latestMessage = messages?.last()
+
+                if (latestMessage?.sentBy != uid) {
+                    latestMessage = latestMessage?.copy(read = true)
+
+                    if (latestMessage != null) {
+                        messages?.set(messages.lastIndex, latestMessage)
+
+                        documentRef
+                            .set(chatObj.copy(messages = messages))
+                            .await()
+                    }
+                }
+            }
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e(TAG, "changeMessageReadStatus: ${e.message}")
+            Result.failure(e)
+        }
+    }
 }

@@ -66,7 +66,7 @@ fun ChatScreen(
 ) {
     val message = viewModel.message
     val selectedImages = viewModel.selectedAttachments
-    val recipientName = viewModel.recepientName
+    val recipientName = viewModel.recipientName
     val recipientPic = viewModel.recipientProfilePic
 
     val scope = rememberCoroutineScope()
@@ -108,7 +108,7 @@ fun ChatScreen(
 
     SideEffect {
         viewModel.getChat(cid = chatID)
-        viewModel.getRecepientName()
+        viewModel.getRecipientName()
     }
 
     Scaffold(

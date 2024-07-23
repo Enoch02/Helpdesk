@@ -17,16 +17,29 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottomAxis
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStartAxis
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
+import com.patrykandpatrick.vico.compose.cartesian.rememberVicoZoomState
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 
 @Composable
 fun Profile(
@@ -112,14 +125,45 @@ fun Profile(
                 )
             }
 
-            /*item {
+            item {
                 Card(
                     modifier = Modifier
                         .padding(8.dp)
                         .fillMaxWidth()
-                        .height(200.dp),  //TODO: remove
+                        .height(200.dp),
                     content = {
+                        val scrollState = rememberVicoScrollState()
+                        val zoomState = rememberVicoZoomState()
+                        val modelProducer = remember { CartesianChartModelProducer() }
 
+                        LaunchedEffect(Unit) {
+                            modelProducer.runTransaction {
+                                lineSeries {
+                                    series(x = listOf(1, 2, 3, 4, 69), y = listOf(1, 8, 3, 7, 100))
+                                    /*series(1, 8, 3, 7)*/
+                                    /*series(y = listOf(6, 1, 9, 3))
+                                    series(x = listOf(1, 2, 3, 4), y = listOf(2, 5, 3, 4))*/
+                                }
+                            }
+                        }
+
+                        Text(
+                            text = "Tickets Created Over Time",
+                            fontSize = MaterialTheme.typography.headlineSmall.fontSize,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp)
+                        )
+
+                        CartesianChartHost(
+                            chart = rememberCartesianChart(
+                                rememberLineCartesianLayer(),
+                                startAxis = rememberStartAxis(),
+                                bottomAxis = rememberBottomAxis()
+                            ),
+                            scrollState = scrollState,
+                            zoomState = zoomState,
+                            modelProducer = modelProducer,
+                        )
                     }
                 )
             }
@@ -146,7 +190,7 @@ fun Profile(
 
                     }
                 )
-            }*/
+            }
         }
     )
 }

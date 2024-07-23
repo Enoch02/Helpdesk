@@ -15,6 +15,7 @@ import com.enoch02.helpdesk.data.remote.model.UserData
 import com.enoch02.helpdesk.data.remote.repository.auth.FirebaseAuthRepository
 import com.enoch02.helpdesk.data.remote.repository.cloud_storage.CloudStorageRepository
 import com.enoch02.helpdesk.data.remote.repository.firestore_db.FirestoreRepository
+import com.enoch02.helpdesk.util.DEFAULT_DISPLAY_NAME
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -47,8 +48,11 @@ class TicketDetailViewModel @Inject constructor(
     var chatID by mutableStateOf("")
     var ticketID by mutableStateOf("")
     var attachments by mutableStateOf(emptyList<Uri>())
+    private var feedbackGiven by mutableStateOf(false)
 
     var navigateToChatScreen by mutableStateOf(false)
+    var showFeedbackDialog by mutableStateOf(false)
+    var ticketOwnerId by mutableStateOf("")
 
 
     fun getTicket(uid: String, tid: String) {
@@ -86,9 +90,10 @@ class TicketDetailViewModel @Inject constructor(
                             attachments = ticketAttachments
                         }
 
-
                     chatID = it.chatID ?: ""
                     ticketID = it.ticketID ?: ""
+                    feedbackGiven = it.feedBackGiven ?: false
+                    ticketOwnerId = it.uid.toString()
 
                     contentState = ContentState.COMPLETED
                 }
@@ -106,6 +111,10 @@ class TicketDetailViewModel @Inject constructor(
                 .onSuccess {
                     onSuccess()
                     contentState = ContentState.COMPLETED
+
+                    if (!feedbackGiven && userData.role == DEFAULT_DISPLAY_NAME) {
+                        showFeedbackDialog = true
+                    }
                 }
         }
     }

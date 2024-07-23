@@ -140,9 +140,21 @@ fun HelpdeskNavHost(
                                 }
                             )
 
-                            composable(Screen.Feedback.route) {
-                                FeedbackScreen(navController = navController)
-                            }
+                            composable(
+                                Screen.Feedback.route + "/{uid}/{tid}",
+                                arguments = listOf(
+                                    navArgument("uid") { type = NavType.StringType },
+                                    navArgument("tid") { type = NavType.StringType }
+                                ),
+                                content = { entry ->
+                                    FeedbackScreen(
+                                        ticketOwnerId = entry.arguments?.getString("uid")
+                                            .toString(),
+                                        ticketId = entry.arguments?.getString("tid").toString(),
+                                        navController = navController
+                                    )
+                                }
+                            )
 
                             composable(Screen.Settings.route) {
                                 SettingsScreen(navController = navController)
@@ -315,7 +327,7 @@ fun FindHome(navController: NavHostController, viewModel: FindHomeViewModel = hi
                     }
 
                     else -> {
-                        navController.navigate(Screen.StudentHome.route)  {
+                        navController.navigate(Screen.StudentHome.route) {
                             popUpTo(Screen.FindHome.route) {
                                 inclusive = true
                             }

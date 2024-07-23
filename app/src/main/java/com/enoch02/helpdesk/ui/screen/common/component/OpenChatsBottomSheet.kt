@@ -3,8 +3,10 @@ package com.enoch02.helpdesk.ui.screen.common.component
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -44,7 +46,7 @@ fun OpenChatsBottomSheet(
     onDismiss: () -> Unit,
     chats: List<Chat>,
     chatsData: List<StudentHomeViewModel.ChatsData>,
-    onChatItemClicked: (chatID: String) -> Unit
+    onChatItemClicked: (chatID: String) -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
@@ -56,99 +58,115 @@ fun OpenChatsBottomSheet(
                 },
                 sheetState = sheetState,
                 content = {
-                    when (chats.isEmpty()) {
+                    when (chatsData.isEmpty()) {
                         true -> {
                             Column(
                                 verticalArrangement = Arrangement.Center,
                                 horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier.fillMaxSize(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .fillMaxHeight(0.75f),
                                 content = {
-                                    Text(text = "No Messages Found")
+                                    Text(text = "No Chats Found")
                                 }
                             )
                         }
 
                         false -> {
-                            Card(
-                                modifier = Modifier
-                                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                            Box(
                                 content = {
-                                    LazyColumn(
+                                    Card(
+                                        modifier = Modifier
+                                            .padding(horizontal = 8.dp, vertical = 4.dp),
                                         content = {
-                                            items(
-                                                count = chats.size,
-                                                itemContent = { index ->
-                                                    ListItem(
-                                                        headlineContent = {
-                                                            //Text(text = "Chat with ${chatsData[index].name ?: DEFAULT_DISPLAY_NAME} for ticket with subject ${chatsData[index].ticketSubject}")
-                                                            Text(
-                                                                text = buildAnnotatedString {
-                                                                    append("Chat with ")
-                                                                    withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                                                                        append(
-                                                                            chatsData[index].name
-                                                                                ?: DEFAULT_DISPLAY_NAME
-                                                                        )
-                                                                    }
-                                                                    append(" for ticket with subject ")
-                                                                    withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                                                                        append(chatsData[index].ticketSubject)
-                                                                    }
+                                            LazyColumn(
+                                                content = {
+                                                    items(
+                                                        count = chats.size,
+                                                        itemContent = { index ->
+                                                            ListItem(
+                                                                headlineContent = {
+                                                                    Text(
+                                                                        text = buildAnnotatedString {
+                                                                            append("Chat with ")
+                                                                            withStyle(
+                                                                                SpanStyle(
+                                                                                    fontWeight = FontWeight.Bold
+                                                                                )
+                                                                            ) {
+                                                                                append(
+                                                                                    chatsData[index].name
+                                                                                        ?: DEFAULT_DISPLAY_NAME
+                                                                                )
+                                                                            }
+                                                                            append(" for ticket with subject ")
+                                                                            withStyle(
+                                                                                SpanStyle(
+                                                                                    fontWeight = FontWeight.Bold
+                                                                                )
+                                                                            ) {
+                                                                                append(chatsData[index].ticketSubject)
+                                                                            }
+                                                                        },
+                                                                        textAlign = TextAlign.Justify
+                                                                    )
                                                                 },
-                                                                textAlign = TextAlign.Justify
-                                                            )
-                                                        },
-                                                        supportingContent = {
-                                                            Text(
-                                                                text = chatsData[index].mostRecentMessage
-                                                                    ?: ""
-                                                            )
-                                                        },
-                                                        leadingContent = {
-                                                            val profilePic =
-                                                                chatsData[index].profilePic
-
-                                                            AnimatedVisibility(
-                                                                visible = profilePic == null,
-                                                                content = {
-                                                                    Icon(
-                                                                        imageVector = Icons.Default.AccountCircle,
-                                                                        contentDescription = null
+                                                                supportingContent = {
+                                                                    Text(
+                                                                        text = chatsData[index].mostRecentMessage
+                                                                            ?: ""
                                                                     )
+                                                                },
+                                                                leadingContent = {
+                                                                    val profilePic =
+                                                                        chatsData[index].profilePic
+
+                                                                    AnimatedVisibility(
+                                                                        visible = profilePic == null,
+                                                                        content = {
+                                                                            Icon(
+                                                                                imageVector = Icons.Default.AccountCircle,
+                                                                                contentDescription = null
+                                                                            )
+                                                                        }
+                                                                    )
+
+                                                                    AnimatedVisibility(
+                                                                        visible = profilePic != null,
+                                                                        content = {
+                                                                            AsyncImage(
+                                                                                model = profilePic,
+                                                                                contentDescription = null,
+                                                                                contentScale = ContentScale.Crop,
+                                                                                modifier = Modifier
+                                                                                    .size(24.dp)
+                                                                                    .clip(
+                                                                                        CircleShape
+                                                                                    )
+                                                                            )
+                                                                        }
+                                                                    )
+                                                                },
+                                                                modifier = Modifier.clickable {
+                                                                    onChatItemClicked(chats[index].chatID.toString())
                                                                 }
                                                             )
 
-                                                            AnimatedVisibility(
-                                                                visible = profilePic != null,
-                                                                content = {
-                                                                    AsyncImage(
-                                                                        model = profilePic,
-                                                                        contentDescription = null,
-                                                                        contentScale = ContentScale.Crop,
-                                                                        modifier = Modifier
-                                                                            .size(24.dp)
-                                                                            .clip(CircleShape)
-                                                                    )
-                                                                }
-                                                            )
-                                                        },
-                                                        modifier = Modifier.clickable {
-                                                            onChatItemClicked(chats[index].chatID.toString())
+                                                            if (index < chats.size - 1) {
+                                                                HorizontalDivider()
+                                                            }
                                                         }
                                                     )
-
-                                                    if (index < chats.size - 1) {
-                                                        HorizontalDivider()
-                                                    }
                                                 }
                                             )
                                         }
                                     )
-                                }
+                                },
+                                modifier = Modifier.fillMaxHeight(0.75f)
                             )
                         }
                     }
-                }
+                },
             )
         }
     }

@@ -24,16 +24,23 @@ android {
     }
 
     buildTypes {
-        create("staff") {
+        /*create("staff") {
             applicationIdSuffix = ".staff"
             resValue("string", "app_name", "Helpdesk (Staff)")
             signingConfig = signingConfigs.getByName("debug")
+        }*/
+
+        create("benchmark") {
+            initWith(buildTypes.getByName("release"))
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += listOf("release")
+            isDebuggable = false
         }
 
-        getByName("debug") {
+        /*getByName("debug") {
             applicationIdSuffix = ".debug"
             resValue("string", "app_name", "Helpdesk Debug")
-        }
+        }*/
 
         release {
             isMinifyEnabled = false
@@ -97,4 +104,7 @@ dependencies {
     implementation(libs.androidx.work.runtime.ktx)
 
     implementation(libs.vico.compose.m3)
+
+    testImplementation("io.mockk:mockk:1.13.12")
+    implementation ("androidx.profileinstaller:profileinstaller:1.3.1")
 }

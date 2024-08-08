@@ -22,6 +22,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -99,8 +100,9 @@ fun AuthenticationScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            /*TODO: implement*/
             AnimatedVisibility(
-                visible = state == AuthScreenState.SIGN_IN,
+                visible = /*state == AuthScreenState.SIGN_IN*/false,
                 content = {
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -152,7 +154,9 @@ fun AuthenticationScreen(
                         }
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("SubmitButton")
             )
 
             TextButton(
@@ -185,7 +189,6 @@ fun AuthenticationScreen(
         }
     )
 
-    //TODO: replace toasts with snack bars?
     LaunchedEffect(key1 = registrationState.value?.isSuccess) {
         scope.launch {
             if (registrationState.value?.isSuccess?.isNotEmpty() == true) {

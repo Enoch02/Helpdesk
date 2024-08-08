@@ -79,7 +79,7 @@ class StartupBenchmark {
             startActivityAndWait()
 
             composeTestRule.onNodeWithTag("EmailField").performTextInput("adesanyaenoch@gmail.com")
-            composeTestRule.onNodeWithTag("PasswordField").performTextInput("Wole@22146")
+            composeTestRule.onNodeWithTag("PasswordField").performTextInput("")
             composeTestRule.onNodeWithTag("SubmitButton").performClick()
 
             Thread.sleep(5000)

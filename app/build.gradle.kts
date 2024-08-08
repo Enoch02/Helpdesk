@@ -24,11 +24,11 @@ android {
     }
 
     buildTypes {
-        /*create("staff") {
+        create("staff") {
             applicationIdSuffix = ".staff"
             resValue("string", "app_name", "Helpdesk (Staff)")
             signingConfig = signingConfigs.getByName("debug")
-        }*/
+        }
 
         create("benchmark") {
             initWith(buildTypes.getByName("release"))
@@ -37,10 +37,10 @@ android {
             isDebuggable = false
         }
 
-        /*getByName("debug") {
+        getByName("debug") {
             applicationIdSuffix = ".debug"
             resValue("string", "app_name", "Helpdesk Debug")
-        }*/
+        }
 
         release {
             isMinifyEnabled = false

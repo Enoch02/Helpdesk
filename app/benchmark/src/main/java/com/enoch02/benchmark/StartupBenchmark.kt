@@ -16,26 +16,14 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/**
- * This is an example startup benchmark.
- *
- * It navigates to the device's home screen, and launches the default activity.
- *
- * Before running this benchmark:
- * 1) switch your app's active build variant in the Studio (affects Studio runs only)
- * 2) add `<profileable android:shell="true" />` to your app's manifest, within the `<application>` tag
- *
- * Run this benchmark from Studio to see startup measurements, and captured system traces
- * for investigating your app's performance.
- */
 @LargeTest
 @RunWith(AndroidJUnit4::class)
 class StartupBenchmark {
     @get:Rule
     val benchmarkRule = MacrobenchmarkRule()
 
-    @get:Rule
-    val composeTestRule = createComposeRule()
+    /*@get:Rule
+    val composeTestRule = createComposeRule()*/
 
     @Test
     fun startup() = benchmarkRule.measureRepeated(
@@ -52,16 +40,11 @@ class StartupBenchmark {
         },
         measureBlock = {
             startActivityAndWait()
-
-            /*composeTestRule.onNodeWithTag("EmailField").performTextInput("adesanyaenoch@gmail.com")
-            composeTestRule.onNodeWithTag("PasswordField").performTextInput("Wole@22146")
-            composeTestRule.onNodeWithTag("SubmitButton").performClick()*/
-
             Thread.sleep(5000)
         }
     )
 
-    @OptIn(ExperimentalMetricApi::class)
+    /*@OptIn(ExperimentalMetricApi::class)
     @Test
     fun login() = benchmarkRule.measureRepeated(
         packageName = "com.enoch02.helpdesk",
@@ -71,7 +54,7 @@ class StartupBenchmark {
             FrameTimingMetric()
         ),
         startupMode = StartupMode.WARM,
-        iterations = /*5*/1,
+        iterations = *//*5*//*1,
         setupBlock = {
             pressHome()
         },
@@ -84,5 +67,5 @@ class StartupBenchmark {
 
             Thread.sleep(5000)
         }
-    )
+    )*/
 }

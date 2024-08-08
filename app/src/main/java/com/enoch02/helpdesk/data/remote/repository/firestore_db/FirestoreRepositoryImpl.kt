@@ -2,6 +2,7 @@ package com.enoch02.helpdesk.data.remote.repository.firestore_db
 
 import android.util.Log
 import com.enoch02.helpdesk.data.local.model.TicketStats
+import com.enoch02.helpdesk.data.remote.model.Article
 import com.enoch02.helpdesk.data.remote.model.Chat
 import com.enoch02.helpdesk.data.remote.model.Feedback
 import com.enoch02.helpdesk.data.remote.model.Message
@@ -17,6 +18,7 @@ import javax.inject.Inject
 
 private const val USER_COLLECTION_NAME = "users/"
 private const val TICKETS_COLLECTION_NAME = "tickets/"
+private const val ARTICLES_COLLECTION_NAME = "articles/"
 const val CHATS_COLLECTION_NAME = "chats/"
 const val FEEDBACK_COLLECTION_NAME = "feedbacks/"
 private const val TAG = "FirestoreRepo"
@@ -374,7 +376,7 @@ class FirestoreRepositoryImpl @Inject constructor(
     }
 
     /**
-     * Send a feedback that is not associated with any user to the database
+     * Send a [Feedback] that is not associated with any user to the database
      */
     override suspend fun sendFeedback(feedback: Feedback): Result<Unit> {
         return try {
@@ -385,6 +387,44 @@ class FirestoreRepositoryImpl @Inject constructor(
             Result.success(Unit)
         } catch (e: Exception) {
             Log.e(TAG, "sendFeedback: ${e.message}")
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * Get a list of [Feedback] for analysis
+     * */
+    override suspend fun getFeedbacks(): Result<Unit> {
+        TODO()
+    }
+
+    /**
+     * Create an [Article]
+     */
+    override suspend fun createArticle(article: Article): Result<Unit> {
+        return try {
+            db.collection(ARTICLES_COLLECTION_NAME)
+                .add(article)
+                .await()
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e(TAG, "createArticle: ${e.message}")
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * Get all articles from the database
+     */
+    override suspend fun getArticles(): Result<List<Article>> {
+        return try {
+            val articles =
+                db.collection(ARTICLES_COLLECTION_NAME).get().await().toObjects(Article::class.java)
+
+            Result.success(articles)
+        } catch (e: Exception) {
+            Log.e(TAG, "getChats: ${e.message}")
             Result.failure(e)
         }
     }

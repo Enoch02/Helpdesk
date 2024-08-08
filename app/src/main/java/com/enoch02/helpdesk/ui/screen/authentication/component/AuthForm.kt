@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -45,7 +46,7 @@ fun BasicAuthForm(
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onDone: () -> Unit,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     val focusManager = LocalFocusManager.current
     var passwordVisible by rememberSaveable {
@@ -96,7 +97,9 @@ fun BasicAuthForm(
             OutlinedTextField(
                 value = email,
                 onValueChange = { onEmailChange(it) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("EmailField"),
                 label = { Text(text = "Email") },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Email,
@@ -111,7 +114,9 @@ fun BasicAuthForm(
             OutlinedTextField(
                 value = password,
                 onValueChange = { onPasswordChange(it) },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("PasswordField"),
                 label = { Text(text = "Password") },
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {

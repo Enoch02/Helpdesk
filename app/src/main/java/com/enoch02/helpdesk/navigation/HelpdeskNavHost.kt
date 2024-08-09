@@ -32,6 +32,7 @@ import com.enoch02.helpdesk.ui.screen.common.chat.ChatScreen
 import com.enoch02.helpdesk.ui.screen.common.knowledge_base.KnowledgeBaseScreen
 import com.enoch02.helpdesk.ui.screen.common.settings.SettingsScreen
 import com.enoch02.helpdesk.ui.screen.common.ticket_detail.TicketDetailScreen
+import com.enoch02.helpdesk.ui.screen.staff.feedback_viewer.FeedbackViewerScreen
 import com.enoch02.helpdesk.ui.screen.staff.home.StaffHomeScreen
 import com.enoch02.helpdesk.ui.screen.staff.ticket_list.StaffTicketListScreen
 import com.enoch02.helpdesk.ui.screen.staff.user_list.UserListScreen
@@ -164,7 +165,6 @@ fun HelpdeskNavHost(
                                 AccountScreen(navController = navController)
                             }
 
-                            /*Staff*/
                             composable(Screen.StaffHome.route) {
                                 StaffHomeScreen(navController = navController)
                             }
@@ -188,6 +188,10 @@ fun HelpdeskNavHost(
 
                             composable(Screen.KnowledgeBase.route) {
                                 KnowledgeBaseScreen(navController = navController)
+                            }
+
+                            composable(Screen.FeedbackViewer.route) {
+                                FeedbackViewerScreen(navController = navController)
                             }
                         }
                     )

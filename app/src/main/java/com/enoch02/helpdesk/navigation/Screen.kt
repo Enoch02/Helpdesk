@@ -18,6 +18,7 @@ sealed class Screen(val route: String) {
     data object StaffHome: Screen("staff_home_screen")
     data object StaffTicketList: Screen("staff_ticket_list")
     data object UserList: Screen("user_list")
+    data object FeedbackViewer: Screen("feedback_viewer_screen")
 
     fun withArgs(vararg args: String): String {
         return buildString {

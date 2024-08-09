@@ -262,7 +262,7 @@ fun StaffHomeScreen(navController: NavController, viewModel: StaffHomeViewModel 
                                         icon= Icons.Default.Feedback,
                                         label = "View Feedbacks",
                                         onClick = {
-                                            /*TODO*/
+                                            navController.navigate(Screen.FeedbackViewer.route)
                                         }
                                     )
                                 }

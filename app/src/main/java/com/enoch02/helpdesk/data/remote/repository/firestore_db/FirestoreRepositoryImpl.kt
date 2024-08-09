@@ -392,10 +392,19 @@ class FirestoreRepositoryImpl @Inject constructor(
     }
 
     /**
-     * Get a list of [Feedback] for analysis
+     * Get a list of [Feedback]
      * */
-    override suspend fun getFeedbacks(): Result<Unit> {
-        TODO()
+    override suspend fun getFeedbacks(): Result<List<Feedback>> {
+        return try {
+            val feedbacks =
+                db.collection(FEEDBACK_COLLECTION_NAME).get().await()
+                    .toObjects(Feedback::class.java)
+
+            Result.success(feedbacks)
+        } catch (e: Exception) {
+            Log.e(TAG, "getChats: ${e.message}")
+            Result.failure(e)
+        }
     }
 
     /**

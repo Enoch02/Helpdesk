@@ -46,7 +46,7 @@ interface FirestoreRepository {
 
     suspend fun sendFeedback(feedback: Feedback): Result<Unit>
 
-    suspend fun getFeedbacks(): Result<Unit>
+    suspend fun getFeedbacks(): Result<List<Feedback>>
 
     suspend fun createArticle(article: Article): Result<Unit>
 

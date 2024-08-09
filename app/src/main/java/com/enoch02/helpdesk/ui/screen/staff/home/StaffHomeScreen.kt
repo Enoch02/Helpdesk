@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpCenter
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Feedback
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -28,6 +29,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +43,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.enoch02.helpdesk.data.local.model.Filter
 import com.enoch02.helpdesk.navigation.Screen
+import com.enoch02.helpdesk.ui.screen.common.component.AboutAppDialog
 import com.enoch02.helpdesk.ui.screen.common.component.Header
 import com.enoch02.helpdesk.ui.screen.staff.home.component.StatsCard
 import com.enoch02.helpdesk.ui.screen.user.home.component.ActionCard
@@ -57,6 +60,10 @@ fun StaffHomeScreen(navController: NavController, viewModel: StaffHomeViewModel 
 
     val pullToRefreshState = rememberPullToRefreshState()
     val isRefreshing = viewModel.isRefreshing
+
+    var showAboutDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
 
     if (pullToRefreshState.isRefreshing) {
         LaunchedEffect(true) {
@@ -123,6 +130,14 @@ fun StaffHomeScreen(navController: NavController, viewModel: StaffHomeViewModel 
                                 expanded = showDropDown,
                                 onDismissRequest = { showDropDown = false },
                                 content = {
+                                    DropdownMenuItem(
+                                        text = { Text("About App") },
+                                        onClick = {
+                                            showDropDown = false
+                                            showAboutDialog = true
+                                        }
+                                    )
+
                                     DropdownMenuItem(
                                         text = { Text(text = "Sign Out") },
                                         onClick = {
@@ -241,6 +256,16 @@ fun StaffHomeScreen(navController: NavController, viewModel: StaffHomeViewModel 
                                         }
                                     )
                                 }
+
+                                item {
+                                    ActionCard(
+                                        icon= Icons.Default.Feedback,
+                                        label = "View Feedbacks",
+                                        onClick = {
+                                            /*TODO*/
+                                        }
+                                    )
+                                }
                             }
                         )
                     },
@@ -258,6 +283,13 @@ fun StaffHomeScreen(navController: NavController, viewModel: StaffHomeViewModel 
                     )
                 )
             }
+
+            AboutAppDialog(
+                showDialog = showAboutDialog,
+                onConfirm = {
+                    showAboutDialog = false
+                }
+            )
         }
     )
 }

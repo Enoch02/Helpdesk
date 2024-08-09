@@ -33,6 +33,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,6 +44,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.enoch02.helpdesk.navigation.Screen
+import com.enoch02.helpdesk.ui.screen.common.component.AboutAppDialog
 import com.enoch02.helpdesk.ui.screen.common.component.Header
 import com.enoch02.helpdesk.ui.screen.common.component.OpenChatsBottomSheet
 import com.enoch02.helpdesk.ui.screen.user.home.component.ActionCard
@@ -64,6 +66,9 @@ fun StudentHomeScreen(
 
 
     var showBottomSheet by remember {
+        mutableStateOf(false)
+    }
+    var showAboutDialog by rememberSaveable {
         mutableStateOf(false)
     }
 
@@ -125,6 +130,14 @@ fun StudentHomeScreen(
                                 expanded = showDropDown,
                                 onDismissRequest = { showDropDown = false },
                                 content = {
+                                    DropdownMenuItem(
+                                        text = { Text("About App") },
+                                        onClick = {
+                                            showDropDown = false
+                                            showAboutDialog = true
+                                        }
+                                    )
+
                                     DropdownMenuItem(
                                         text = { Text(text = "Sign Out") },
                                         onClick = {
@@ -233,6 +246,13 @@ fun StudentHomeScreen(
                     navController.navigate(
                         Screen.Chat.withArgs(chatID)
                     )
+                }
+            )
+
+            AboutAppDialog(
+                showDialog = showAboutDialog,
+                onConfirm = {
+                    showAboutDialog = false
                 }
             )
         }

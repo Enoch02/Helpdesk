@@ -8,7 +8,6 @@ data class Chat(
     val ticketID: String? = null,
     val createdAt: Date? = null,
     val startedBy: String? = null,  // uid
-    // TODO: the uid of the person assigned to this chat will be added here
     val members: Members? = null,  // uid (limit = 2),
     val messages: List<Message>? = null
 )

@@ -47,7 +47,6 @@ class FirebaseAuthRepositoryImpl @Inject constructor(private val firebaseAuth: F
 
     override fun getUser() = firebaseAuth.currentUser
 
-    //TODO: remove
     override fun updateUserInfo(name: String): Result<Unit> {
         return try {
             val user = firebaseAuth.currentUser

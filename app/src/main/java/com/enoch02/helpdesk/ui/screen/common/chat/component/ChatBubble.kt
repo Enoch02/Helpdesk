@@ -14,9 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.enoch02.helpdesk.util.formatTime
+import com.enoch02.helpdesk.util.getCurrentDateTime
 
 @Composable
-fun ChatBubble(content: String, owner: BubbleOwner) {
+fun ChatBubble(content: String, owner: BubbleOwner, sentAt: String) {
     val alignment =
         when (owner) {
             BubbleOwner.REMOTE -> {
@@ -27,21 +29,12 @@ fun ChatBubble(content: String, owner: BubbleOwner) {
                 Alignment.CenterEnd
             }
         }
-    val textAlign =
-        when (owner) {
-            BubbleOwner.REMOTE -> {
-                TextAlign.Start
-            }
-
-            BubbleOwner.LOCAL -> {
-                TextAlign.Start
-            }
-        }
     val colors = CardDefaults.cardColors(
         containerColor = when (owner) {
             BubbleOwner.REMOTE -> {
                 MaterialTheme.colorScheme.surfaceVariant
             }
+
             BubbleOwner.LOCAL -> {
                 MaterialTheme.colorScheme.primary
             }
@@ -58,10 +51,17 @@ fun ChatBubble(content: String, owner: BubbleOwner) {
                 content = {
                     Text(
                         text = content,
-                        //textAlign = textAlign,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(10.dp)
+                    )
+
+                    Text(
+                        text = sentAt,
+                        textAlign = TextAlign.End,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 10.dp, vertical = 4.dp)
                     )
                 },
                 colors = colors,
@@ -77,7 +77,15 @@ fun ChatBubble(content: String, owner: BubbleOwner) {
 @Composable
 private fun Preview() {
     Column(modifier = Modifier.fillMaxWidth()) {
-        ChatBubble(content = "Hello, World!", owner = BubbleOwner.REMOTE)
-        ChatBubble(content = "Nice to meet ya!", owner = BubbleOwner.LOCAL)
+        ChatBubble(
+            content = "Hello, World!",
+            owner = BubbleOwner.REMOTE,
+            sentAt = formatTime(getCurrentDateTime())
+        )
+        ChatBubble(
+            content = "Nice to meet ya!",
+            owner = BubbleOwner.LOCAL,
+            sentAt = formatTime(getCurrentDateTime())
+        )
     }
 }

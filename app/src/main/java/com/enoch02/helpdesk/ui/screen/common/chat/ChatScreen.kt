@@ -55,6 +55,7 @@ import com.enoch02.helpdesk.data.remote.model.MessageType
 import com.enoch02.helpdesk.ui.screen.common.chat.component.BubbleOwner
 import com.enoch02.helpdesk.ui.screen.common.chat.component.ChatBubble
 import com.enoch02.helpdesk.ui.screen.common.chat.component.ImageBubble
+import com.enoch02.helpdesk.util.formatTime
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -177,14 +178,16 @@ fun ChatScreen(
                                     MessageType.TEXT -> {
                                         ChatBubble(
                                             content = item.messageText.toString(),
-                                            owner = owner
+                                            owner = owner,
+                                            sentAt = formatTime(item.sentAt)
                                         )
                                     }
 
                                     MessageType.IMAGE -> {
                                         ImageBubble(
                                             content = viewModel.getPictureAt(index),
-                                            owner = owner
+                                            owner = owner,
+                                            sentAt = formatTime(item.sentAt)
                                         )
                                     }
 
@@ -192,7 +195,8 @@ fun ChatScreen(
                                         ImageBubble(
                                             content = viewModel.getPictureAt(index),
                                             text = item.messageText.toString(),
-                                            owner = owner
+                                            owner = owner,
+                                            sentAt = formatTime(item.sentAt)
                                         )
                                     }
 

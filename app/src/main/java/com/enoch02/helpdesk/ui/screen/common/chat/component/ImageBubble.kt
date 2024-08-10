@@ -15,15 +15,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.enoch02.helpdesk.R
+import com.enoch02.helpdesk.util.formatTime
+import com.enoch02.helpdesk.util.getCurrentDateTime
 
-//TODO: image bubble with text
-//TODO: image bubble with multiple images
 @Composable
-fun ImageBubble(content: Uri?, owner: BubbleOwner) {
+fun ImageBubble(content: Uri?, owner: BubbleOwner, sentAt: String) {
     val alignment =
         when (owner) {
             BubbleOwner.REMOTE -> {
@@ -58,6 +59,15 @@ fun ImageBubble(content: Uri?, owner: BubbleOwner) {
                         contentDescription = null,
                         placeholder = painterResource(id = R.drawable.placeholder)
                     )
+
+                    Text(
+                        text = sentAt,
+                        textAlign = TextAlign.End,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.Black.copy(alpha = 0.5f))
+                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                    )
                 },
                 colors = colors,
                 modifier = Modifier.fillMaxWidth(0.7f)
@@ -68,7 +78,7 @@ fun ImageBubble(content: Uri?, owner: BubbleOwner) {
 }
 
 @Composable
-fun ImageBubble(content: Uri?, text: String, owner: BubbleOwner) {
+fun ImageBubble(content: Uri?, text: String, owner: BubbleOwner, sentAt: String) {
     val alignment =
         when (owner) {
             BubbleOwner.REMOTE -> {
@@ -111,6 +121,15 @@ fun ImageBubble(content: Uri?, text: String, owner: BubbleOwner) {
                             .background(Color.Black.copy(alpha = 0.5f))
                             .padding(8.dp)
                     )
+
+                    Text(
+                        text = sentAt,
+                        textAlign = TextAlign.End,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.Black.copy(alpha = 0.5f))
+                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                    )
                 },
                 colors = colors,
                 modifier = Modifier.fillMaxWidth(0.7f)
@@ -124,8 +143,21 @@ fun ImageBubble(content: Uri?, text: String, owner: BubbleOwner) {
 @Composable
 private fun Preview() {
     Column(modifier = Modifier.fillMaxWidth()) {
-        ImageBubble(content = Uri.EMPTY, owner = BubbleOwner.REMOTE)
-        ImageBubble(content = Uri.EMPTY, owner = BubbleOwner.LOCAL)
-        ImageBubble(content = Uri.EMPTY, text = "Hello World", owner = BubbleOwner.LOCAL)
+        ImageBubble(
+            content = Uri.EMPTY,
+            owner = BubbleOwner.REMOTE,
+            sentAt = formatTime(getCurrentDateTime())
+        )
+        ImageBubble(
+            content = Uri.EMPTY,
+            owner = BubbleOwner.LOCAL,
+            sentAt = formatTime(getCurrentDateTime())
+        )
+        ImageBubble(
+            content = Uri.EMPTY,
+            text = "Hello World",
+            owner = BubbleOwner.LOCAL,
+            sentAt = formatTime(getCurrentDateTime())
+        )
     }
 }

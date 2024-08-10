@@ -34,7 +34,6 @@ class AuthenticationViewModel @Inject constructor(
     var screenState by mutableStateOf(AuthScreenState.SIGN_IN)
     var name by mutableStateOf("")
 
-    /*TODO: clear values*/
     var email by mutableStateOf("")
     var password by mutableStateOf("")
 

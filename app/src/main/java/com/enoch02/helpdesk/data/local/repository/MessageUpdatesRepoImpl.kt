@@ -13,9 +13,9 @@ import com.enoch02.helpdesk.workers.MessageUpdateWorker
 import java.util.concurrent.TimeUnit
 
 class MessageUpdatesRepoImpl(private val context: Context) : MessageUpdatesRepository {
-    override fun checkForUpdates(/*context: Context, */interval: Long) {
-
-        val constraints = Constraints.Builder()
+    override fun checkForUpdates(interval: Long) {
+        //TODO: Disabled for now
+        /*val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
@@ -33,10 +33,10 @@ class MessageUpdatesRepoImpl(private val context: Context) : MessageUpdatesRepos
             "message_update_check",
             ExistingPeriodicWorkPolicy.KEEP,
             periodicWorkRequest
-        )
+        )*/
     }
 
     override fun cancelWork() {
-        TODO("Not yet implemented")
+
     }
 }

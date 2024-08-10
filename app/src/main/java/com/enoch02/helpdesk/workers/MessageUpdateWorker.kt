@@ -6,12 +6,16 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.registerReceiver
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.enoch02.helpdesk.MainActivity
+import com.enoch02.helpdesk.MarkNotificationAsSeenReceiver
 import com.enoch02.helpdesk.R
 import com.enoch02.helpdesk.data.remote.model.Chat
 import com.enoch02.helpdesk.data.remote.repository.firestore_db.CHATS_COLLECTION_NAME
@@ -119,6 +123,24 @@ class MessageUpdateWorker(
             )
             notificationManager.createNotificationChannel(channel)
         }
+        val intentFilter = IntentFilter("MARK_SEEN")
+        val receiver = MarkNotificationAsSeenReceiver()
+        registerReceiver(context, receiver, intentFilter, ContextCompat.RECEIVER_EXPORTED)
+
+        //val replyIntent = Intent(this, NotificationActionReceiver::class.java)
+        val replyIntent = Intent(context, MarkNotificationAsSeenReceiver::class.java)
+        replyIntent.action = "MARK_SEEN"
+        replyIntent.putExtra("message", "Reply clicked")
+        val replyPendingIntent =
+            PendingIntent.getBroadcast(context, 0, replyIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+        val seenAction =
+            NotificationCompat.Action.Builder(
+                R.drawable.baseline_check_24,
+                "Seen",
+                replyPendingIntent
+            )
+                .build()
 
         val notification = NotificationCompat.Builder(context, "message_updates")
             .setContentTitle("New Message")
@@ -126,6 +148,7 @@ class MessageUpdateWorker(
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
+            .addAction(seenAction)
             .build()
 
         notificationManager.notify(NOTIFICATION_ID, notification)

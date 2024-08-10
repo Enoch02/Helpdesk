@@ -28,6 +28,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.OutlinedTextField
@@ -51,6 +52,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 
 @Composable
@@ -60,7 +62,7 @@ fun AccountEdit(
     currentName: String?,
     onNameChange: (String) -> Unit,
     onSaveChangesClicked: () -> Unit,
-    modifier: Modifier
+    modifier: Modifier,
 ) {
     LazyColumn(
         content = {
@@ -75,7 +77,7 @@ fun AccountEdit(
                             }
                         )
 
-                        Divider()
+                        HorizontalDivider()
 
                         NewNameSelector(
                             currentName = currentName,
@@ -91,13 +93,9 @@ fun AccountEdit(
                 Card(
                     modifier = Modifier.padding(8.dp),
                     content = {
-                        PasswordChanger(
-                            onPasswordChangeConfirmed = { currentPassword, newPassword ->
+                        PasswordChanger()
 
-                            }
-                        )
-
-                        Divider()
+                        HorizontalDivider()
 
                         EmailChanger()
                     }
@@ -257,225 +255,6 @@ fun NewNameSelector(currentName: String?, onNameChange: (String) -> Unit) {
     )
 }
 
-@Composable
-fun PasswordChanger(onPasswordChangeConfirmed: (currentPassword: String, newPassword: String) -> Unit) {
-    val focusManager = LocalFocusManager.current
-    var showDialog by remember {
-        mutableStateOf(false)
-    }
-    var currentPassword by remember {
-        mutableStateOf("")
-    }
-    var newPassword by remember {
-        mutableStateOf("")
-    }
-    var confirmPassword by remember {
-        mutableStateOf("")
-    }
-
-    ListItem(
-        leadingContent = {
-            Text(text = "Change Password")
-        },
-        headlineContent = { },
-        trailingContent = {
-            Icon(imageVector = Icons.Default.ChevronRight, contentDescription = null)
-        },
-        tonalElevation = 30.dp,
-        modifier = Modifier.clickable {
-            showDialog = true
-        }
-    )
-
-
-    AnimatedVisibility(
-        visible = showDialog,
-        content = {
-            AlertDialog(
-                onDismissRequest = { showDialog = false },
-                title = { Text(text = "Change Password") },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            if (newPassword == confirmPassword) {
-                                onPasswordChangeConfirmed(currentPassword, newPassword)
-                                showDialog = false
-                            } else {
-                                //TODO: show error msg here!
-                            }
-                        },
-                        content = {
-                            Text(text = "OK")
-                        }
-                    )
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = { showDialog = false },
-                        content = {
-                            Text(text = "Cancel")
-                        }
-                    )
-                },
-                text = {
-                    Column(
-                        content = {
-                            OutlinedTextField(
-                                value = currentPassword,
-                                onValueChange = { currentPassword = it },
-                                modifier = Modifier.fillMaxWidth(),
-                                label = { Text(text = "Current Password") },
-                                visualTransformation = PasswordVisualTransformation(),
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Password,
-                                    imeAction = ImeAction.Next
-                                ),
-                                keyboardActions = KeyboardActions(
-                                    onNext = {
-                                        focusManager.moveFocus(FocusDirection.Down)
-                                    }
-                                )
-                            )
-
-                            OutlinedTextField(
-                                value = newPassword,
-                                onValueChange = { newPassword = it },
-                                modifier = Modifier.fillMaxWidth(),
-                                label = { Text(text = "New Password") },
-                                visualTransformation = PasswordVisualTransformation(),
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Password,
-                                    imeAction = ImeAction.Next
-                                ),
-                                keyboardActions = KeyboardActions(
-                                    onNext = {
-                                        focusManager.moveFocus(FocusDirection.Down)
-                                    }
-                                )
-                            )
-
-                            OutlinedTextField(
-                                value = confirmPassword,
-                                onValueChange = { confirmPassword = it },
-                                modifier = Modifier.fillMaxWidth(),
-                                label = { Text(text = "Confirm Password") },
-                                visualTransformation = PasswordVisualTransformation(),
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Password,
-                                    imeAction = ImeAction.Done
-                                ),
-                                keyboardActions = KeyboardActions(
-                                    onDone = {
-                                        /*TODO*/
-                                    }
-                                )
-                            )
-                        }
-                    )
-                }
-            )
-        }
-    )
-}
-
-@Composable
-fun EmailChanger() {
-    val focusManager = LocalFocusManager.current
-    var showDialog by remember {
-        mutableStateOf(false)
-    }
-    var password by remember {
-        mutableStateOf("")
-    }
-    var newEmail by remember {
-        mutableStateOf("")
-    }
-
-    ListItem(
-        leadingContent = {
-            Text(text = "Change Email")
-        },
-        headlineContent = { },
-        trailingContent = {
-            Icon(imageVector = Icons.Default.ChevronRight, contentDescription = null)
-        },
-        tonalElevation = 30.dp,
-        modifier = Modifier.clickable {
-            showDialog = true
-        }
-    )
-
-    AnimatedVisibility(
-        visible = showDialog,
-        content = {
-            AlertDialog(
-                onDismissRequest = { showDialog = false },
-                title = {
-                    Text(text = "Change Email")
-                },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            /*TODO*/
-                            showDialog = false
-                        },
-                        content = {
-                            Text(text = "OK")
-                        }
-                    )
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = { showDialog = false },
-                        content = {
-                            Text(text = "Cancel")
-                        }
-                    )
-                },
-                text = {
-                    Column(
-                        content = {
-                            OutlinedTextField(
-                                value = password,
-                                onValueChange = { password = it },
-                                modifier = Modifier.fillMaxWidth(),
-                                label = { Text(text = "Password") },
-                                visualTransformation = PasswordVisualTransformation(),
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Password,
-                                    imeAction = ImeAction.Next
-                                ),
-                                keyboardActions = KeyboardActions(
-                                    onNext = {
-                                        focusManager.moveFocus(FocusDirection.Down)
-                                    }
-                                )
-                            )
-
-                            OutlinedTextField(
-                                value = newEmail,
-                                onValueChange = { newEmail = it },
-                                modifier = Modifier.fillMaxWidth(),
-                                label = { Text(text = "New Email") },
-                                visualTransformation = PasswordVisualTransformation(),
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Email,
-                                    imeAction = ImeAction.Done
-                                ),
-                                keyboardActions = KeyboardActions(
-                                    onDone = {
-                                        /*TODO*/
-                                    }
-                                )
-                            )
-                        }
-                    )
-                }
-            )
-        }
-    )
-}
-
 @Preview(showSystemUi = true, showBackground = true)
 @Composable
 private fun ProfilePicPreview() {
@@ -496,7 +275,5 @@ private fun NewNameSelectorPreview() {
 @Preview(showSystemUi = true, showBackground = true, apiLevel = 33)
 @Composable
 private fun PasswordChangerPreview() {
-    PasswordChanger { _, _ ->
-
-    }
+    PasswordChanger()
 }

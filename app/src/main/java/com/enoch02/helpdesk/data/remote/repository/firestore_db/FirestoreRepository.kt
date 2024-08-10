@@ -16,6 +16,8 @@ interface FirestoreRepository {
 
     suspend fun updateDisplayName(uid: String, newDisplayName: String): Result<Unit>
 
+    suspend fun updateEmail(uid: String, newEmail: String): Result<Unit>
+
     suspend fun createTicket(ticket: Ticket): Result<Unit>
 
     suspend fun getTickets(uid: String): Result<Tickets>

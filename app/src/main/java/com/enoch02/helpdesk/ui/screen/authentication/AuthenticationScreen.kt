@@ -21,6 +21,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
@@ -100,9 +101,8 @@ fun AuthenticationScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            /*TODO: implement*/
             AnimatedVisibility(
-                visible = /*state == AuthScreenState.SIGN_IN*/false,
+                visible = state == AuthScreenState.SIGN_IN,
                 content = {
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -111,15 +111,26 @@ fun AuthenticationScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,
                         content = {
+                            /*TODO*/
                             LabeledCheckBox(
                                 label = "Remember Me",
                                 checked = rememberMe,
                                 onCheckChanged = { viewModel.updateRememberMe(it) },
-                                modifier = Modifier
+                                modifier = Modifier.alpha(0f)
                             )
 
                             TextButton(
-                                onClick = { /*TODO*/ },
+                                onClick = {
+                                    if (email.isBlank()) {
+                                        Toast.makeText(
+                                            context,
+                                            "Enter a valid email",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    } else {
+                                        viewModel.resetPassword(context, email)
+                                    }
+                                },
                                 content = {
                                     Text(text = "Reset password")
                                 }

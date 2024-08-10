@@ -14,8 +14,8 @@ android {
         applicationId = "com.enoch02.helpdesk"
         minSdk = 24
         targetSdk = 34
-        versionCode = 6
-        versionName = "0.7"
+        versionCode = 8
+        versionName = "0.8"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -39,7 +39,7 @@ android {
 
         getByName("debug") {
             applicationIdSuffix = ".debug"
-            resValue("string", "app_name", "Helpdesk Debug")
+            resValue("string", "app_name", "CEES Helpdesk Debug")
         }
 
         release {

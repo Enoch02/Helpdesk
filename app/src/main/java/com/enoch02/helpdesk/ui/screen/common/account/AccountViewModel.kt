@@ -22,7 +22,6 @@ class AccountViewModel @Inject constructor(
     private val firestoreRepository: FirestoreRepository
 ) :
     ViewModel() {
-    var showProfile by mutableStateOf(true)
     var currentImage by mutableStateOf<Uri?>(null)
     var currentName by mutableStateOf("") // For updating the user's name
     var userData by mutableStateOf(UserData(displayName = null))
@@ -44,7 +43,6 @@ class AccountViewModel @Inject constructor(
         }
     }
 
-    //TODO: could take more data in the future
     private fun updateDisplayName() {
         viewModelScope.launch(Dispatchers.IO) {
             if (currentName != userData.displayName) {
@@ -75,10 +73,9 @@ class AccountViewModel @Inject constructor(
         }
     }
 
-    fun toggleShowProfile() {
+    fun refreshProfile() {
         getUserData()
         getProfilePicture()
-        showProfile = !showProfile
     }
 
     fun updateCurrentImage(newImage: Uri?) {

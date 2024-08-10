@@ -75,7 +75,7 @@ class FirebaseAuthRepositoryImpl @Inject constructor(private val firebaseAuth: F
     override fun updatePassword(
         email: String,
         oldPassword: String,
-        newPassword: String
+        newPassword: String,
     ): Result<Unit> {
         return try {
             val user = firebaseAuth.currentUser
@@ -85,6 +85,16 @@ class FirebaseAuthRepositoryImpl @Inject constructor(private val firebaseAuth: F
                 .addOnCompleteListener {
                     user.updatePassword(newPassword)
                 }
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun resetPassword(email: String): Result<Unit> {
+        return try {
+            firebaseAuth.sendPasswordResetEmail(email).await()
 
             Result.success(Unit)
         } catch (e: Exception) {

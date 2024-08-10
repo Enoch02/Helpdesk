@@ -1,5 +1,7 @@
 package com.enoch02.helpdesk.ui.screen.authentication
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,9 +12,11 @@ import com.enoch02.helpdesk.data.remote.repository.auth.FirebaseAuthRepository
 import com.enoch02.helpdesk.data.remote.repository.firestore_db.FirestoreRepository
 import com.enoch02.helpdesk.data.local.model.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,6 +33,7 @@ class AuthenticationViewModel @Inject constructor(
 
     var screenState by mutableStateOf(AuthScreenState.SIGN_IN)
     var name by mutableStateOf("")
+
     /*TODO: clear values*/
     var email by mutableStateOf("")
     var password by mutableStateOf("")
@@ -64,7 +69,6 @@ class AuthenticationViewModel @Inject constructor(
         rememberMe = new
     }
 
-    //TODO: create a function that validates inputs
     fun signIn() {
         viewModelScope.launch {
             authRepository.loginUser(email, password).collect { result ->
@@ -121,6 +125,24 @@ class AuthenticationViewModel @Inject constructor(
             firestoreRepository.getUserData(uid = authRepository.getUID())
                 .onSuccess {
                     userData = it
+                }
+        }
+    }
+
+    fun resetPassword(context: Context, email: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            authRepository.resetPassword(email)
+                .onSuccess {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "Password Reset Link sent", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                }
+                .onFailure {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, it.message, Toast.LENGTH_SHORT)
+                            .show()
+                    }
                 }
         }
     }

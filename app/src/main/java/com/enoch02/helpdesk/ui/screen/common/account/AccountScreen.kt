@@ -1,6 +1,5 @@
 package com.enoch02.helpdesk.ui.screen.common.account
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -16,12 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.enoch02.helpdesk.ui.screen.common.account.component.AccountEdit
-import com.enoch02.helpdesk.ui.screen.common.account.component.Profile
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountScreen(navController: NavController, viewModel: AccountViewModel = hiltViewModel()) {
-    val showProfile = viewModel.showProfile
     val currentImage = viewModel.currentImage
     val displayName = viewModel.currentName
 
@@ -34,21 +31,12 @@ fun AccountScreen(navController: NavController, viewModel: AccountViewModel = hi
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = when (showProfile) {
-                            true -> "Profile"
-                            false -> "Account"
-                        }
-                    )
+                    Text(text = "Account")
                 },
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            if (showProfile) {
-                                navController.popBackStack()
-                            } else {
-                                viewModel.toggleShowProfile()
-                            }
+                            navController.popBackStack()
                         },
                         content = {
                             Icon(
@@ -61,37 +49,16 @@ fun AccountScreen(navController: NavController, viewModel: AccountViewModel = hi
             )
         },
         content = { paddingValues ->
-            AnimatedContent(
-                targetState = showProfile,
-                content = {
-                    when (it) {
-                        true -> {
-                            Profile(
-                                displayName = displayName,
-                                profilePic = currentImage,
-                                onDisplayNameClick = {
-                                    viewModel.toggleShowProfile()
-                                },
-                                modifier = Modifier.padding(paddingValues)
-                            )
-                        }
-
-                        false -> {
-                            AccountEdit(
-                                currentImage = currentImage,
-                                onImageChange = { newImage -> viewModel.updateCurrentImage(newImage) },
-                                currentName = displayName,
-                                onNameChange = { newName -> viewModel.updateCurrentName(newName) },
-                                onSaveChangesClicked = {
-                                    viewModel.updateUserInfo()
-                                    viewModel.toggleShowProfile()
-                                },
-                                modifier = Modifier.padding(paddingValues)
-                            )
-                        }
-                    }
+            AccountEdit(
+                currentImage = currentImage,
+                onImageChange = { newImage -> viewModel.updateCurrentImage(newImage) },
+                currentName = displayName,
+                onNameChange = { newName -> viewModel.updateCurrentName(newName) },
+                onSaveChangesClicked = {
+                    viewModel.updateUserInfo()
+                    viewModel.refreshProfile()
                 },
-                label = ""
+                modifier = Modifier.padding(paddingValues)
             )
         }
     )

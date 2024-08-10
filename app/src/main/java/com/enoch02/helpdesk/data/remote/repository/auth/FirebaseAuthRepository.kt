@@ -15,6 +15,8 @@ interface FirebaseAuthRepository {
     fun getUser(): FirebaseUser?
     fun updateUserInfo(name: String): Result<Unit>
     fun updatePassword(email: String, oldPassword: String, newPassword: String): Result<Unit>
+
+    suspend fun resetPassword(email: String): Result<Unit>
 }
 
 

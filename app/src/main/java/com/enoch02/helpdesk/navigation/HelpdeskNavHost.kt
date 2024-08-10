@@ -361,7 +361,18 @@ class FindHomeViewModel @Inject constructor(
                 .onSuccess {
                     if (it != null) {
                         userData = it
-                        homeScreenContentState = ContentState.COMPLETED
+                        // runs when user has changed their email to ensure database is consistent with firebase auth
+                        if (it.email != authRepository.getMail()) {
+                            firestoreRepository.updateEmail(
+                                authRepository.getUID(),
+                                authRepository.getMail()
+                            )
+                                .onSuccess {
+                                    homeScreenContentState = ContentState.COMPLETED
+                                }
+                        } else {
+                            homeScreenContentState = ContentState.COMPLETED
+                        }
                     }
                 }
         }

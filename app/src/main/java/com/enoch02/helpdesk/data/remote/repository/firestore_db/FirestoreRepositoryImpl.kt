@@ -66,6 +66,18 @@ class FirestoreRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun updateEmail(uid: String, newEmail: String): Result<Unit> {
+        return try {
+            val document = db.collection(USER_COLLECTION_NAME).document(uid)
+            document.update("email", newEmail).await()
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e(TAG, "updateEmail: ${e.message}")
+            Result.failure(e)
+        }
+    }
+
     override suspend fun createTicket(ticket: Ticket): Result<Unit> {
         return try {
             val collection = db.collection(TICKETS_COLLECTION_NAME)

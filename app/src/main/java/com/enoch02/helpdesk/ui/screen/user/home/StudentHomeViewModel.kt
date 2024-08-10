@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.enoch02.helpdesk.data.local.model.ChatsData
 import com.enoch02.helpdesk.data.local.repository.MessageUpdatesRepository
 import com.enoch02.helpdesk.data.remote.model.Chat
 import com.enoch02.helpdesk.data.remote.model.UserData
@@ -112,11 +113,4 @@ class StudentHomeViewModel @Inject constructor(
             allChatsData = temp
         }
     }
-
-    data class ChatsData(
-        val profilePic: Uri?,
-        val name: String?,
-        val ticketSubject: String?,
-        val mostRecentMessage: String?
-    )
 }

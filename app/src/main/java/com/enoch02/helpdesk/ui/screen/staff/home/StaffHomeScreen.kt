@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpCenter
+import androidx.compose.material.icons.automirrored.filled.Message
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Feedback
 import androidx.compose.material.icons.filled.MoreVert
@@ -26,6 +27,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +47,7 @@ import com.enoch02.helpdesk.data.local.model.Filter
 import com.enoch02.helpdesk.navigation.Screen
 import com.enoch02.helpdesk.ui.screen.common.component.AboutAppDialog
 import com.enoch02.helpdesk.ui.screen.common.component.Header
+import com.enoch02.helpdesk.ui.screen.common.component.OpenChatsBottomSheet
 import com.enoch02.helpdesk.ui.screen.staff.home.component.StatsCard
 import com.enoch02.helpdesk.ui.screen.user.home.component.ActionCard
 import com.enoch02.helpdesk.util.STAFF_ROLE
@@ -57,11 +60,17 @@ fun StaffHomeScreen(navController: NavController, viewModel: StaffHomeViewModel 
     val profilePicture = viewModel.profilePicture
     val userData = viewModel.userData
     val ticketStats = viewModel.ticketStats
+    val chats = viewModel.chats
+    val chatsData = viewModel.allChatsData
 
     val pullToRefreshState = rememberPullToRefreshState()
     val isRefreshing = viewModel.isRefreshing
 
     var showAboutDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    var showBottomSheet by remember {
         mutableStateOf(false)
     }
 
@@ -77,6 +86,11 @@ fun StaffHomeScreen(navController: NavController, viewModel: StaffHomeViewModel 
         } else {
             pullToRefreshState.endRefresh()
         }
+    }
+
+    SideEffect {
+        viewModel.getChats()
+        viewModel.getChatData()
     }
 
     Scaffold(
@@ -266,6 +280,16 @@ fun StaffHomeScreen(navController: NavController, viewModel: StaffHomeViewModel 
                                         }
                                     )
                                 }
+
+                                item {
+                                    ActionCard(
+                                        icon = Icons.AutoMirrored.Filled.Message,
+                                        label = "View Chats",
+                                        onClick = {
+                                            showBottomSheet = true
+                                        }
+                                    )
+                                }
                             }
                         )
                     },
@@ -288,6 +312,18 @@ fun StaffHomeScreen(navController: NavController, viewModel: StaffHomeViewModel 
                 showDialog = showAboutDialog,
                 onConfirm = {
                     showAboutDialog = false
+                }
+            )
+
+            OpenChatsBottomSheet(
+                showBottomSheet = showBottomSheet,
+                onDismiss = { showBottomSheet = false },
+                chats = chats,
+                chatsData = chatsData,
+                onChatItemClicked = { chatID ->
+                    navController.navigate(
+                        Screen.Chat.withArgs(chatID)
+                    )
                 }
             )
         }

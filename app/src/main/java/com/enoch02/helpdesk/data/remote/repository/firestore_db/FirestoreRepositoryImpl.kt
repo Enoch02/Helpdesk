@@ -9,6 +9,7 @@ import com.enoch02.helpdesk.data.remote.model.Message
 import com.enoch02.helpdesk.data.remote.model.Ticket
 import com.enoch02.helpdesk.data.remote.model.Tickets
 import com.enoch02.helpdesk.data.remote.model.UserData
+import com.enoch02.helpdesk.data.remote.model.contains
 import com.enoch02.helpdesk.data.remote.repository.auth.FirebaseAuthRepository
 import com.enoch02.helpdesk.util.DEFAULT_DISPLAY_NAME
 import com.enoch02.helpdesk.util.getCurrentDateTime
@@ -380,7 +381,7 @@ class FirestoreRepositoryImpl @Inject constructor(
             val chats =
                 db.collection(CHATS_COLLECTION_NAME).get().await().toObjects(Chat::class.java)
 
-            Result.success(chats.filter { it.startedBy == uid })
+            Result.success(chats.filter { it.members?.contains(uid) ?: false })
         } catch (e: Exception) {
             Log.e(TAG, "getChats: ${e.message}")
             Result.failure(e)

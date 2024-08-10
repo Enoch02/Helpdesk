@@ -34,18 +34,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.enoch02.helpdesk.data.local.model.ChatsData
 import com.enoch02.helpdesk.data.remote.model.Chat
 import com.enoch02.helpdesk.ui.screen.user.home.StudentHomeViewModel
 import com.enoch02.helpdesk.util.DEFAULT_DISPLAY_NAME
 
-//TODO: staff version might need a different implementation
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OpenChatsBottomSheet(
     showBottomSheet: Boolean,
     onDismiss: () -> Unit,
     chats: List<Chat>,
-    chatsData: List<StudentHomeViewModel.ChatsData>,
+    chatsData: List<ChatsData>,
     onChatItemClicked: (chatID: String) -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)

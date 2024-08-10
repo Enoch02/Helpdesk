@@ -6,8 +6,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.enoch02.helpdesk.data.local.model.ChatsData
 import com.enoch02.helpdesk.data.local.model.TicketStats
 import com.enoch02.helpdesk.data.local.repository.MessageUpdatesRepository
+import com.enoch02.helpdesk.data.remote.model.Chat
 import com.enoch02.helpdesk.data.remote.model.UserData
 import com.enoch02.helpdesk.data.remote.repository.auth.FirebaseAuthRepository
 import com.enoch02.helpdesk.data.remote.repository.cloud_storage.CloudStorageRepository
@@ -28,6 +30,8 @@ class StaffHomeViewModel @Inject constructor(
     var profilePicture by mutableStateOf<Uri?>(null)
     var userData by mutableStateOf(UserData())
     var ticketStats by mutableStateOf(TicketStats())
+    var chats by mutableStateOf(emptyList<Chat>())
+    var allChatsData by mutableStateOf(emptyList<ChatsData>())
 
     var isRefreshing by mutableStateOf(false)
 
@@ -43,6 +47,8 @@ class StaffHomeViewModel @Inject constructor(
         getProfilePicture()
         getUserData()
         getStats()
+        getChats()
+        getChatData()
     }
 
     fun getUserData() {
@@ -86,6 +92,63 @@ class StaffHomeViewModel @Inject constructor(
                 .onFailure {
                     isRefreshing = false
                 }
+        }
+    }
+
+    fun getChats() {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (userData.userID != null) {
+                firestoreRepository.getChats(userData.userID!!)
+                    .onSuccess {
+                        chats = it
+                    }
+                    .onFailure {
+                        chats = emptyList()
+                    }
+            }
+        }
+    }
+
+    fun getChatData() {
+        viewModelScope.launch {
+            val temp = mutableListOf<ChatsData>()
+
+            chats.forEach { chat ->
+                var name: String? = null
+                var ticketSubject: String? = null
+                var profilePic = Uri.EMPTY
+                val mostRecentMessage: String? = chat.messages?.last()?.messageText
+                var timeSent = chat.messages?.last()?.sentAt
+
+                firestoreRepository.getUserName(chat.members?.userID.toString())
+                    .onSuccess {
+                        name = it
+                    }
+
+                firestoreRepository.getTicket(
+                    chat.members?.userID.toString(),
+                    chat.ticketID.toString()
+                )
+                    .onSuccess {
+                        ticketSubject = it.subject
+                    }
+
+                cloudStorageRepository.getProfilePicture(chat.members?.userID.toString())
+                    .onSuccess {
+                        profilePic = it
+                    }
+
+                temp.add(
+                    ChatsData(
+                        profilePic = profilePic,
+                        name = name,
+                        ticketSubject = ticketSubject,
+                        mostRecentMessage = mostRecentMessage
+                    )
+                )
+            }
+
+            allChatsData = temp
         }
     }
 

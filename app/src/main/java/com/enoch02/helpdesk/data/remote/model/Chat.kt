@@ -9,13 +9,17 @@ data class Chat(
     val createdAt: Date? = null,
     val startedBy: String? = null,  // uid
     val members: Members? = null,  // uid (limit = 2),
-    val messages: List<Message>? = null
+    val messages: List<Message>? = null,
 )
 
 data class Members(
     val userID: String? = null,
-    val staffID: String? = null
+    val staffID: String? = null,
 )
+
+fun Members.contains(id: String): Boolean {
+    return id == userID || id == staffID
+}
 
 /**
  * [imageId] should be set only when the message is being sent with an image
@@ -26,7 +30,7 @@ data class Message(
     val sentAt: Date? = null,
     val sentBy: String? = null,
     val type: MessageType? = null,
-    val read: Boolean? = false
+    val read: Boolean? = false,
 )
 
 enum class MessageType {

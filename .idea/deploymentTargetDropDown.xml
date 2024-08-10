@@ -7,8 +7,7 @@
       </entry>
       <entry key="app">
         <State>
-          <multipleDevicesSelectedInDropDown value="true" />
-          <runningDeviceTargetsSelectedWithDialog>
+          <runningDeviceTargetSelectedWithDropDown>
             <Target>
               <type value="RUNNING_DEVICE_TARGET" />
               <deviceKey>
@@ -18,12 +17,15 @@
                 </Key>
               </deviceKey>
             </Target>
+          </runningDeviceTargetSelectedWithDropDown>
+          <timeTargetWasSelectedWithDropDown value="2024-08-10T15:01:12.228791600Z" />
+          <runningDeviceTargetsSelectedWithDialog>
             <Target>
               <type value="RUNNING_DEVICE_TARGET" />
               <deviceKey>
                 <Key>
-                  <type value="SERIAL_NUMBER" />
-                  <value value="DEIBY559R4PRYXJB" />
+                  <type value="VIRTUAL_DEVICE_PATH" />
+                  <value value="C:\Users\adesa\.android\avd\Pixel_2_API_29.avd" />
                 </Key>
               </deviceKey>
             </Target>

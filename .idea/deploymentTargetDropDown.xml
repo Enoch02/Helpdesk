@@ -43,6 +43,9 @@
           </targetsSelectedWithDialog>
         </State>
       </entry>
+      <entry key="login()">
+        <State />
+      </entry>
     </value>
   </component>
 </project>

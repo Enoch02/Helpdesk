@@ -2,7 +2,6 @@ package com.enoch02.helpdesk.ui.screen.staff.user_list.component
 
 import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -30,7 +29,7 @@ import coil.compose.AsyncImage
 @Composable
 fun UserListItem(
     modifier: Modifier = Modifier,
-    showMenu: Boolean = true,
+    showMenu: Boolean = false,
     profilePicUri: Uri?,
     name: String,
     role: String,
